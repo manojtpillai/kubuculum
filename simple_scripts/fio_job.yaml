@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio
+spec:
+  template:
+    spec:
+      volumes:
+      - name: data-volume
+        emptyDir: {}
+      - name: storapp-pv
+        persistentVolumeClaim:
+          claimName: storapp-pv-claim
+      containers:
+      - name: fio-complete
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: /data
+            name: data-volume
+        command: ["/bin/sh"]
+        args: ["-c", "touch /data/fio.completed.txt; sleep 3600"]
+      initContainers:
+      - name: fio-container
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: /data
+            name: data-volume
+          - mountPath: /dataset
+            name: storapp-pv
+        command: ["/bin/sh"]
+        args: ["-c", "fio --name=writetest --ioengine=sync --rw=write --direct=0 --create_on_open=1 --end_fsync=1 --bs=128k --directory=/dataset --filesize=32m --numjobs=4 --output=/data/fio.run.txt ; ls -l /dataset > /data/fio.ls.txt"]
+      restartPolicy: Never
+
