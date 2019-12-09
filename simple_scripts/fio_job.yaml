@@ -4,6 +4,9 @@ metadata:
   name: fio
 spec:
   template:
+    metadata:
+      labels:
+        type: storapp-pod
     spec:
       volumes:
       - name: data-volume
@@ -28,6 +31,6 @@ spec:
           - mountPath: /dataset
             name: storapp-pv
         command: ["/bin/sh"]
-        args: ["-c", "fio --name=writetest --ioengine=sync --rw=write --direct=0 --create_on_open=1 --end_fsync=1 --bs=128k --directory=/dataset --filesize=32m --numjobs=4 --output=/data/fio.run.txt ; ls -l /dataset > /data/fio.ls.txt"]
+        args: ["-c", "fio --name=writetest --ioengine=sync --rw=write --direct=0 --create_on_open=1 --end_fsync=1 --bs=128k --directory=/dataset --filesize=1g --numjobs=2 --output=/data/fio.run.txt ; ls -l /dataset > /data/fio.ls.txt"]
       restartPolicy: Never
 

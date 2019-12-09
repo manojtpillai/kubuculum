@@ -22,6 +22,19 @@ NM_SYSSTAT="kube-system"
 # namespace for app pods; created by script
 NM_STORAPP="nm-storapp"
 
+# yaml file for MON pods
+MONYAML_PATH="./daemonset_sysstat.yaml"
+MONPOD_LABEL="name=sysstat-collection"
+
+# yaml file for PVC
+# use empty string if not applicable
+PVCYAML_PATH="./storapp_pvc.yaml"
+
+# yaml file for application, as a k8s job
+# expects it in a specific format
+JOBYAML_PATH="./fio_job.yaml"
+JOBPOD_LABEL="type=storapp-pod"
+
 # parameters section: END
 
 function print_usage
@@ -36,6 +49,37 @@ function setup_rundir
     mkdir ${run_dir}
 }
 
+function do_cleanup
+{
+    # cleanup application pods, pvcs and namespaces
+    kubectl delete -f ${JOBYAML_PATH} --namespace=${NM_STORAPP}
+    kubectl delete -f ${PVCYAML_PATH} --namespace=${NM_STORAPP}
+    kubectl delete namespace ${NM_STORAPP}
+
+    # cleanup monitoring pods 
+    if [ "$MON_ENABLED" = "y" ]; then
+
+	kubectl delete -f ${MONYAML_PATH}
+
+    fi
+}
+
+function force_cleanup
+{
+    set +e
+    do_cleanup
+}
+
+## process command-line
+
+if [ "$1" = "cleanup" ]; then
+    force_cleanup
+    exit 0
+elif [ "$1" != "start" ]; then
+    print_usage
+    exit 1
+fi
+
 ## set up run directory run_dir
 
 setup_rundir
@@ -43,6 +87,7 @@ setup_rundir
 echo "output for run: " > ${run_dir}/${RUNOUT}
 echo >> ${run_dir}/${RUNOUT}
 
+echo "nodes:" >> ${run_dir}/${RUNOUT}
 kubectl get nodes >> ${run_dir}/${RUNOUT}
 echo >> ${run_dir}/${RUNOUT}
 
@@ -53,11 +98,12 @@ echo >> ${run_dir}/${RUNOUT}
 if [ "$MON_ENABLED" = "y" ]; then
 
     # create sysstat pod on each node
-    kubectl create -f daemonset_sysstat.yaml
-    sleep 20
+    kubectl create -f ${MONYAML_PATH}
+    sleep 20 # TODO
 
     # check pods created
-    kubectl get pods -o wide --namespace=${NM_SYSSTAT} >> ${run_dir}/${RUNOUT}
+    echo "sysstat pods:" >> ${run_dir}/${RUNOUT}
+    kubectl get pods -o wide -l ${MONPOD_LABEL} --namespace=${NM_SYSSTAT} >> ${run_dir}/${RUNOUT}
     echo >> ${run_dir}/${RUNOUT}
 
 fi
@@ -70,30 +116,41 @@ fi
 kubectl create namespace ${NM_STORAPP}
 
 # create pvc
-kubectl create -f storapp_pvc.yaml --namespace=${NM_STORAPP}
+kubectl create -f ${PVCYAML_PATH} --namespace=${NM_STORAPP}
 
 # create app pod that uses pvc 
-kubectl create -f fio_job.yaml --namespace=${NM_STORAPP}
+kubectl create -f ${JOBYAML_PATH} --namespace=${NM_STORAPP}
 
 ## 
 
 ## wait for application pods to complete
-# use: kubectl wait command
-sleep 120
+# check whether pod is in running state
+# this means initContainer has completed, and therfore job done
+app_pod_list=`kubectl get pods -l ${JOBPOD_LABEL} --namespace=${NM_STORAPP} --no-headers | awk '{print $1}'`
+for pod in ${app_pod_list}; do
+    kubectl wait --for=condition=Ready  pod/${pod} --namespace=${NM_STORAPP} --timeout=3600s
+done
 ##
 
 ## copy application results to run_dir
-pod=`kubectl get pods --namespace=${NM_STORAPP} --no-headers | awk '{print $1}'`
-mkdir ${run_dir}/${pod}
-kubectl cp ${NM_STORAPP}/${pod}:/data ${run_dir}/${pod}
+app_pod_list=`kubectl get pods -l ${JOBPOD_LABEL} --namespace=${NM_STORAPP} --no-headers | awk '{print $1}'`
+for pod in ${app_pod_list}; do
+    mkdir ${run_dir}/${pod}
+    kubectl cp ${NM_STORAPP}/${pod}:/data ${run_dir}/${pod}
+done
+
+# get node where pod was running
+echo "application pod:" >> ${run_dir}/${RUNOUT}
+kubectl get pods -o wide -l ${JOBPOD_LABEL} --namespace=${NM_STORAPP} >> ${run_dir}/${RUNOUT}
+echo >> ${run_dir}/${RUNOUT}
 ##
 
-## collect stats
+## gather stats
 
 if [ "$MON_ENABLED" = "y" ]; then
 
     # copy stats files from sysstat pods to run_dir
-    pod_list=`kubectl get pods --namespace=${NM_SYSSTAT} -l name=sysstat-collection --no-headers | awk '{print $1}'`
+    pod_list=`kubectl get pods -l ${MONPOD_LABEL} --namespace=${NM_SYSSTAT} --no-headers | awk '{print $1}'`
     for pod in ${pod_list}; do
 	mkdir ${run_dir}/${pod}
 	kubectl cp ${NM_SYSSTAT}/${pod}:/data ${run_dir}/${pod}
@@ -104,18 +161,6 @@ fi
 ##
 
 ## clean up
-
-# cleanup application pods, pvcs and namespaces
-kubectl delete -f fio_job.yaml --namespace=${NM_STORAPP}
-kubectl delete -f storapp_pvc.yaml --namespace=${NM_STORAPP}
-kubectl delete namespace ${NM_STORAPP}
-
-# cleanup monitoring pods 
-if [ "$MON_ENABLED" = "y" ]; then
-
-    kubectl delete -f daemonset_sysstat.yaml
-
-fi
-
+do_cleanup
 ##
 
