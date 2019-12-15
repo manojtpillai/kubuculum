@@ -1,3 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fio-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 16Gi
+...
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -6,31 +19,41 @@ spec:
   template:
     metadata:
       labels:
-        type: storapp-pod
+        type: benchmark-pod
     spec:
       volumes:
-      - name: data-volume
+      - name: output-volume
         emptyDir: {}
-      - name: storapp-pv
+      - name: fio-pv
         persistentVolumeClaim:
-          claimName: storapp-pv-claim
+          claimName: fio-pv-claim
       containers:
-      - name: fio-complete
-        image: quay.io/mpillai/fio
+      - name: benchmark-complete
+        image: rhel7
         volumeMounts:
-          - mountPath: /data
-            name: data-volume
+          - mountPath: /benchout
+            name: output-volume
         command: ["/bin/sh"]
-        args: ["-c", "touch /data/fio.completed.txt; sleep 3600"]
+        args: ["-c", "touch /benchout/benchmark.completed.txt; sleep 3600"]
       initContainers:
       - name: fio-container
         image: quay.io/mpillai/fio
         volumeMounts:
-          - mountPath: /data
-            name: data-volume
+          - mountPath: /benchout
+            name: output-volume
           - mountPath: /dataset
-            name: storapp-pv
+            name: fio-pv
         command: ["/bin/sh"]
-        args: ["-c", "fio --name=writetest --ioengine=sync --rw=write --direct=0 --create_on_open=1 --end_fsync=1 --bs=128k --directory=/dataset --filesize=1g --numjobs=2 --output=/data/fio.run.txt ; ls -l /dataset > /data/fio.ls.txt"]
+        args:
+          - "-c" 
+          - > 
+            fio --name=writetest --rw=write 
+            --ioengine=sync --direct=0 
+            --create_on_open=1 --end_fsync=1 
+            --directory=/dataset 
+            --filename_format='f.$jobnum.$filenum'
+            --bs=128k --filesize=1g --numjobs=2 
+            --output=/benchout/fio.run.txt 
+            ; ls -l /dataset > /benchout/fio.ls.txt
       restartPolicy: Never
-
+...

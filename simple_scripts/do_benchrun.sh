@@ -19,21 +19,20 @@ MON_ENABLED="n"
 # should match the namespace specified in daemonset yaml
 NM_SYSSTAT="kube-system"
 
-# namespace for app pods; created by script
+# namespace for app pods; must exist
 NM_STORAPP="nm-storapp"
 
 # yaml file for MON pods
 MONYAML_PATH="./daemonset_sysstat.yaml"
 MONPOD_LABEL="name=sysstat-collection"
-
-# yaml file for PVC
-# use empty string if not applicable
-PVCYAML_PATH="./storapp_pvc.yaml"
+MONOUT="/data"
 
 # yaml file for application, as a k8s job
 # expects it in a specific format
 JOBYAML_PATH="./fio_job.yaml"
-JOBPOD_LABEL="type=storapp-pod"
+# JOBYAML_PATH="./ycsb_job.yaml"
+JOBPOD_LABEL="type=benchmark-pod"
+PODOUT="/benchout"
 
 # parameters section: END
 
@@ -53,14 +52,10 @@ function do_cleanup
 {
     # cleanup application pods, pvcs and namespaces
     kubectl delete -f ${JOBYAML_PATH} --namespace=${NM_STORAPP}
-    kubectl delete -f ${PVCYAML_PATH} --namespace=${NM_STORAPP}
-    kubectl delete namespace ${NM_STORAPP}
 
     # cleanup monitoring pods 
     if [ "$MON_ENABLED" = "y" ]; then
-
 	kubectl delete -f ${MONYAML_PATH}
-
     fi
 }
 
@@ -112,12 +107,6 @@ fi
 
 ## create application pods
 
-# setup namespace for application
-kubectl create namespace ${NM_STORAPP}
-
-# create pvc
-kubectl create -f ${PVCYAML_PATH} --namespace=${NM_STORAPP}
-
 # create app pod that uses pvc 
 kubectl create -f ${JOBYAML_PATH} --namespace=${NM_STORAPP}
 
@@ -136,7 +125,7 @@ done
 app_pod_list=`kubectl get pods -l ${JOBPOD_LABEL} --namespace=${NM_STORAPP} --no-headers | awk '{print $1}'`
 for pod in ${app_pod_list}; do
     mkdir ${run_dir}/${pod}
-    kubectl cp ${NM_STORAPP}/${pod}:/data ${run_dir}/${pod}
+    kubectl cp ${NM_STORAPP}/${pod}:${PODOUT} ${run_dir}/${pod}
 done
 
 # get node where pod was running
@@ -153,7 +142,7 @@ if [ "$MON_ENABLED" = "y" ]; then
     pod_list=`kubectl get pods -l ${MONPOD_LABEL} --namespace=${NM_SYSSTAT} --no-headers | awk '{print $1}'`
     for pod in ${pod_list}; do
 	mkdir ${run_dir}/${pod}
-	kubectl cp ${NM_SYSSTAT}/${pod}:/data ${run_dir}/${pod}
+	kubectl cp ${NM_SYSSTAT}/${pod}:${MONOUT} ${run_dir}/${pod}
     done
 
 fi
