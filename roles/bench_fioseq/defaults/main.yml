@@ -1,0 +1,15 @@
+---
+# defaults file for bench_fioseq
+
+# default namespace
+bench_fioseq_namespace: '{{ benchmark_namespace }}'
+
+# label on pods
+bench_fioseq_podlabel: "type=benchmark-pod"
+
+# directory where output files exist in pods/containers
+bench_fioseq_podoutdir: /benchout
+
+# maximum time for a run; used for wait timeout
+bench_fioseq_maxtime_sec: 36000
+...

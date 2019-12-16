@@ -1,0 +1,14 @@
+---
+# tasks file for bench_fioseq start
+
+- name: start fio pod
+  command: 'kubectl create -f {{ role_path }}/files/fio_job.yaml --namespace={{ bench_fioseq_namespace }}'
+
+- name: get fio pod name
+  command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} --namespace={{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: wait for fio pod completion
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} --namespace={{ bench_fioseq_namespace }} --timeout={{ bench_fioseq_maxtime_sec }}s'
+  with_items: "{{ podlist.stdout_lines }}"
+...

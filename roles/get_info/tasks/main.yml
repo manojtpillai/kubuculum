@@ -1,0 +1,6 @@
+---
+# tasks file for get_info
+
+- name: get node info 
+  shell: 'kubectl get nodes >> {{ run_dir }}/out.{{ role_name }}.txt'
+...

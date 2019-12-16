@@ -1,0 +1,6 @@
+---
+# tasks file for bench_fioseq stop
+
+- name: stop fio pod
+  command: 'kubectl delete -f {{ role_path }}/files/fio_job.yaml --namespace={{ bench_fioseq_namespace }}'
+...

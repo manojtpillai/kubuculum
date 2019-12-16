@@ -1,0 +1,23 @@
+
+[hosts]
+localhost
+
+[all:vars]
+
+# by default, run output is in a sub-dir in playbook directory
+# use run_basedir to change that
+run_basedir="/root/mpillai"
+
+# optionally collect stats
+stats_enabled=True
+
+# choose benchmark 
+# benchmark_namespace="default"
+benchmark_namespace="nm-kubuculum"
+
+# choose benchmark 
+benchmark_name="bench_fioseq"
+
+# pausefor_custombench options
+pausefor_custombench_wait_secs=600
+

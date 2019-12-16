@@ -1,0 +1,10 @@
+---
+# tasks file for collect_sysstat start
+
+- name: start sysstat pods
+  command: 'kubectl create -f {{ role_path}}/files/daemonset_sysstat.yaml'
+
+# MTP_TODO
+- name: wait for sysstat pods to come up
+  command: 'sleep 30'
+...

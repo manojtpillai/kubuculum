@@ -1,0 +1,36 @@
+
+---
+# quickly test a particular role
+
+- hosts: localhost
+
+  tasks:
+
+  - name: set run directory
+    set_fact:
+      run_dir: /tmp/run_ts
+
+  - name: create run directory
+    local_action:
+      module: file
+      path: '{{ run_dir }}'
+      state: directory
+
+  - include_role:
+      name: '{{ role_name }}'
+    vars:
+      benchmark_mode: start
+
+  - pause:
+      seconds: 300
+
+  - include_role:
+      name: '{{ role_name }}'
+    vars:
+      benchmark_mode: gather
+
+  - include_role:
+      name: '{{ role_name }}'
+    vars:
+      benchmark_mode: stop
+...

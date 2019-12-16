@@ -1,0 +1,6 @@
+---
+# defaults file for pausefor_custombench
+
+pausefor_custombench_wait_secs: 30
+
+...

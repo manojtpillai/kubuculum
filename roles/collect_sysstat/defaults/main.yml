@@ -1,0 +1,13 @@
+---
+# defaults file for collect_sysstat
+
+# default monitoring interval
+collect_sysstat_namespace: kube-system
+
+# label on systat pods
+collect_sysstat_podlabel: "name=sysstat-collection"
+
+# directory where output files exist in pods/containers
+collect_sysstat_podoutdir: /data
+
+...

@@ -1,0 +1,84 @@
+
+---
+- hosts: localhost
+
+  # Stores all output for each run in a created directory.
+  # By default, this dir is created in current dir.
+  # To change that, provide value in inventory file or set:
+  # vars: 
+  #   - run_basedir: /tmp (or whatever)
+
+  tasks:
+  - name: get current directory
+    run_once: true
+    local_action:
+      module: command
+      args: pwd
+    register: run_cwd
+
+  - name: set base directory
+    set_fact:
+      run_pdir: "{{ run_basedir | default(run_cwd.stdout) }}"
+
+  - name: generate run timestamp
+    run_once: true
+    local_action:
+      module: shell
+      args: 'date +%F_%s'
+    register: run_ts
+
+  - name: set run directory
+    set_fact:
+      run_dir: '{{ run_pdir }}/run_{{ run_ts.stdout }}'
+
+  - name: create run directory
+    run_once: true
+    local_action:
+      module: file
+      path: '{{ run_dir }}'
+      state: directory
+
+  - name: create namespace for benchmark resources 
+    command: 'kubectl create namespace {{ benchmark_namespace }}'
+    when: benchmark_namespace != "default"
+
+  - include_role:
+      name: collect_sysstat
+    vars: 
+      benchmark_mode: start
+    when: stats_enabled is defined and stats_enabled
+
+  - include_role:
+      name: '{{ benchmark_name }}'
+    vars: 
+      benchmark_mode: start
+
+  - include_role:
+      name: '{{ benchmark_name }}'
+    vars: 
+      benchmark_mode: gather
+
+  - include_role:
+      name: collect_sysstat
+    vars: 
+      benchmark_mode: gather
+    when: stats_enabled is defined and stats_enabled
+
+  - include_role:
+      name: get_info
+
+  - include_role:
+      name: '{{ benchmark_name }}'
+    vars: 
+      benchmark_mode: stop
+
+  - include_role:
+      name: collect_sysstat
+    vars: 
+      benchmark_mode: stop
+    when: stats_enabled is defined and stats_enabled
+
+  - name: delete namespace for benchmark resources 
+    command: 'kubectl delete namespace {{ benchmark_namespace }}'
+    when: benchmark_namespace != "default"
+...
