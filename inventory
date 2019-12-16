@@ -11,12 +11,22 @@ run_basedir="/root/mpillai"
 # optionally collect stats
 stats_enabled=True
 
-# choose benchmark 
-# benchmark_namespace="default"
+# namespace for sysstat pods
+# fixed for now; other namespaces not yet working with daemonset
+# stats_namespace="kube-system" 
+
+# choose namespace for benchmark 
+# there is a chance of inadvertently deleting other pod/pvc, so
+# "default" namespace no longer allowed
 benchmark_namespace="nm-kubuculum"
 
 # choose benchmark 
-benchmark_name="bench_fioseq"
+# benchmark_name="bench_fioseq"
+benchmark_name="bench_ycsb"
+
+# ycsb specific options
+bench_ycsb_db="db_mongodb"
+
 
 # pausefor_custombench options
 pausefor_custombench_wait_secs=600

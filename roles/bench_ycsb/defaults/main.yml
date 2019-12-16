@@ -1,0 +1,18 @@
+---
+# defaults file for bench_ycsb
+
+# default namespace
+bench_ycsb_namespace: '{{ benchmark_namespace }}'
+
+# nosql db to run against; specify role
+bench_ycsb_db: db_mongodb
+
+# label on pods
+bench_ycsb_podlabel: "type=benchmark-pod"
+
+# directory where output files exist in pods/containers
+bench_ycsb_podoutdir: /benchout
+
+# maximum time for a run; used for wait timeout
+bench_ycsb_maxtime_sec: 36000
+...

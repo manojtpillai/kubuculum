@@ -1,0 +1,14 @@
+---
+# tasks file for db_mongodb start
+
+- name: start mongodb service
+  command: 'kubectl create -f {{ role_path }}/files/mongodb_service.yaml --namespace={{ db_mongodb_namespace }}'
+
+- name: get mongodb pod names
+  command: 'kubectl get pods -l {{ db_mongodb_podlabel }} --namespace={{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: wait for mongodb pods to be ready
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} --namespace={{ db_mongodb_namespace }} --timeout={{ db_mongodb_timetoready_sec }}s'
+  with_items: "{{ podlist.stdout_lines }}"
+...

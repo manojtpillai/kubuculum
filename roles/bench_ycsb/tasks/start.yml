@@ -1,0 +1,17 @@
+---
+# tasks file for bench_ycsb start
+
+- include_role:
+    name: '{{ bench_ycsb_db }}'
+
+- name: start ycsb pod
+  command: 'kubectl create -f {{ role_path }}/files/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
+
+- name: get ycsb pod name
+  command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} --namespace={{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: wait for ycsb test completion
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} --namespace={{ bench_ycsb_namespace }} --timeout={{ bench_ycsb_maxtime_sec }}s'
+  with_items: "{{ podlist.stdout_lines }}"
+...
