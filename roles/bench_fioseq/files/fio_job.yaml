@@ -54,6 +54,6 @@ spec:
             --filename_format='f.$jobnum.$filenum'
             --bs=128k --filesize=1g --numjobs=2 
             --output=/benchout/fio.run.txt 
-            ; ls -l /dataset > /benchout/fio.ls.txt
+            ; ls -l /dataset > /benchout/fio.ls_l.txt
       restartPolicy: Never
 ...

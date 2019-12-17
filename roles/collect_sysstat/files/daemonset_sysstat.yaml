@@ -24,7 +24,7 @@ spec:
         - name: data-volume
           mountPath: /data
         command: ["/bin/sh"]
-        args: ["-c", "iostat -tkdxN 10 > /data/iostat.out.txt"]
+        args: ["-c", "df -h > /data/df_h.out.txt; iostat -tkdxN 10 > /data/iostat.out.txt"]
       - name: sysstat-top-thr
         image: quay.io/mpillai/sysstat
         securityContext:
