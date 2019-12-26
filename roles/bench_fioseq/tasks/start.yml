@@ -1,8 +1,18 @@
 ---
 # tasks file for bench_fioseq start
 
+- name: create directory for storing bench_fioseq output
+  file:
+    path: '{{ run_dir }}/{{ role_name }}'
+    state: directory
+
+- name: create job file from template
+  template:
+    src: '{{ role_path }}/templates/fio_job.j2'
+    dest: '{{ run_dir }}/{{ role_name }}/fio_job.yaml'
+
 - name: start fio pod
-  command: 'kubectl create -f {{ role_path }}/files/fio_job.yaml --namespace={{ bench_fioseq_namespace }}'
+  command: 'kubectl create -f {{ run_dir }}/{{ role_name }}/fio_job.yaml --namespace={{ bench_fioseq_namespace }}'
 
 - name: get fio pod name
   command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} --namespace={{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'

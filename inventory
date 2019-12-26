@@ -22,10 +22,27 @@ benchmark_namespace="nm-kubuculum"
 
 # choose benchmark 
 # benchmark_name="bench_fioseq"
-benchmark_name="bench_ycsb"
+benchmark_name="bench_fiorand"
+# benchmark_name="bench_ycsb"
+
+# fioseq specific options
+bench_fioseq_pvcsize_gb=300
+bench_fioseq_fsz_gb=16
+bench_fioseq_njobs=8
+
+# fiorand specific options
+bench_fiorand_pvcsize_gb=300
+bench_fiorand_fsz_gb=16
+bench_fiorand_njobs=2
 
 # ycsb specific options
-bench_ycsb_db="db_mongodb"
+bench_ycsb_dbrole="db_mongodb"
+bench_ycsb_workload="workloads/workloada"
+# bench_ycsb_reccount=100000000
+# bench_ycsb_opcount=10000000
+bench_ycsb_reccount=1000000
+bench_ycsb_opcount=500000
+bench_ycsb_run_thrds=8
 
 
 # pausefor_custombench options

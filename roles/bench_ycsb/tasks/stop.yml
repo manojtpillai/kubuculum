@@ -2,8 +2,8 @@
 # tasks file for bench_ycsb stop
 
 - name: stop ycsb pod
-  command: 'kubectl delete -f {{ role_path }}/files/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
+  command: 'kubectl delete -f {{ run_dir }}/{{ role_name }}/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
 
 - include_role:
-    name: '{{ bench_ycsb_db }}'
+    name: '{{ bench_ycsb_dbrole }}'
 ...

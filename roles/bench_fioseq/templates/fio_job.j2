@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fio-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ bench_fioseq_pvcsize_gb }}Gi
+...
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio
+spec:
+  template:
+    metadata:
+      labels:
+        type: benchmark-pod
+    spec:
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+      - name: fio-pv
+        persistentVolumeClaim:
+          claimName: fio-pv-claim
+      containers:
+      - name: benchmark-complete
+        image: rhel7
+        volumeMounts:
+          - mountPath: /benchout
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+        args: ["-c", "touch /benchout/benchmark.completed.txt; sleep 3600"]
+      initContainers:
+      - name: fio-initwrite
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: /benchout
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            fio --name=initwrite --rw=write 
+            --ioengine=sync --direct=0 
+            --create_on_open=1 --end_fsync=1 
+            --directory=/dataset 
+            --filename_format='f.$jobnum.$filenum'
+            --bs={{ bench_fioseq_bs_kb }}k 
+            --filesize={{ bench_fioseq_fsz_gb }}g 
+            --numjobs={{ bench_fioseq_njobs }} 
+            --output=/benchout/fio.initwrite.run.txt 
+            ; ls -l /dataset > /benchout/fio.initwrite.ls_l.txt
+      - name: fio-seqread
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: /benchout
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            fio --name=seqread --rw=read 
+            --ioengine=sync --direct=0 
+            --create_on_open=1
+            --directory=/dataset 
+            --filename_format='f.$jobnum.$filenum'
+            --bs={{ bench_fioseq_bs_kb }}k 
+            --filesize={{ bench_fioseq_fsz_gb }}g 
+            --numjobs={{ bench_fioseq_njobs }} 
+            --output=/benchout/fio.seqread.run.txt 
+      restartPolicy: Never
+...

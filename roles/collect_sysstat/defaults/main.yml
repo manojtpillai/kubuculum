@@ -10,4 +10,19 @@ collect_sysstat_podlabel: "name=sysstat-collection"
 # directory where output files exist in pods/containers
 collect_sysstat_podoutdir: /data
 
+# default monitoring interval
+collect_sysstat_interval_sec: 10
+
+# top output can get huge
+# separate knob for top mon interval
+collect_sysstat_topintrvl_sec: 30
+
+# top output can get huge
+# number of top top threads for which output is collected
+collect_sysstat_topthrds: 100
+
+# top output can get huge
+# number of top top procs for which output is collected
+collect_sysstat_topprocs: 20
+
 ...

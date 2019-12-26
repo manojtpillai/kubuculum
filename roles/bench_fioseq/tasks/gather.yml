@@ -7,12 +7,16 @@
 
 - name: create directory for storing fio pod output
   file: 
-    path: '{{ run_dir}}/{{ item }}'
+    path: '{{ run_dir }}/{{ role_name }}/{{ item }}'
     state: directory
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: fetch output from fio pod
-  command: 'kubectl cp {{ bench_fioseq_namespace }}/{{ item }}:{{ bench_fioseq_podoutdir }} {{ run_dir }}/{{ item}}'
+  command: 'kubectl cp {{ bench_fioseq_namespace }}/{{ item }}:{{ bench_fioseq_podoutdir }} {{ run_dir }}/{{ role_name }}/{{ item}}'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch df from fio pod
+  shell: 'kubectl exec {{ item }} -c {{ bench_fioseq_container }} -n {{ bench_fioseq_namespace }} -- df -h > {{ run_dir }}/{{ role_name }}/{{ item }}/df_h.txt'
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: get fio pod location

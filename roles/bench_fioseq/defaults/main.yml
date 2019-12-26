@@ -10,6 +10,21 @@ bench_fioseq_podlabel: "type=benchmark-pod"
 # directory where output files exist in pods/containers
 bench_fioseq_podoutdir: /benchout
 
+# main container name
+bench_fioseq_container: "benchmark-complete"
+
 # maximum time for a run; used for wait timeout
 bench_fioseq_maxtime_sec: 36000
+
+# pvc size; limit on data set size
+bench_fioseq_pvcsize_gb: 8
+
+# block size
+bench_fioseq_bs_kb: 128
+
+# file size per job
+bench_fioseq_fsz_gb: 2
+
+# number of jobs
+bench_fioseq_njobs: 2
 ...

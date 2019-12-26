@@ -5,7 +5,7 @@
 bench_ycsb_namespace: '{{ benchmark_namespace }}'
 
 # nosql db to run against; specify role
-bench_ycsb_db: db_mongodb
+bench_ycsb_dbrole: db_mongodb
 
 # label on pods
 bench_ycsb_podlabel: "type=benchmark-pod"
@@ -15,4 +15,29 @@ bench_ycsb_podoutdir: /benchout
 
 # maximum time for a run; used for wait timeout
 bench_ycsb_maxtime_sec: 36000
+
+# nosql db as specified on ycsb command line
+bench_ycsb_nosqldb: mongodb
+
+# name of collection/table/db as specified on ycsb command line
+bench_ycsb_storename: ycsb
+
+# TODO: these need to be generated, not hard-coded
+bench_ycsb_db_loadopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb?w=0'"
+bench_ycsb_db_runopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb'"
+
+# ycsb workload to run
+bench_ycsb_workload: "workloads/workloada"
+
+# number of records created in load phase
+bench_ycsb_reccount: 1000000
+
+# number of records accessed in run phase
+bench_ycsb_opcount: 500000
+
+# number of threads in load phase
+bench_ycsb_load_thrds: 16
+
+# number of threads in run phase
+bench_ycsb_run_thrds: 8
 ...

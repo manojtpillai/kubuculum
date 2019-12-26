@@ -2,10 +2,20 @@
 # tasks file for bench_ycsb start
 
 - include_role:
-    name: '{{ bench_ycsb_db }}'
+    name: '{{ bench_ycsb_dbrole }}'
+
+- name: create directory for storing bench_ycsb output
+  file:
+    path: '{{ run_dir }}/{{ role_name }}'
+    state: directory
+
+- name: create ycsb yaml file from template
+  template:
+    src: '{{ role_path }}/templates/ycsb_job.j2'
+    dest: '{{ run_dir }}/{{ role_name }}/ycsb_job.yaml'
 
 - name: start ycsb pod
-  command: 'kubectl create -f {{ role_path }}/files/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
+  command: 'kubectl create -f {{ run_dir }}/{{ role_name }}/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
 
 - name: get ycsb pod name
   command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} --namespace={{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
