@@ -27,6 +27,9 @@ spec:
       - name: fio-pv
         persistentVolumeClaim:
           claimName: fio-pv-claim
+      - name: config-volume
+        configMap:
+          name: kubuculum-state
       containers:
       - name: benchmark-complete
         image: rhel7
@@ -59,6 +62,14 @@ spec:
             --numjobs={{ bench_fiorand_njobs }} 
             --output=/benchout/fio.initwrite.run.txt 
             ; ls -l /dataset > /benchout/fio.initwrite.ls_l.txt
+      - name: fio-prepwait
+        image: rhel7
+        volumeMounts:
+          - mountPath: /runstatus
+            name: config-volume
+          - mountPath: /benchout
+            name: output-volume
+        command: ["/bin/sh", "-c", "while [ `cat /runstatus/bench.mode` = 'prepare' ]; do sleep 30; done"]
       - name: fio-randomread
         image: quay.io/mpillai/fio
         volumeMounts:

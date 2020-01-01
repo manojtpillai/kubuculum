@@ -55,6 +55,11 @@
   - include_role:
       name: '{{ benchmark_name }}'
     vars: 
+      benchmark_mode: run
+
+  - include_role:
+      name: '{{ benchmark_name }}'
+    vars: 
       benchmark_mode: gather
 
   - include_role:

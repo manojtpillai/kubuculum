@@ -4,6 +4,9 @@
 - include_tasks: start.yml
   when: benchmark_mode == "start"
 
+- include_tasks: run.yml
+  when: benchmark_mode == "run"
+
 - include_tasks: gather.yml
   when: benchmark_mode == "gather"
 
