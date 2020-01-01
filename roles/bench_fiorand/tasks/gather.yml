@@ -19,6 +19,10 @@
   shell: 'kubectl exec {{ item }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- df -h > {{ run_dir }}/{{ role_name }}/{{ item }}/df_h.txt'
   with_items: "{{ podlist.stdout_lines }}"
 
+- name: fetch mount from fio pod
+  shell: 'kubectl exec {{ item }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- mount > {{ run_dir }}/{{ role_name }}/{{ item }}/mount.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+
 - name: get fio pod location
   shell: 'kubectl get pods -l {{ bench_fiorand_podlabel }} --namespace={{ bench_fiorand_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
 ...

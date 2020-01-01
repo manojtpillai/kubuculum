@@ -79,5 +79,6 @@ spec:
             --filesize={{ bench_fioseq_fsz_gb }}g 
             --numjobs={{ bench_fioseq_njobs }} 
             --output=/benchout/fio.seqread.run.txt 
+            ; ls -l /dataset > /benchout/fio.seqread.ls_l.txt
       restartPolicy: Never
 ...

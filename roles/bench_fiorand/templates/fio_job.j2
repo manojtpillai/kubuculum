@@ -81,6 +81,7 @@ spec:
             --numjobs={{ bench_fiorand_njobs }} 
             --runtime={{ bench_fiorand_run_sec }} 
             --output=/benchout/fio.randomread.run.txt 
+            ; ls -l /dataset > /benchout/fio.randomread.ls_l.txt
       - name: fio-randomwrite
         image: quay.io/mpillai/fio
         volumeMounts:
@@ -103,5 +104,6 @@ spec:
             --numjobs={{ bench_fiorand_njobs }} 
             --runtime={{ bench_fiorand_run_sec }} 
             --output=/benchout/fio.randomwrite.run.txt 
+            ; ls -l /dataset > /benchout/fio.randomwrite.ls_l.txt
       restartPolicy: Never
 ...

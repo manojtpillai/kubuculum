@@ -6,7 +6,7 @@ localhost
 
 # by default, run output is in a sub-dir in playbook directory
 # use run_basedir to change that
-run_basedir="/root/mpillai"
+run_basedir="."
 
 # optionally collect stats
 stats_enabled=True
@@ -27,13 +27,14 @@ benchmark_name="bench_fiorand"
 
 # fioseq specific options
 bench_fioseq_pvcsize_gb=300
-bench_fioseq_fsz_gb=16
-bench_fioseq_njobs=8
+bench_fioseq_fsz_gb=2
+bench_fioseq_njobs=64
 
 # fiorand specific options
 bench_fiorand_pvcsize_gb=300
-bench_fiorand_fsz_gb=16
-bench_fiorand_njobs=2
+bench_fiorand_fsz_gb=32
+bench_fiorand_njobs=4
+bench_fiorand_bs_kb=4
 
 # ycsb specific options
 bench_ycsb_dbrole="db_mongodb"
