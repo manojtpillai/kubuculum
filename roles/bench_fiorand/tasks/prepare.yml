@@ -1,0 +1,35 @@
+---
+# tasks file for prepare phase
+
+- name: create directory for storing role output
+  file:
+    path: '{{ bench_fiorand_dir }}'
+    state: directory
+
+- name: create configmap for benchmark phase transitions
+  command: 'kubectl create configmap {{ bench_fiorand_configmap }} --from-literal={{ bench_fiorand_mapkey }}={{ bench_fiorand_initphase }} -n {{ bench_fiorand_namespace }}'
+
+- name: create job file from template
+  template:
+    src: '{{ role_path }}/templates/fio_job.j2'
+    dest: '{{ bench_fiorand_dir }}/fio_job.yaml'
+
+- name: start pod
+  command: 'kubectl create -f {{ bench_fiorand_dir }}/fio_job.yaml -n {{ bench_fiorand_namespace }}'
+
+- name: sleep for estimated prepare phase time
+  command: 'sleep {{ bench_fiorand_prep_sec }}'
+
+- name: get pod name
+  command: 'kubectl get pods -l {{ bench_fiorand_podlabel }} --namespace={{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+# wait for prepwait initContainer that marks end of prepare phase
+- name: wait for prepare phase completion
+  shell: "kubectl describe pod {{ podlist.stdout }} -n {{ bench_fiorand_namespace }} | grep State: | sed -n {{ bench_fiorand_prepc }}p | awk '{print $2}'"
+  register: cs
+  until: cs.stdout.find("Running") != -1
+  retries: '{{ bench_fiorand_prep_retries }}'
+  delay: '{{ bench_fiorand_prepretry_sec }}'
+
+...

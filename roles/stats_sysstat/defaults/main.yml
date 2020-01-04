@@ -1,28 +1,28 @@
 ---
-# defaults file for collect_sysstat
+# defaults file for stats_sysstat
 
 # default monitoring interval
-collect_sysstat_namespace: kube-system
+stats_sysstat_namespace: kube-system
 
 # label on systat pods
-collect_sysstat_podlabel: "name=sysstat-collection"
+stats_sysstat_podlabel: "name=sysstat-collection"
 
 # directory where output files exist in pods/containers
-collect_sysstat_podoutdir: /data
+stats_sysstat_podoutdir: /data
 
 # default monitoring interval
-collect_sysstat_interval_sec: 10
+stats_sysstat_interval_sec: 10
 
 # top output can get huge
 # separate knob for top mon interval
-collect_sysstat_topintrvl_sec: 30
+stats_sysstat_topintrvl_sec: 30
 
 # top output can get huge
 # number of top top threads for which output is collected
-collect_sysstat_topthrds: 100
+stats_sysstat_topthrds: 100
 
 # top output can get huge
 # number of top top procs for which output is collected
-collect_sysstat_topprocs: 20
+stats_sysstat_topprocs: 20
 
 ...

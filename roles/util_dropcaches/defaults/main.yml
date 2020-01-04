@@ -1,0 +1,10 @@
+---
+# defaults file for util_dropcaches
+
+# default namespace
+util_dropcaches_cephnm: "openshift-storage"
+
+# label on pods
+util_dropcaches_cephlabel: "app=rook-ceph-tools"
+
+...

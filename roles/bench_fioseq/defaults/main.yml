@@ -2,7 +2,7 @@
 # defaults file for bench_fioseq
 
 # default namespace
-bench_fioseq_namespace: '{{ benchmark_namespace }}'
+bench_fioseq_namespace: '{{ run_namespace }}'
 
 # label on pods
 bench_fioseq_podlabel: "type=benchmark-pod"

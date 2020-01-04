@@ -1,6 +1,0 @@
----
-# tasks file for bench_fiorand stop
-
-- name: stop fio pod
-  command: 'kubectl delete -f {{ run_dir }}/{{ role_name}}/fio_job.yaml --namespace={{ bench_fiorand_namespace }}'
-...

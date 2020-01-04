@@ -7,22 +7,19 @@
 
 - name: create directory for storing fio pod output
   file: 
-    path: '{{ run_dir }}/{{ role_name }}/{{ item }}'
+    path: '{{ bench_fiorand_dir }}/{{ podlist.stdout }}'
     state: directory
-  with_items: "{{ podlist.stdout_lines }}"
 
 - name: fetch output from fio pod
-  command: 'kubectl cp {{ bench_fiorand_namespace }}/{{ item }}:{{ bench_fiorand_podoutdir }} {{ run_dir }}/{{ role_name }}/{{ item}}'
-  with_items: "{{ podlist.stdout_lines }}"
+  command: 'kubectl cp {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} {{ bench_fiorand_dir }}/{{ podlist.stdout }}'
 
 - name: fetch df from fio pod
-  shell: 'kubectl exec {{ item }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- df -h > {{ run_dir }}/{{ role_name }}/{{ item }}/df_h.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+  shell: 'kubectl exec {{ podlist.stdout }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- df -h > {{ bench_fiorand_dir }}/{{ podlist.stdout }}/df_h.txt'
 
 - name: fetch mount from fio pod
-  shell: 'kubectl exec {{ item }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- mount > {{ run_dir }}/{{ role_name }}/{{ item }}/mount.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+  shell: 'kubectl exec {{ podlist.stdout }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- mount > {{ bench_fiorand_dir }}/{{ podlist.stdout }}/mount.txt'
 
 - name: get fio pod location
-  shell: 'kubectl get pods -l {{ bench_fiorand_podlabel }} --namespace={{ bench_fiorand_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+  shell: 'kubectl get pods -l {{ bench_fiorand_podlabel }} -n {{ bench_fiorand_namespace }} -o wide >> {{ bench_fiorand_pdir }}/out.{{ role_name }}.txt'
+
 ...

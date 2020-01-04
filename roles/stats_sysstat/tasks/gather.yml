@@ -1,0 +1,24 @@
+---
+# tasks file for stats_sysstat gather
+
+- name: get list of sysstat pods
+  command: 'kubectl get pods -l {{ stats_sysstat_podlabel }} -n {{ stats_sysstat_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: create per-pod directory for storing output
+  file:
+    path: '{{ run_dir }}/{{ role_name }}/{{ item }}'
+    state: directory
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch output from sysstat pods
+  command: 'kubectl cp {{ stats_sysstat_namespace }}/{{ item }}:{{ stats_sysstat_podoutdir }} {{ run_dir }}/{{ role_name }}/{{ item }}'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: collect df output from sysstat pods
+  shell: 'kubectl exec {{ item }} -n {{ stats_sysstat_namespace }} -- df -h > {{ run_dir }}/{{ role_name }}/{{ item }}/df_h.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: get sysstat pod locations
+  shell: 'kubectl get pods -l {{ stats_sysstat_podlabel }} -n {{ stats_sysstat_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+...

@@ -1,5 +1,4 @@
 ---
-# tasks file for bench_ycsb start
 
 - include_role:
     name: '{{ bench_ycsb_dbrole }}'
@@ -17,11 +16,20 @@
 - name: start ycsb pod
   command: 'kubectl create -f {{ run_dir }}/{{ role_name }}/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
 
+- name: sleep for estimated prepare phase time
+  command: 'sleep {{ bench_ycsb_prep_sec }}'
+
 - name: get ycsb pod name
   command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} --namespace={{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-- name: wait for ycsb test completion
-  command: 'kubectl wait --for=condition=Ready pod/{{ item }} --namespace={{ bench_ycsb_namespace }} --timeout={{ bench_ycsb_maxtime_sec }}s'
+# first initContainer completion marks end of prepare phase
+- name: wait for prepare phase completion
+  shell: "kubectl describe pod {{ item }} -n {{ bench_ycsb_namespace }} | grep State: | head -n 1 | awk '{print $2}'"
+  register: cs
+  until: cs.stdout.find("Terminated") != -1
+  retries: '{{ bench_ycsb_prep_retries }}'
+  delay: '{{ bench_ycsb_prepretry_sec }}'
   with_items: "{{ podlist.stdout_lines }}"
+
 ...

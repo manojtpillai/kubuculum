@@ -1,14 +1,13 @@
 ---
-# tasks file for bench_fiorand run
 
-- name: trigger transition to run phase
-  shell: 'kubectl create configmap kubuculum-state --from-literal=bench.mode=run -n {{ bench_fiorand_namespace }} -o yaml --dry-run | kubectl replace -f -'
+- name: update configmap to mark run phase
+  shell: 'kubectl create configmap {{ bench_fiorand_configmap }} --from-literal={{ bench_fiorand_mapkey }}={{ bench_fiorand_nextphase }} -n {{ bench_fiorand_namespace }} -o yaml --dry-run | kubectl replace -f -'
 
 - name: get fio pod name
   command: 'kubectl get pods -l {{ bench_fiorand_podlabel }} --namespace={{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
 - name: wait for fio test completion
-  command: 'kubectl wait --for=condition=Ready pod/{{ item }} --namespace={{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
-  with_items: "{{ podlist.stdout_lines }}"
+  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} --namespace={{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
+
 ...

@@ -25,7 +25,7 @@ spec:
         - name: data-volume
           mountPath: /data
         command: ["/bin/sh"]
-        args: ["-c", "iostat -tkdxN {{ collect_sysstat_interval_sec }} > /data/iostat.out.txt"]
+        args: ["-c", "iostat -tkdxN {{ stats_sysstat_interval_sec }} > /data/iostat.out.txt"]
       - name: sysstat-top-thr
         image: quay.io/mpillai/sysstat
         securityContext:
@@ -34,7 +34,7 @@ spec:
         - name: data-volume
           mountPath: /data
         command: ["/bin/sh"]
-        args: ["-c", "top -bH -d {{ collect_sysstat_topintrvl_sec }} | grep -A {{ collect_sysstat_topthrds }} 'load average' > /data/top_thr.out.txt"]
+        args: ["-c", "top -bH -d {{ stats_sysstat_topintrvl_sec }} | grep -A {{ stats_sysstat_topthrds }} 'load average' > /data/top_thr.out.txt"]
       - name: sysstat-top-proc
         image: quay.io/mpillai/sysstat
         securityContext:
@@ -43,7 +43,7 @@ spec:
         - name: data-volume
           mountPath: /data
         command: ["/bin/sh"]
-        args: ["-c", "top -b -d {{ collect_sysstat_topintrvl_sec }} | grep -A {{ collect_sysstat_topprocs }} 'load average' > /data/top_proc.out.txt"]
+        args: ["-c", "top -b -d {{ stats_sysstat_topintrvl_sec }} | grep -A {{ stats_sysstat_topprocs }} 'load average' > /data/top_proc.out.txt"]
       - name: sysstat-sar
         image: quay.io/mpillai/sysstat
         securityContext:
@@ -52,7 +52,7 @@ spec:
         - name: data-volume
           mountPath: /data
         command: ["/bin/sh"]
-        args: ["-c", "sar -n DEV -BdpqruW {{ collect_sysstat_interval_sec }} > /data/sar.out.txt"]
+        args: ["-c", "sar -n DEV -BdpqruW {{ stats_sysstat_interval_sec }} > /data/sar.out.txt"]
       volumes:
       - name: data-volume
         emptyDir: {}

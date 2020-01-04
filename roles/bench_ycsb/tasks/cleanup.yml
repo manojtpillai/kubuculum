@@ -1,6 +1,4 @@
 ---
-# tasks file for bench_ycsb stop
-
 - name: stop ycsb pod
   command: 'kubectl delete -f {{ run_dir }}/{{ role_name }}/ycsb_job.yaml --namespace={{ bench_ycsb_namespace }}'
 

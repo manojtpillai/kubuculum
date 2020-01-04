@@ -1,0 +1,14 @@
+---
+# tasks file for util_dropcaches ceph
+
+- name: get pod info
+  command: 'kubectl get pods -n {{ util_dropcaches_cephnm }} -l {{ util_dropcaches_cephlabel }} -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: drop osd caches
+  command: 'kubectl exec {{ podlist.stdout }} -n {{ util_dropcaches_cephnm }} -- ceph tell osd.\* cache drop'
+
+- name: drop mds caches
+  command: 'kubectl exec {{ podlist.stdout }} -n {{ util_dropcaches_cephnm }} -- ceph tell mds.\* cache drop'
+
+...

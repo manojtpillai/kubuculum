@@ -1,0 +1,11 @@
+
+---
+# quickly test a particular role
+
+- hosts: localhost
+
+  tasks:
+
+  - include_role:
+      name: util_dropcaches
+...

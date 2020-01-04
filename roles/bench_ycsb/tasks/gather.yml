@@ -1,8 +1,6 @@
 ---
-# tasks file for bench_ycsb gather
-
 - name: get ycsb pod name
-  command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} --namespace={{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
 - name: create directory for storing ycsb pod output
@@ -16,7 +14,7 @@
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: get ycsb pod location
-  shell: 'kubectl get pods -l {{ bench_ycsb_podlabel }} --namespace={{ bench_ycsb_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+  shell: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
 
 - include_role:
     name: '{{ bench_ycsb_dbrole }}'

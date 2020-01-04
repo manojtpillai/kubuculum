@@ -1,5 +1,5 @@
 ---
-# tasks file for collect_sysstat stop
+# tasks file for stats_sysstat stop
 
 - name: stop sysstat pods
   command: 'kubectl delete -f {{ run_dir }}/{{ role_name }}/sysstat_daemonset.yaml'

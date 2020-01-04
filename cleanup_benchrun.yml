@@ -11,11 +11,11 @@
       run_dir: "{{ command_output.stdout }}"
 
   - include_role:
-      name: collect_sysstat
+      name: stats_sysstat
     vars: 
-      benchmark_mode: stop
+      stats_mode: stop
     when: stats_enabled is defined and stats_enabled
 
   - name: delete namespace for benchmark resources 
-    command: 'kubectl delete namespace {{ benchmark_namespace }}'
+    command: 'kubectl delete namespace {{ run_namespace }}'
 ...

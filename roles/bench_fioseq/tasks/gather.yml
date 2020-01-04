@@ -2,7 +2,7 @@
 # tasks file for bench_fioseq gather
 
 - name: get fio pod name
-  command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} --namespace={{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} -n {{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
 - name: create directory for storing fio pod output
@@ -24,5 +24,6 @@
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: get fio pod location
-  shell: 'kubectl get pods -l {{ bench_fioseq_podlabel }} --namespace={{ bench_fioseq_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+  shell: 'kubectl get pods -l {{ bench_fioseq_podlabel }} -n {{ bench_fioseq_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+
 ...

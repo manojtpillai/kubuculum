@@ -1,10 +1,5 @@
 ---
-- include_tasks: start.yml
-  when: benchmark_mode == "start"
 
-- include_tasks: gather.yml
-  when: benchmark_mode == "gather"
+- include_tasks: '{{ benchmark_mode }}.yml'
 
-- include_tasks: stop.yml
-  when: benchmark_mode == "stop"
 ...

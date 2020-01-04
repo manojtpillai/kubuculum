@@ -1,7 +1,7 @@
 ---
-# tasks file for collect_sysstat start
+# tasks file for stats_sysstat start
 
-- name: create directory for storing collect_sysstat output
+- name: create directory for storing stats_sysstat output
   file: 
     path: '{{ run_dir }}/{{ role_name }}'
     state: directory

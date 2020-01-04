@@ -2,7 +2,7 @@
 # defaults file for bench_ycsb
 
 # default namespace
-bench_ycsb_namespace: '{{ benchmark_namespace }}'
+bench_ycsb_namespace: '{{ run_namespace }}'
 
 # nosql db to run against; specify role
 bench_ycsb_dbrole: db_mongodb
@@ -40,4 +40,14 @@ bench_ycsb_load_thrds: 16
 
 # number of threads in run phase
 bench_ycsb_run_thrds: 8
+
+# expected time for prepare phase
+bench_fiorand_prep_sec: 300
+
+# time between retries waiting for prepare phase completion
+bench_fiorand_prepretry_sec: 60
+
+# number of retries waiting for prepare phase completion
+bench_fiorand_prep_retries: 60
+
 ...
