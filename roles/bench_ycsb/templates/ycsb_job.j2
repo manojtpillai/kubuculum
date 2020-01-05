@@ -14,7 +14,7 @@ spec:
         emptyDir: {}
       - name: config-volume
         configMap:
-          name: {{ benchmark_configmap }}
+          name: {{ bench_ycsb_configmap }}
       containers:
       - name: benchmark-complete
         image: rhel7
@@ -45,7 +45,7 @@ spec:
         volumeMounts:
           - mountPath: /runstatus
             name: config-volume
-        command: ["/bin/sh", "-c", "while [ `cat /runstatus/{{ benchmark_mapkey }}` = 'prepare' ]; do sleep 30; done"]
+        command: ["/bin/sh", "-c", "while [ `cat /runstatus/{{ bench_ycsb_mapkey }}` = {{ bench_ycsb_initphase }} ]; do sleep 30; done"]
       - name: ycsb-run
         image: quay.io/mpillai/ycsb
         volumeMounts:

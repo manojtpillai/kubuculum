@@ -1,21 +1,23 @@
 ---
-- name: get ycsb pod name
+
+- name: get pod name
   command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-- name: create directory for storing ycsb pod output
+- name: create directory for storing pod output
   file: 
-    path: '{{ run_dir }}/{{ role_name }}/{{ item }}'
+    path: '{{ bench_ycsb_dir }}/{{ podlist.stdout }}'
     state: directory
-  with_items: "{{ podlist.stdout_lines }}"
 
-- name: fetch output from ycsb pod
-  command: 'kubectl cp {{ bench_ycsb_namespace }}/{{ item }}:{{ bench_ycsb_podoutdir }} {{ run_dir }}/{{ role_name }}/{{ item}}'
-  with_items: "{{ podlist.stdout_lines }}"
+- name: fetch output from pod
+  command: 'kubectl cp {{ bench_ycsb_namespace }}/{{ podlist.stdout }}:{{ bench_ycsb_podoutdir }} {{ bench_ycsb_dir }}/{{ podlist.stdout }}'
 
-- name: get ycsb pod location
-  shell: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+- name: get pod location
+  shell: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} -o wide >> {{ bench_ycsb_pdir }}/out.{{ role_name }}.txt'
 
 - include_role:
     name: '{{ bench_ycsb_dbrole }}'
+  vars:
+    db_mode: gather
+
 ...

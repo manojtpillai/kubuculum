@@ -1,11 +1,17 @@
 ---
-# defaults file for bench_ycsb
 
-# default namespace
+#
+# variables similar to the below are likely to be present in different bench roles
+#
+
+# output directory for run
+bench_ycsb_pdir: '{{ run_dir }}'
+
+# directory for role's output
+bench_ycsb_dir: '{{ run_dir }}/{{ role_name }}'
+
+# namespace
 bench_ycsb_namespace: '{{ run_namespace }}'
-
-# nosql db to run against; specify role
-bench_ycsb_dbrole: db_mongodb
 
 # label on pods
 bench_ycsb_podlabel: "type=benchmark-pod"
@@ -13,8 +19,36 @@ bench_ycsb_podlabel: "type=benchmark-pod"
 # directory where output files exist in pods/containers
 bench_ycsb_podoutdir: /benchout
 
+# main container name
+bench_ycsb_container: "benchmark-complete"
+
+# configmap to trigger benchmark phase transition
+bench_ycsb_configmap: "bench-ycsb-cfgmap"
+bench_ycsb_mapkey: "bench.phase"
+bench_ycsb_initphase: "prepare"
+bench_ycsb_nextphase: "run"
+
+# sequence number of prepwait initContainer
+bench_ycsb_prepc: 2
+
+# expected time for prepare phase
+bench_ycsb_prep_sec: 60
+
+# time between retries waiting for prepare phase completion
+bench_ycsb_prepretry_sec: 60
+
+# number of retries waiting for prepare phase completion
+bench_ycsb_prep_retries: 60
+
 # maximum time for a run; used for wait timeout
 bench_ycsb_maxtime_sec: 36000
+
+#
+# variables likely to be specific to this benchmark
+#
+
+# nosql db to run against; specify role
+bench_ycsb_dbrole: db_mongodb
 
 # nosql db as specified on ycsb command line
 bench_ycsb_nosqldb: mongodb
@@ -40,14 +74,5 @@ bench_ycsb_load_thrds: 16
 
 # number of threads in run phase
 bench_ycsb_run_thrds: 8
-
-# expected time for prepare phase
-bench_fiorand_prep_sec: 300
-
-# time between retries waiting for prepare phase completion
-bench_fiorand_prepretry_sec: 60
-
-# number of retries waiting for prepare phase completion
-bench_fiorand_prep_retries: 60
 
 ...

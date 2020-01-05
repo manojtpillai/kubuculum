@@ -1,10 +1,13 @@
 ---
-- name: get ycsb pod name
-  command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} --namespace={{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+
+- name: update configmap to mark run phase
+  shell: 'kubectl create configmap {{ bench_ycsb_configmap }} --from-literal={{ bench_ycsb_mapkey }}={{ bench_ycsb_nextphase }} -n {{ bench_ycsb_namespace }} -o yaml --dry-run | kubectl replace -f -'
+
+- name: get pod name
+  command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-- name: wait for ycsb test completion
-  command: 'kubectl wait --for=condition=Ready pod/{{ item }} --namespace={{ bench_ycsb_namespace }} --timeout={{ bench_ycsb_maxtime_sec }}s'
-  with_items: "{{ podlist.stdout_lines }}"
+- name: wait for test completion
+  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} -n {{ bench_ycsb_namespace }} --timeout={{ bench_ycsb_maxtime_sec }}s'
 
 ...

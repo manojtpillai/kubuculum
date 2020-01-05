@@ -2,7 +2,7 @@
 # defaults file for db_mongodb
 
 # default namespace
-db_mongodb_namespace: '{{ benchmark_namespace }}'
+db_mongodb_namespace: '{{ run_namespace }}'
 
 # label on pods
 db_mongodb_podlabel: "role=mongo"
@@ -12,4 +12,5 @@ db_mongodb_container: "mongo"
 
 # max time to wait for mongo pods ready
 db_mongodb_timetoready_sec: 600
+
 ...
