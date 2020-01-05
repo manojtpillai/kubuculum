@@ -1,13 +1,14 @@
 ---
-- name: create directory for storing bench_fioseq output
+
+- name: create directory for storing role output
   file:
-    path: '{{ run_dir }}/{{ role_name }}'
+    path: '{{ bench_fioseq_dir }}'
     state: directory
 
 - name: create job file from template
   template:
     src: '{{ role_path }}/templates/fio_job.j2'
-    dest: '{{ run_dir }}/{{ role_name }}/fio_job.yaml'
+    dest: '{{ bench_fioseq_dir }}/fio_job.yaml'
 
 # nothing else to do as part of prepare
 # benchmark tasks are all in run phase

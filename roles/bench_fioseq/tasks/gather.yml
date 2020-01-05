@@ -1,29 +1,24 @@
 ---
-# tasks file for bench_fioseq gather
 
 - name: get fio pod name
-  command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} -n {{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} --namespace={{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
 - name: create directory for storing fio pod output
   file: 
-    path: '{{ run_dir }}/{{ role_name }}/{{ item }}'
+    path: '{{ bench_fioseq_dir }}/{{ podlist.stdout }}'
     state: directory
-  with_items: "{{ podlist.stdout_lines }}"
 
 - name: fetch output from fio pod
-  command: 'kubectl cp {{ bench_fioseq_namespace }}/{{ item }}:{{ bench_fioseq_podoutdir }} {{ run_dir }}/{{ role_name }}/{{ item}}'
-  with_items: "{{ podlist.stdout_lines }}"
+  command: 'kubectl cp {{ bench_fioseq_namespace }}/{{ podlist.stdout }}:{{ bench_fioseq_podoutdir }} {{ bench_fioseq_dir }}/{{ podlist.stdout }}'
 
 - name: fetch df from fio pod
-  shell: 'kubectl exec {{ item }} -c {{ bench_fioseq_container }} -n {{ bench_fioseq_namespace }} -- df -h > {{ run_dir }}/{{ role_name }}/{{ item }}/df_h.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+  shell: 'kubectl exec {{ podlist.stdout }} -c {{ bench_fioseq_container }} -n {{ bench_fioseq_namespace }} -- df -h > {{ bench_fioseq_dir }}/{{ podlist.stdout }}/df_h.txt'
 
 - name: fetch mount from fio pod
-  shell: 'kubectl exec {{ item }} -c {{ bench_fioseq_container }} -n {{ bench_fioseq_namespace }} -- mount > {{ run_dir }}/{{ role_name }}/{{ item }}/mount.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+  shell: 'kubectl exec {{ podlist.stdout }} -c {{ bench_fioseq_container }} -n {{ bench_fioseq_namespace }} -- mount > {{ bench_fioseq_dir }}/{{ podlist.stdout }}/mount.txt'
 
 - name: get fio pod location
-  shell: 'kubectl get pods -l {{ bench_fioseq_podlabel }} -n {{ bench_fioseq_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+  shell: 'kubectl get pods -l {{ bench_fioseq_podlabel }} -n {{ bench_fioseq_namespace }} -o wide >> {{ bench_fioseq_pdir }}/out.{{ role_name }}.txt'
 
 ...

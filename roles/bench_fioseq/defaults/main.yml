@@ -1,7 +1,16 @@
 ---
-# defaults file for bench_fioseq
 
-# default namespace
+#
+# variables similar to the below are likely to be present in different bench roles
+#
+
+# output directory for run
+bench_fioseq_pdir: '{{ run_dir }}'
+
+# directory for role's output
+bench_fioseq_dir: '{{ run_dir }}/{{ role_name }}'
+
+# namespace
 bench_fioseq_namespace: '{{ run_namespace }}'
 
 # label on pods
@@ -16,6 +25,13 @@ bench_fioseq_container: "benchmark-complete"
 # maximum time for a run; used for wait timeout
 bench_fioseq_maxtime_sec: 36000
 
+# this benchmark has a trivial prepare phase
+# does not need vars that are in other benchmarks
+
+#
+# variables likely to be specific to this benchmark
+#
+
 # pvc size; limit on data set size
 bench_fioseq_pvcsize_gb: 8
 
@@ -27,4 +43,5 @@ bench_fioseq_fsz_gb: 2
 
 # number of jobs
 bench_fioseq_njobs: 2
+
 ...
