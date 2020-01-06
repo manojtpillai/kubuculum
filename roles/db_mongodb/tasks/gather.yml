@@ -1,20 +1,21 @@
 ---
 # tasks file for db_mongodb gather
 
-- name: get mongodb pod names 
-  command: 'kubectl get pods -l {{ db_mongodb_podlabel }} --namespace={{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+- name: get pod names 
+  command: 'kubectl get pods -l {{ db_mongodb_podlabel }} -n {{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-- name: create directory for storing mongodb pod output
+- name: create directory for storing pod output
   file: 
-    path: '{{ run_dir}}/{{ item }}'
+    path: '{{ db_mongodb_dir }}/{{ item }}'
     state: directory
   with_items: "{{ podlist.stdout_lines }}"
 
-- name: fetch output from mongodb pod
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }}  -n {{ db_mongodb_namespace }} -- df -h > {{ run_dir}}/{{ item }}/mongo.df_h.txt'
+- name: fetch output from pod
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.df_h.txt'
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: get mongodb pod locations
-  shell: 'kubectl get pods -l {{ db_mongodb_podlabel }} --namespace={{ db_mongodb_namespace }} -o wide >> {{ run_dir }}/out.{{ role_name }}.txt'
+  shell: 'kubectl get pods -l {{ db_mongodb_podlabel }} --namespace={{ db_mongodb_namespace }} -o wide >> {{ db_mongodb_pdir }}/out.{{ role_name }}.txt'
+
 ...

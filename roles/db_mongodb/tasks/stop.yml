@@ -1,8 +1,7 @@
 ---
-# tasks file for db_mongodb stop
 
 - name: stop mongodb pods
-  command: 'kubectl delete -f {{ role_path }}/files/mongodb_service.yaml --namespace={{ db_mongodb_namespace }}'
+  command: 'kubectl delete -f {{ role_path }}/files/mongodb_service.yaml -n {{ db_mongodb_namespace }}'
 
 - name: get mongodb pvc names
   command: 'kubectl get pvc -l {{ db_mongodb_podlabel }} -n {{ db_mongodb_namespace }} --no-headers -o
@@ -12,4 +11,5 @@ custom-columns=":metadata.name"'
 - name: delete mongodb pvcs 
   command: 'kubectl delete pvc {{ item }} -n {{ db_mongodb_namespace }}'
   with_items: "{{ pvclist.stdout_lines }}"
+
 ...

@@ -1,10 +1,5 @@
 ---
-- include_tasks: start.yml
-  when: db_mode == "start"
 
-- include_tasks: gather.yml
-  when: db_mode == "gather"
+- include_tasks: '{{ db_mode }}.yml'
 
-- include_tasks: stop.yml
-  when: db_mode == "stop"
 ...
