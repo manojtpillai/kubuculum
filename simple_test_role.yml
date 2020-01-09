@@ -4,8 +4,11 @@
 
 - hosts: localhost
 
+  vars:
+    run_dir: "/root/mpillai"
+
   tasks:
 
   - include_role:
-      name: util_dropcaches
+      name: get_envinfo
 ...

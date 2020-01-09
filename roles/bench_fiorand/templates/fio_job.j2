@@ -21,6 +21,10 @@ spec:
       labels:
         type: benchmark-pod
     spec:
+{% if bench_fiorand_nodelabel is defined %}
+      nodeSelector:
+        {{ bench_fiorand_nodelabel.split("=")[0] }}: {{ bench_fiorand_nodelabel.split("=")[1] }}
+{% endif %}
       volumes:
       - name: output-volume
         emptyDir: {}
