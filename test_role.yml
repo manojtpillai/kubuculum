@@ -17,20 +17,29 @@
       state: directory
 
   - include_role:
-      name: '{{ role_name }}'
+      name: '{{ test_role }}'
     vars:
-      benchmark_mode: start
+      calm_mode: start
 
   - pause:
       seconds: 300
 
   - include_role:
-      name: '{{ role_name }}'
+      name: '{{ test_role }}'
     vars:
-      benchmark_mode: gather
+      calm_mode: ensure_ready
+
+  - pause:
+      seconds: 300
 
   - include_role:
-      name: '{{ role_name }}'
+      name: '{{ test_role }}'
     vars:
-      benchmark_mode: stop
+      calm_mode: gather
+
+  - include_role:
+      name: '{{ test_role }}'
+    vars:
+      calm_mode: stop
+
 ...

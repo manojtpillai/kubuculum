@@ -31,6 +31,18 @@
     when: dropcaches_postprepare
 
   - include_role:
+      name: '{{ calm_role }}'
+    vars: 
+      calm_mode: start
+    when: calm_enabled is defined and calm_enabled
+
+  - include_role:
+      name: '{{ calm_role }}'
+    vars: 
+      calm_mode: ensure_ready
+    when: calm_enabled is defined and calm_enabled
+
+  - include_role:
       name: '{{ benchmark_role }}'
     vars: 
       benchmark_mode: run
@@ -39,6 +51,12 @@
       name: '{{ benchmark_role }}'
     vars: 
       benchmark_mode: gather
+
+  - include_role:
+      name: '{{ calm_role }}'
+    vars: 
+      calm_mode: gather
+    when: calm_enabled is defined and calm_enabled
 
   - include_role:
       name: '{{ stats_role }}'
@@ -53,6 +71,12 @@
       name: '{{ benchmark_role }}'
     vars: 
       benchmark_mode: cleanup
+
+  - include_role:
+      name: '{{ calm_role }}'
+    vars: 
+      calm_mode: stop
+    when: calm_enabled is defined and calm_enabled
 
   - include_role:
       name: '{{ stats_role }}'

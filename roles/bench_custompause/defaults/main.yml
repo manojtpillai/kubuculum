@@ -1,5 +1,5 @@
 ---
 
-bench_custompause_wait_secs: 30
+bench_custompause_wait_sec: 30
 
 ...

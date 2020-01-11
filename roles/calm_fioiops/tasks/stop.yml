@@ -1,0 +1,14 @@
+---
+
+- name: stop pods
+  command: 'kubectl delete -f {{ calm_fioiops_dir }}/fio_statefulset.yaml -n {{ calm_fioiops_namespace }}'
+
+- name: get pvc names
+  command: 'kubectl get pvc -l {{ calm_fioiops_podlabel }} -n {{ calm_fioiops_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: pvclist
+
+- name: delete pvcs 
+  command: 'kubectl delete pvc {{ item }} -n {{ calm_fioiops_namespace }}'
+  with_items: "{{ pvclist.stdout_lines }}"
+
+...

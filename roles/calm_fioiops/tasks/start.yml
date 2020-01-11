@@ -1,0 +1,16 @@
+---
+
+- name: create directory for storing role output
+  file: 
+    path: '{{ calm_fioiops_dir }}'
+    state: directory
+  
+- name: create job file from template
+  template:
+    src: '{{ role_path }}/templates/fio_statefulset.j2'
+    dest: '{{ calm_fioiops_dir }}/fio_statefulset.yaml'
+
+- name: start pods
+  command: 'kubectl create -f {{ calm_fioiops_dir }}/fio_statefulset.yaml -n {{ calm_fioiops_namespace }}'
+
+...

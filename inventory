@@ -5,7 +5,7 @@ localhost
 [all:vars]
 
 # run output
-run_basedir="/root/mpillai" # output stored in a timestamped directory here
+run_basedir="." # output stored in a timestamped directory here
 
 # namespaces used
 run_namespace="nm-kubuculum" # "default" namespace no longer allowed
@@ -13,18 +13,34 @@ run_namespace="nm-kubuculum" # "default" namespace no longer allowed
 
 # optional high-level features 
 # stats_enabled=True
+# calm_enabled=True
 
 # roles for major features
 stats_role="stats_sysstat"
+calm_role="calm_fioiops"
 # benchmark_role="bench_fioseq"
-benchmark_role="bench_fiorand"
+# benchmark_role="bench_fiorand"
 # benchmark_role="bench_ycsb"
+benchmark_role="bench_custompause"
 
 # dropping of ceph osd/mgr caches is based on below var
 ceph_benchrun=True
 
 # drop caches after prepare phase
 dropcaches_postprepare=True
+
+# 
+# calm specific options
+#
+
+# calm_fioiops specific
+calm_fioiops_replicas=3
+calm_fioiops_ratecontrolled=True
+calm_fioiops_rate=512
+calm_fioiops_pvcsize_gb=20
+calm_fioiops_fsz_gb=16
+calm_fioiops_readpct=100
+
 
 # 
 # benchmark specific options
@@ -41,16 +57,16 @@ bench_fioseq_njobs=64
 bench_fiorand_pvcsize_gb=300
 bench_fiorand_fsz_gb=32
 bench_fiorand_njobs=4
-bench_fiorand_bs_kb=4
-# bench_fiorand_prep_sec=600
+bench_fiorand_bs_kb=8
+bench_fiorand_prep_sec=500
 
 # ycsb specific options
 bench_ycsb_dbrole="db_mongodb"
 bench_ycsb_workload="workloads/workloada"
-bench_ycsb_reccount=100000000
-bench_ycsb_opcount=10000000
+# bench_ycsb_reccount=100000000
+# bench_ycsb_opcount=10000000
 bench_ycsb_run_thrds=32
 
 # pausefor_custombench options
-pausefor_custombench_wait_secs=600
+bench_custompause_wait_sec=600
 

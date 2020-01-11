@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calm-fioiops
+  labels:
+    name: calm-fioiops
+spec:
+  ports:
+  - port: {{ calm_fioiops_port }}
+    targetPort: {{ calm_fioiops_port }}
+  clusterIP: None
+  selector:
+    role: calm-fioiops
+...
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: calm-fioiops
+spec:
+  serviceName: "calm-fioiops"
+  podManagementPolicy: "Parallel"
+  replicas: {{ calm_fioiops_replicas }}
+  template:
+    metadata:
+      labels:
+        role: calm-fioiops
+    spec:
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+      containers:
+      - name: calm-fiorun
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: /calmout
+            name: output-volume
+          - mountPath: /dataset
+            name: calm-fioiops-pvc
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            fio --name=randomrw --rw=randrw 
+            --ioengine=libaio --direct=1 
+            --norandommap
+            --time_based=1 
+            --directory=/dataset 
+            --filename_format='f.$jobnum.$filenum'
+{% if calm_fioiops_ratecontrolled %}
+            --rate_iops={{ calm_fioiops_rate }}
+{% endif %}
+            --rwmixread={{ calm_fioiops_read_pct }}
+            --iodepth={{ calm_fioiops_iodepth }}
+            --bs={{ calm_fioiops_bs }}
+            --filesize={{ calm_fioiops_fsz_gb }}g
+            --numjobs={{ calm_fioiops_njobs }}
+            --runtime={{ calm_fioiops_run_sec }}
+            --status-interval={{ calm_fioiops_statusintrvl_sec }}
+            --output=/calmout/fio.randrw.run.txt 
+      initContainers:
+      - name: calm-fioinit
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: /calmout
+            name: output-volume
+          - mountPath: /dataset
+            name: calm-fioiops-pvc
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            fio --name=initwrite --rw=write 
+            --ioengine=sync --direct=0 
+            --create_on_open=1 --end_fsync=1 
+            --directory=/dataset 
+            --filename_format='f.$jobnum.$filenum'
+            --bs={{ calm_fioiops_sbs_kb }}k
+            --filesize={{ calm_fioiops_fsz_gb }}
+            --numjobs={{ calm_fioiops_njobs }}
+            --output=/calmout/fio.initwrite.run.txt 
+            ; ls -l /dataset > /calmout/fio.initwrite.ls_l.txt
+  volumeClaimTemplates:
+  - metadata:
+      name: calm-fioiops-pvc
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ calm_fioiops_pvcsize_gb }}Gi
+
+...

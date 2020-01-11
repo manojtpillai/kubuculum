@@ -1,0 +1,11 @@
+---
+
+- name: get fio pod names
+  command: 'kubectl get pods -l {{ calm_fioiops_podlabel }} -n {{ calm_fioiops_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: wait for fio pods ready
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} -n {{ calm_fioiops_namespace }} --timeout={{ calm_fioiops_maxprep_sec }}s'
+  with_items: "{{ podlist.stdout_lines }}"
+
+...

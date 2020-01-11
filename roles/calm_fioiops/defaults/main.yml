@@ -1,0 +1,73 @@
+---
+
+#
+# variables similar to the below are likely to be present in different calm roles
+#
+
+# output directory for run
+calm_fioiops_pdir: '{{ run_dir }}'
+
+# directory for role's output
+calm_fioiops_dir: '{{ run_dir }}/{{ role_name }}'
+
+# namespace
+calm_fioiops_namespace: '{{ run_namespace }}'
+
+# label on pods
+calm_fioiops_podlabel: "role=calm-fioiops"
+
+# directory where output files exist in pods/containers
+calm_fioiops_podoutdir: /calmout
+
+# main container name
+calm_fioiops_container: "calm-fiorun"
+
+# max time for prepare phase
+calm_fioiops_maxprep_sec: 36000
+
+#
+# variables likely to be specific to this benchmark
+#
+
+# pvc size; limit on data set size
+calm_fioiops_pvcsize_gb: 8
+
+# file size per job
+calm_fioiops_fsz_gb: 2
+
+# number of replicas
+calm_fioiops_replicas: 1
+
+# iops rate
+calm_fioiops_ratecontrolled: True
+
+# iops rate
+calm_fioiops_rate: 256
+
+# read mix
+calm_fioiops_read_pct: 50
+
+# block size for random IO
+calm_fioiops_bs: 8k
+
+# block size for initial write
+calm_fioiops_sbs_kb: 128
+
+# number of jobs
+calm_fioiops_njobs: 1
+
+# iodepth per job
+calm_fioiops_iodepth: 32
+
+# run time for time based job
+# approximation of forever
+# typically stopped much before this
+calm_fioiops_run_sec: 86400
+
+# status interval
+calm_fioiops_statusintrvl_sec: 60
+
+# port, fio default; not used
+calm_fioiops_port: 8765
+
+...

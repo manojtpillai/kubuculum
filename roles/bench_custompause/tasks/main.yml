@@ -2,7 +2,7 @@
 
 - pause:
     prompt: "run custom benchmark. after benchmark completion, ctrl-c c to continue"
-    seconds: "{{ bench_custompause_wait_secs }}"
+    seconds: "{{ bench_custompause_wait_sec }}"
   when: benchmark_mode == "run"
 
 ...
