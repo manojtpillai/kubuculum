@@ -27,7 +27,6 @@ spec:
       labels:
         role: calm-fioiops
     spec:
-      terminationGracePeriodSeconds: 10
 {% if calm_fioiops_nodelabel is defined %}
       nodeSelector:
         {{ calm_fioiops_nodelabel.split("=")[0] }}: {{ calm_fioiops_nodelabel.split("=")[1] }}
