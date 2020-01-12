@@ -39,7 +39,7 @@ spec:
       - name: calm-fiorun
         image: quay.io/mpillai/fio
         volumeMounts:
-          - mountPath: /calmout
+          - mountPath: {{ calm_fioiops_podoutdir }}
             name: output-volume
           - mountPath: /dataset
             name: calm-fioiops-pvc
@@ -63,12 +63,12 @@ spec:
             --numjobs={{ calm_fioiops_njobs }}
             --runtime={{ calm_fioiops_run_sec }}
             --status-interval={{ calm_fioiops_statusintrvl_sec }}
-            --output=/calmout/fio.randrw.run.txt 
+            --output={{ calm_fioiops_podoutdir }}/fio.randrw.run.txt 
       initContainers:
       - name: calm-fioinit
         image: quay.io/mpillai/fio
         volumeMounts:
-          - mountPath: /calmout
+          - mountPath: {{ calm_fioiops_podoutdir }}
             name: output-volume
           - mountPath: /dataset
             name: calm-fioiops-pvc
@@ -82,10 +82,10 @@ spec:
             --directory=/dataset 
             --filename_format='f.$jobnum.$filenum'
             --bs={{ calm_fioiops_sbs_kb }}k
-            --filesize={{ calm_fioiops_fsz_gb }}
+            --filesize={{ calm_fioiops_fsz_gb }}g
             --numjobs={{ calm_fioiops_njobs }}
-            --output=/calmout/fio.initwrite.run.txt 
-            ; ls -l /dataset > /calmout/fio.initwrite.ls_l.txt
+            --output={{ calm_fioiops_podoutdir }}/fio.initwrite.run.txt 
+            ; ls -l /dataset > {{ calm_fioiops_podoutdir }}/fio.initwrite.ls_l.txt
   volumeClaimTemplates:
   - metadata:
       name: calm-fioiops-pvc

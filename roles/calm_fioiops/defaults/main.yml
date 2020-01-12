@@ -16,16 +16,13 @@ calm_fioiops_namespace: '{{ run_namespace }}'
 # label on pods
 calm_fioiops_podlabel: "role=calm-fioiops"
 
-# var for nodeSelector
+# for nodeSelector; example below
 # calm_fioiops_nodelabel: "cluster.ocs.openshift.io/openshift-storage=''"
 
 # directory where output files exist in pods/containers
 calm_fioiops_podoutdir: /calmout
 
-# main container name
-calm_fioiops_container: "calm-fiorun"
-
-# max time for prepare phase
+# max time for prepare phase, used as a timeout
 calm_fioiops_maxprep_sec: 36000
 
 #
@@ -38,19 +35,20 @@ calm_fioiops_pvcsize_gb: 8
 # file size per job
 calm_fioiops_fsz_gb: 2
 
-# number of replicas
+# number of replicas 
 calm_fioiops_replicas: 1
 
-# iops rate
+# apply rate controlled load?
 calm_fioiops_ratecontrolled: True
 
 # iops rate
 calm_fioiops_rate: 256
 
-# read mix
+# read mix in r/w workload
 calm_fioiops_readpct: 50
 
 # block size for random IO
+# supports fio syntax for separate bs for r/w
 calm_fioiops_bs: 8k
 
 # block size for initial write
@@ -62,12 +60,11 @@ calm_fioiops_njobs: 1
 # iodepth per job
 calm_fioiops_iodepth: 32
 
-# run time for time based job
-# approximation of forever
-# typically stopped much before this
+# run time; approximation of forever
+# pods are tupically stopped much before this
 calm_fioiops_run_sec: 86400
 
-# status interval
+# output results every so often
 calm_fioiops_statusintrvl_sec: 60
 
 # port, fio default; not used
