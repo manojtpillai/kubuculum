@@ -16,6 +16,10 @@ bench_fiorand_namespace: '{{ run_namespace }}'
 # label on pods
 bench_fiorand_podlabel: "type=benchmark-pod"
 
+# var for nodeSelector
+# bench_fiorand_nodelabel: "kubernetes.io/hostname=ip-10-0-205-26"
+
+
 # directory where output files exist in pods/containers
 bench_fiorand_podoutdir: /benchout
 
