@@ -16,6 +16,9 @@ calm_fioiops_namespace: '{{ run_namespace }}'
 # label on pods
 calm_fioiops_podlabel: "role=calm-fioiops"
 
+# var for nodeSelector
+# calm_fioiops_nodelabel: "cluster.ocs.openshift.io/openshift-storage=''"
+
 # directory where output files exist in pods/containers
 calm_fioiops_podoutdir: /calmout
 

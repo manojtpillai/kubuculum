@@ -40,7 +40,7 @@ calm_fioiops_rate=512
 calm_fioiops_pvcsize_gb=20
 calm_fioiops_fsz_gb=16
 calm_fioiops_readpct=100
-
+calm_fioiops_nodelabel="cluster.ocs.openshift.io/openshift-storage=''"
 
 # 
 # benchmark specific options
