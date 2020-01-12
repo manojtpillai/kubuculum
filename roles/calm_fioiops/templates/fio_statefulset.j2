@@ -52,7 +52,7 @@ spec:
 {% if calm_fioiops_ratecontrolled %}
             --rate_iops={{ calm_fioiops_rate }}
 {% endif %}
-            --rwmixread={{ calm_fioiops_read_pct }}
+            --rwmixread={{ calm_fioiops_readpct }}
             --iodepth={{ calm_fioiops_iodepth }}
             --bs={{ calm_fioiops_bs }}
             --filesize={{ calm_fioiops_fsz_gb }}g

@@ -45,7 +45,7 @@ calm_fioiops_ratecontrolled: True
 calm_fioiops_rate: 256
 
 # read mix
-calm_fioiops_read_pct: 50
+calm_fioiops_readpct: 50
 
 # block size for random IO
 calm_fioiops_bs: 8k
