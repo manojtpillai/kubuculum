@@ -28,7 +28,7 @@
 
   - include_role:
       name: util_dropcaches
-    when: dropcaches_postprepare
+    when: dropcaches_postprepare is defined and dropcaches_postprepare
 
   - include_role:
       name: '{{ calm_role }}'
