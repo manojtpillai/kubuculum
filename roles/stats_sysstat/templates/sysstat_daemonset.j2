@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: sysstat
-  namespace: kube-system
 spec:
   selector:
     matchLabels:
@@ -13,9 +12,14 @@ spec:
       labels:
         name: sysstat-collection
     spec:
+{% if stats_sysstat_nodelabel is defined %}
+      nodeSelector:
+        {{ stats_sysstat_nodelabel.split("=")[0] }}: {{ stats_sysstat_nodelabel.split("=")[1] }}
+{% endif %}
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
+
       containers:
       - name: sysstat-iostat
         image: quay.io/mpillai/sysstat
@@ -23,36 +27,48 @@ spec:
           privileged: true
         volumeMounts:
         - name: data-volume
-          mountPath: /data
+          mountPath: {{ stats_sysstat_podoutdir }}
         command: ["/bin/sh"]
-        args: ["-c", "iostat -tkdxN {{ stats_sysstat_interval_sec }} > /data/iostat.out.txt"]
+        args: ["-c", "iostat -tkdxN {{ stats_sysstat_interval_sec }} > {{ stats_sysstat_podoutdir }}/iostat.out.txt"]
+
       - name: sysstat-top-thr
         image: quay.io/mpillai/sysstat
         securityContext:
           privileged: true
         volumeMounts:
         - name: data-volume
-          mountPath: /data
+          mountPath: {{ stats_sysstat_podoutdir }}
         command: ["/bin/sh"]
-        args: ["-c", "top -bH -d {{ stats_sysstat_topintrvl_sec }} | grep -A {{ stats_sysstat_topthrds }} 'load average' > /data/top_thr.out.txt"]
+{% if stats_sysstat_limittop %}
+        args: ["-c", "top -bH -d {{ stats_sysstat_topintrvl_sec }} | grep -A {{ stats_sysstat_topthrds }} 'load average' > {{ stats_sysstat_podoutdir }}/top_thr.out.txt"]
+{% else %}
+        args: ["-c", "top -bH -d {{ stats_sysstat_topintrvl_sec }} > {{ stats_sysstat_podoutdir }}/top_thr.out.txt"]
+{% endif %}
+
       - name: sysstat-top-proc
         image: quay.io/mpillai/sysstat
         securityContext:
           privileged: true
         volumeMounts:
         - name: data-volume
-          mountPath: /data
+          mountPath: {{ stats_sysstat_podoutdir }}
         command: ["/bin/sh"]
-        args: ["-c", "top -b -d {{ stats_sysstat_topintrvl_sec }} | grep -A {{ stats_sysstat_topprocs }} 'load average' > /data/top_proc.out.txt"]
+{% if stats_sysstat_limittop %}
+        args: ["-c", "top -b -d {{ stats_sysstat_topintrvl_sec }} | grep -A {{ stats_sysstat_topprocs }} 'load average' > {{ stats_sysstat_podoutdir }}/top_proc.out.txt"]
+{% else %}
+        args: ["-c", "top -b -d {{ stats_sysstat_topintrvl_sec }} > {{ stats_sysstat_podoutdir }}/top_proc.out.txt"]
+{% endif %}
+
       - name: sysstat-sar
         image: quay.io/mpillai/sysstat
         securityContext:
           privileged: true
         volumeMounts:
         - name: data-volume
-          mountPath: /data
+          mountPath: {{ stats_sysstat_podoutdir }}
         command: ["/bin/sh"]
-        args: ["-c", "sar -n DEV -BdpqruW {{ stats_sysstat_interval_sec }} > /data/sar.out.txt"]
+        args: ["-c", "sar -n DEV -BdpqruW {{ stats_sysstat_interval_sec }} > {{ stats_sysstat_podoutdir }}/sar.out.txt"]
+
       volumes:
       - name: data-volume
         emptyDir: {}

@@ -1,14 +1,31 @@
 ---
-# defaults file for stats_sysstat
 
-# default monitoring interval
+#
+# variables similar to the below are likely to be present in different roles
+#
+
+# output directory for run
+stats_sysstat_pdir: '{{ run_dir }}'
+
+# directory for role's output
+stats_sysstat_dir: '{{ run_dir }}/{{ role_name }}'
+
+# namespace
+# stats_sysstat_namespace: '{{ stats_namespace }}'
 stats_sysstat_namespace: kube-system
 
-# label on systat pods
+# label on sysstat pods
 stats_sysstat_podlabel: "name=sysstat-collection"
+
+# for nodeSelector
+# stats_sysstat_nodelabel: "node-role.kubernetes.io/worker=''"
 
 # directory where output files exist in pods/containers
 stats_sysstat_podoutdir: /data
+
+#
+# variables specific to this role
+#
 
 # default monitoring interval
 stats_sysstat_interval_sec: 10
@@ -18,11 +35,15 @@ stats_sysstat_interval_sec: 10
 stats_sysstat_topintrvl_sec: 30
 
 # top output can get huge
+# opt to limit it by setting below to True
+stats_sysstat_limittop: True
+
 # number of top top threads for which output is collected
+# when stats_sysstat_limittop is true
 stats_sysstat_topthrds: 100
 
-# top output can get huge
 # number of top top procs for which output is collected
+# when stats_sysstat_limittop is true
 stats_sysstat_topprocs: 20
 
 ...

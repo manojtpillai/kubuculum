@@ -1,18 +1,17 @@
 ---
-# tasks file for stats_sysstat start
 
 - name: create directory for storing stats_sysstat output
   file: 
-    path: '{{ run_dir }}/{{ role_name }}'
+    path: '{{ stats_sysstat_dir }}'
     state: directory
   
 - name: create job file from template
   template:
     src: '{{ role_path }}/templates/sysstat_daemonset.j2'
-    dest: '{{ run_dir }}/{{ role_name }}/sysstat_daemonset.yaml'
+    dest: '{{ stats_sysstat_dir }}/sysstat_daemonset.yaml'
 
 - name: start sysstat pods
-  command: 'kubectl create -f {{ run_dir }}/{{ role_name }}/sysstat_daemonset.yaml'
+  command: 'kubectl create -f {{ stats_sysstat_dir }}/sysstat_daemonset.yaml -n {{ stats_sysstat_namespace }}'
 
 # MTP_TODO
 - name: wait for sysstat pods to come up
