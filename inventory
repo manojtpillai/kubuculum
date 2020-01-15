@@ -18,16 +18,23 @@ run_namespace="nm-kubuculum" # "default" namespace no longer allowed
 # roles for major features
 stats_role="stats_sysstat"
 calm_role="calm_fioiops"
-# benchmark_role="bench_fioseq"
+benchmark_role="bench_fioseq"
 # benchmark_role="bench_fiorand"
 # benchmark_role="bench_ycsb"
-benchmark_role="bench_custompause"
+# benchmark_role="bench_custompause"
 
 # dropping of ceph osd/mgr caches is based on below var
-ceph_benchrun=True
+# ceph_benchrun=True
 
 # drop caches after prepare phase
 dropcaches_postprepare=True
+
+# 
+# stats specific options
+#
+
+# stats_sysstat specific
+# stats_sysstat_nodelabel="node-role.kubernetes.io/worker=''"
 
 # 
 # calm specific options
@@ -36,11 +43,13 @@ dropcaches_postprepare=True
 # calm_fioiops specific
 calm_fioiops_replicas=3
 calm_fioiops_ratecontrolled=True
+# calm_fioiops_ratecontrolled=False
 calm_fioiops_rate=512
 calm_fioiops_pvcsize_gb=20
 calm_fioiops_fsz_gb=16
-calm_fioiops_readpct=100
-calm_fioiops_nodelabel="cluster.ocs.openshift.io/openshift-storage=''"
+calm_fioiops_readpct=50
+# calm_fioiops_nodelabel="node-role.kubernetes.io/worker=''"
+
 
 # 
 # benchmark specific options
@@ -59,6 +68,7 @@ bench_fiorand_fsz_gb=32
 bench_fiorand_njobs=4
 bench_fiorand_bs_kb=8
 bench_fiorand_prep_sec=500
+# bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
 
 # ycsb specific options
 bench_ycsb_dbrole="db_mongodb"
@@ -68,5 +78,5 @@ bench_ycsb_workload="workloads/workloada"
 bench_ycsb_run_thrds=32
 
 # pausefor_custombench options
-bench_custompause_wait_sec=600
+bench_custompause_wait_sec=300
 

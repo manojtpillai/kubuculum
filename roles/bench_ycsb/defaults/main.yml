@@ -32,13 +32,13 @@ bench_ycsb_nextphase: "run"
 bench_ycsb_prepc: 2
 
 # expected time for prepare phase
-bench_ycsb_prep_sec: 60
+bench_ycsb_prep_sec: 120
 
 # time between retries waiting for prepare phase completion
-bench_ycsb_prepretry_sec: 60
+bench_ycsb_prepretry_sec: 120
 
 # number of retries waiting for prepare phase completion
-bench_ycsb_prep_retries: 60
+bench_ycsb_prep_retries: 120
 
 # maximum time for a run; used for wait timeout
 bench_ycsb_maxtime_sec: 36000
