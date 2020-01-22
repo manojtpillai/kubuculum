@@ -1,7 +1,11 @@
 ---
+- name: create fiorun job file from template
+  template:
+    src: '{{ role_path }}/templates/fiorun_job.j2'
+    dest: '{{ bench_fiorand_dir }}/fiorun_job.yaml'
 
-- name: update configmap to mark run phase
-  shell: 'kubectl create configmap {{ bench_fiorand_configmap }} --from-literal={{ bench_fiorand_mapkey }}={{ bench_fiorand_nextphase }} -n {{ bench_fiorand_namespace }} -o yaml --dry-run | kubectl replace -f -'
+- name: create fiorun pod
+  command: 'kubectl create -f {{ bench_fiorand_dir }}/fiorun_job.yaml -n {{ bench_fiorand_namespace }}'
 
 - name: get fio pod name
   command: 'kubectl get pods -l {{ bench_fiorand_podlabel }} --namespace={{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'

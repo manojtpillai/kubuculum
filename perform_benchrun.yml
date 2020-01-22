@@ -42,6 +42,10 @@
       calm_mode: ensure_ready
     when: calm_enabled is defined and calm_enabled
 
+  - pause: 
+      prompt: "short pause before benchmark run helps demarcate run phase stats"
+      seconds: 30
+
   - include_role:
       name: '{{ benchmark_role }}'
     vars: 

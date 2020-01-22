@@ -1,0 +1,62 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio
+spec:
+  template:
+    metadata:
+      labels:
+        type: benchmark-pod
+    spec:
+{% if bench_fiorand_nodelabel is defined %}
+      nodeSelector:
+        {{ bench_fiorand_nodelabel.split("=")[0] }}: {{ bench_fiorand_nodelabel.split("=")[1] }}
+{% endif %}
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+      - name: fio-pv
+        persistentVolumeClaim:
+          claimName: fio-pv-claim
+
+      containers:
+      - name: benchmark-complete
+        image: rhel7
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+        args: ["-c", "touch {{ bench_fiorand_podoutdir }}/benchmark.run.completed.txt; sleep 3600"]
+
+      initContainers:
+      - name: fio-randomread
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            sleep 60
+            ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomread.ls_l.pre.txt
+            ; fio --name=randomread --rw=randread 
+            --ioengine=libaio --direct=1 
+            --time_based=1 
+            --directory=/dataset 
+            --filename_format='f.$jobnum.$filenum'
+            --iodepth={{ bench_fiorand_iodepth }} 
+            --bs={{ bench_fiorand_bs_kb }}k 
+            --filesize={{ bench_fiorand_fsz_gb }}g 
+            --numjobs={{ bench_fiorand_njobs }} 
+            --runtime={{ bench_fiorand_run_sec }} 
+            --output={{ bench_fiorand_podoutdir }}/fio.randomread.run.txt 
+            ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomread.ls_l.post.txt
+
+      restartPolicy: Never
+...

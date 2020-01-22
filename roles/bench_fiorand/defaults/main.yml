@@ -14,6 +14,7 @@ bench_fiorand_dir: '{{ run_dir }}/{{ role_name }}'
 bench_fiorand_namespace: '{{ run_namespace }}'
 
 # label on pods
+bench_fiorand_preppodlabel: "type=benchmark-prep-pod"
 bench_fiorand_podlabel: "type=benchmark-pod"
 
 # for nodeSelector

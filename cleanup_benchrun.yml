@@ -8,7 +8,7 @@
     register: command_output
 
   - set_fact:
-      run_dir: "{{ command_output.stdout }}"
+      run_dir: "{{ run_basedir }}/{{ command_output.stdout }}"
 
   - include_role:
       name: stats_sysstat
