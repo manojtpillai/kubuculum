@@ -10,6 +10,13 @@
     set_fact:
       run_dir: /tmp/run_ts
 
+  - name: set namespace for run
+    set_fact:
+      run_namespace: nm-kubuculum
+
+  - name: create namespace for run
+    command: 'kubectl create namespace {{ nm-kubuculum }}'
+
   - name: create run directory
     local_action:
       module: file
@@ -41,5 +48,8 @@
       name: '{{ test_role }}'
     vars:
       calm_mode: stop
+
+  - name: delete run namespace
+    command: 'kubectl delete namespace {{ run_namespace }}'
 
 ...

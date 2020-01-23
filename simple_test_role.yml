@@ -5,7 +5,7 @@
 - hosts: localhost
 
   vars:
-    run_dir: "/root/mpillai"
+    run_dir: "/tmp"
 
   tasks:
 

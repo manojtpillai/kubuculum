@@ -5,7 +5,7 @@ localhost
 [all:vars]
 
 # run output
-run_basedir="." # output stored in a timestamped directory here
+run_basedir="/tmp" # output stored in a timestamped directory here
 
 # namespaces used
 run_namespace="nm-kubuculum" # "default" namespace no longer allowed

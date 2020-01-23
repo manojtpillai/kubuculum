@@ -1,0 +1,49 @@
+
+---
+# quickly test a particular role
+
+- hosts: localhost
+
+  tasks:
+
+  - name: set run directory
+    set_fact:
+      run_dir: /tmp/run_ts
+
+  - name: set run namespace 
+    set_fact:
+      run_namespace: nm-kubuculum
+
+  - name: create namespace for run
+    command: 'kubectl create namespace {{ run_namespace }}'
+
+  - name: create run directory
+    local_action:
+      module: file
+      path: '{{ run_dir }}'
+      state: directory
+
+  - include_role:
+      name: '{{ benchmark_role }}'
+    vars:
+      benchmark_mode: prepare
+
+  - include_role:
+      name: '{{ benchmark_role }}'
+    vars:
+      benchmark_mode: run
+
+  - include_role:
+      name: '{{ benchmark_role }}'
+    vars:
+      benchmark_mode: gather
+
+  - include_role:
+      name: '{{ benchmark_role }}'
+    vars:
+      benchmark_mode: cleanup
+
+  - name: delete run namespace 
+    command: 'kubectl delete namespace {{ run_namespace }}'
+
+...
