@@ -6,6 +6,10 @@
 
   tasks:
 
+  - name: set benchmark role to be tested 
+    set_fact:
+      benchmark_role: bench_fiorand
+
   - name: set run directory
     set_fact:
       run_dir: /tmp/run_ts

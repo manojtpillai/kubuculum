@@ -6,6 +6,10 @@
 
   tasks:
 
+  - name: set calm role to be tested
+    set_fact:
+      calm_role: calm_fioiops
+
   - name: set run directory
     set_fact:
       run_dir: /tmp/run_ts
@@ -15,7 +19,7 @@
       run_namespace: nm-kubuculum
 
   - name: create namespace for run
-    command: 'kubectl create namespace {{ nm-kubuculum }}'
+    command: 'kubectl create namespace {{ run_namespace }}'
 
   - name: create run directory
     local_action:
@@ -24,15 +28,12 @@
       state: directory
 
   - include_role:
-      name: '{{ test_role }}'
+      name: '{{ calm_role }}'
     vars:
       calm_mode: start
 
-  - pause:
-      seconds: 300
-
   - include_role:
-      name: '{{ test_role }}'
+      name: '{{ calm_role }}'
     vars:
       calm_mode: ensure_ready
 
@@ -40,12 +41,12 @@
       seconds: 300
 
   - include_role:
-      name: '{{ test_role }}'
+      name: '{{ calm_role }}'
     vars:
       calm_mode: gather
 
   - include_role:
-      name: '{{ test_role }}'
+      name: '{{ calm_role }}'
     vars:
       calm_mode: stop
 
