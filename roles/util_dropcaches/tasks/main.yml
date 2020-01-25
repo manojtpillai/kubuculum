@@ -1,7 +1,10 @@
 ---
 # tasks file for util_dropcaches
 
-- include_tasks: ceph.yml
+- include_role: 
+    name: storage_ceph
+  vars: 
+    action: drop_caches
   when: ceph_benchrun is defined and ceph_benchrun
 
 ...

@@ -1,0 +1,6 @@
+---
+# tasks file for util_dropcaches
+
+- include_tasks: '{{ action }}.yml'
+
+...

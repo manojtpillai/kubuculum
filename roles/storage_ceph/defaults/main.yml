@@ -1,0 +1,9 @@
+---
+
+# namespace
+storage_ceph_nm: "openshift-storage"
+
+# label on tools
+storage_ceph_toolspodlabel: "app=rook-ceph-tools"
+
+...
