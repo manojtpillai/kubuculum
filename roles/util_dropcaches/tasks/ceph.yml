@@ -2,13 +2,18 @@
 # tasks file for util_dropcaches ceph
 
 - name: get pod info
-  command: 'kubectl get pods -n {{ util_dropcaches_cephnm }} -l {{ util_dropcaches_cephlabel }} -o custom-columns=":metadata.name"'
+  command: 'kubectl get pods -n {{ util_dropcaches_cephnm }} -l {{ util_dropcaches_cephpodlabel }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
+
+- debug: msg='rook-ceph-tools pod not found; will skip cache drop'
+  when: podlist.stdout == ""
 
 - name: drop osd caches
   command: 'kubectl exec {{ podlist.stdout }} -n {{ util_dropcaches_cephnm }} -- ceph tell osd.\* cache drop'
+  when: podlist.stdout != ""
 
 - name: drop mds caches
   command: 'kubectl exec {{ podlist.stdout }} -n {{ util_dropcaches_cephnm }} -- ceph tell mds.\* cache drop'
+  when: podlist.stdout != ""
 
 ...
