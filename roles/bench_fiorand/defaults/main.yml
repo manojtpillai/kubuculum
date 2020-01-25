@@ -18,7 +18,7 @@ bench_fiorand_preppodlabel: "type=benchmark-prep-pod"
 bench_fiorand_podlabel: "type=benchmark-pod"
 
 # for nodeSelector
-# bench_fiorand_nodelabel: "kubernetes.io/hostname=ip-10-0-205-26"
+# bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
 
 
 # directory where output files exist in pods/containers
@@ -26,24 +26,6 @@ bench_fiorand_podoutdir: /benchout
 
 # main container name
 bench_fiorand_container: "benchmark-complete"
-
-# configmap to trigger benchmark phase transition
-bench_fiorand_configmap: "bench-fiorand-cfgmap"
-bench_fiorand_mapkey: "bench.phase"
-bench_fiorand_initphase: "prepare"
-bench_fiorand_nextphase: "run"
-
-# sequence number of prepwait initContainer
-bench_fiorand_prepc: 2
-
-# expected time for prepare phase
-bench_fiorand_prep_sec: 120
-
-# time between retries waiting for prepare phase completion
-bench_fiorand_prepretry_sec: 60
-
-# number of retries waiting for prepare phase completion
-bench_fiorand_prep_retries: 60
 
 # maximum time for a run; used for wait timeout
 bench_fiorand_maxtime_sec: 36000
