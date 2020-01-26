@@ -14,6 +14,7 @@ bench_ycsb_dir: '{{ run_dir }}/{{ role_name }}'
 bench_ycsb_namespace: '{{ run_namespace }}'
 
 # label on pods
+bench_ycsb_preppodlabel: "type=benchmark-prep-pod"
 bench_ycsb_podlabel: "type=benchmark-pod"
 
 # directory where output files exist in pods/containers
@@ -21,24 +22,6 @@ bench_ycsb_podoutdir: /benchout
 
 # main container name
 bench_ycsb_container: "benchmark-complete"
-
-# configmap to trigger benchmark phase transition
-bench_ycsb_configmap: "bench-ycsb-cfgmap"
-bench_ycsb_mapkey: "bench.phase"
-bench_ycsb_initphase: "prepare"
-bench_ycsb_nextphase: "run"
-
-# sequence number of prepwait initContainer
-bench_ycsb_prepc: 2
-
-# expected time for prepare phase
-bench_ycsb_prep_sec: 120
-
-# time between retries waiting for prepare phase completion
-bench_ycsb_prepretry_sec: 120
-
-# number of retries waiting for prepare phase completion
-bench_ycsb_prep_retries: 120
 
 # maximum time for a run; used for wait timeout
 bench_ycsb_maxtime_sec: 36000

@@ -1,10 +1,7 @@
 ---
 
 - name: stop fio pod
-  command: 'kubectl delete -f {{ bench_ycsb_dir }}/ycsb_job.yaml -n {{ bench_ycsb_namespace }}'
-
-- name: delete benchmark configmap
-  command: 'kubectl delete configmap {{ bench_ycsb_configmap }} -n {{ bench_ycsb_namespace }}'
+  command: 'kubectl delete -f {{ bench_ycsb_dir }}/ycsbrun_job.yaml -n {{ bench_ycsb_namespace }}'
 
 - include_role:
     name: '{{ bench_ycsb_dbrole }}'

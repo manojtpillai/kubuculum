@@ -10,30 +10,30 @@
     path: '{{ bench_ycsb_dir }}'
     state: directory
 
-- name: create configmap for benchmark phase transitions
-  command: 'kubectl create configmap {{ bench_ycsb_configmap }} --from-literal={{ bench_ycsb_mapkey }}={{ bench_ycsb_initphase }} -n {{ bench_ycsb_namespace }}'
-
 - name: create job file from template
   template:
-    src: '{{ role_path }}/templates/ycsb_job.j2'
-    dest: '{{ bench_ycsb_dir }}/ycsb_job.yaml'
+    src: '{{ role_path }}/templates/ycsbprep_job.j2'
+    dest: '{{ bench_ycsb_dir }}/ycsbprep_job.yaml'
 
 - name: start pod
-  command: 'kubectl create -f {{ bench_ycsb_dir }}/ycsb_job.yaml -n {{ bench_ycsb_namespace }}'
-
-- name: sleep for estimated prepare phase time
-  command: 'sleep {{ bench_ycsb_prep_sec }}'
+  command: 'kubectl create -f {{ bench_ycsb_dir }}/ycsbprep_job.yaml -n {{ bench_ycsb_namespace }}'
 
 - name: get pod name
-  command: 'kubectl get pods -l {{ bench_ycsb_podlabel }} -n {{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  command: 'kubectl get pods -l {{ bench_ycsb_preppodlabel }} -n {{ bench_ycsb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-# wait for prepwait initContainer that marks end of prepare phase
 - name: wait for prepare phase completion
-  shell: "kubectl describe pod {{ podlist.stdout }} -n {{ bench_ycsb_namespace }} | grep State: | sed -n {{ bench_ycsb_prepc }}p | awk '{print $2}'"
-  register: cs
-  until: cs.stdout.find("Running") != -1
-  retries: '{{ bench_ycsb_prep_retries }}'
-  delay: '{{ bench_ycsb_prepretry_sec }}'
+  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} --namespace={{ bench_ycsb_namespace }} --timeout={{ bench_ycsb_maxtime_sec }}s'
+
+- name: create directory for storing prep pod output
+  file: 
+    path: '{{ bench_ycsb_dir }}/prepare_{{ podlist.stdout }}'
+    state: directory
+
+- name: fetch output from prep pod
+  command: 'kubectl cp {{ bench_ycsb_namespace }}/{{ podlist.stdout }}:{{ bench_ycsb_podoutdir }} {{ bench_ycsb_dir }}/prepare_{{ podlist.stdout }}'
+
+- name: delete prep pod
+  command: 'kubectl delete -f {{ bench_ycsb_dir }}/ycsbprep_job.yaml -n {{ bench_ycsb_namespace }}'
 
 ...

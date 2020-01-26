@@ -1,0 +1,44 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ycsb
+spec:
+  template:
+    metadata:
+      labels:
+        type: benchmark-prep-pod
+    spec:
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+
+      containers:
+      - name: benchmark-complete
+        image: rhel7
+        volumeMounts:
+          - mountPath: {{ bench_ycsb_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args: ["-c", "touch {{ bench_ycsb_podoutdir }}/benchmark.completed.txt; sleep 3600"]
+
+      initContainers:
+      - name: ycsb-load
+        image: quay.io/mpillai/ycsb
+        volumeMounts:
+          - mountPath: {{ bench_ycsb_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args: 
+          - "-c"
+          - >
+            cd /ycsb/ycsb-latest 
+            ; bin/ycsb load {{ bench_ycsb_nosqldb }} -s 
+            -P {{ bench_ycsb_workload }}
+            -p {{ bench_ycsb_db_loadopts }}
+            -p recordcount={{ bench_ycsb_reccount }}
+            -threads {{ bench_ycsb_load_thrds }} 
+            2>&1 | tee {{ bench_ycsb_podoutdir }}/ycsb.load.txt
+
+      restartPolicy: Never
+...
