@@ -40,6 +40,9 @@ spec:
           - mountPath: /dataset
             name: fio-pv
         command: ["/bin/sh"]
+{# 
+        seeing some mount-time I/O activity; added sleep to demarcate run phase 
+#}
         args:
           - "-c" 
           - > 

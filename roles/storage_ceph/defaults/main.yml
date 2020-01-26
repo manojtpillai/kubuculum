@@ -3,7 +3,7 @@
 # namespace
 storage_ceph_nm: "openshift-storage"
 
-# label on tools
+# label on tools pod
 storage_ceph_toolspodlabel: "app=rook-ceph-tools"
 
 ...
