@@ -11,8 +11,10 @@ crystal ball]
 This tool is run on a system that has kubectl set up to control a
 kubernetes cluster. The prerequisites for running the tool are:
 - A kubernetes cluster up and running.
+- The kubernetes cluster has a default StorageClass. This will be
+used by the tool for dynamically provisioning storage.
 - The system running the tool should have kubectl set up to
-work against this kubernetes cluster.
+work against said kubernetes cluster.
 - The system running the tool should have ansible installed.
 
 ### Get Started
@@ -23,26 +25,38 @@ cd kubuculum
 ansible-playbook -i inventory perform_benchrun.yml
 ```
 
-This should run an fio test, against the default storage class of
+This will run an fio test, against the default StorageClass of
 your kubernetes cluster, and collect results of the run in a
 timestamped directory /tmp/run_\<timestamp\>.
 
 The tool creates the k8s resources that it needs, e.g. pods, in a
 separate namespace, nm-kubuculum by default.
 
-It is easiest to control your benchmark runs by editing variables
-in the inventory file. The sample inventory file has most of the
-variables you'll need listed, but commented out. So typically, it
-is just a matter of uncommenting the ones you need.
+It is easiest to control your benchmark runs by supplying
+variables and values in the inventory file. The sample inventory
+file has most of the variables you'll need listed, but commented
+out. So typically, it is just a matter of uncommenting the ones
+you need.
 
 ## Overview
+
+### Goals
+
+This tool is meant as much for experimenting with benchmarking
+techniques for platforms like k8s, as it is for evaluating
+storage performance of a cluster.  It came about from a feeling
+that performance benchmarking methodology for such platforms,
+where many performance critical applications run concurrently,
+still needs refining.
+
+### Structure
 
 The tool is evolving. It is written as a collection of ansible
 roles and a few ansible playbooks that tie these roles together.
 The major role types are:
 
 - benchmark roles: The reason we are here. 
-- calm roles: These serve to set up a background load for benchmarking.
+- CALM roles: These serve to set up a background load for benchmarking.
 - stats roles: These gather various statistics to help analyze
 benchmark runs.
 
@@ -51,8 +65,8 @@ denote the type of role.
 
 The playbooks expect each type of role to support certain
 "actions" like start, stop, that make sense for that type of
-role.  Each action generally maps to an ansible playlist that has
-a sequence of tasks to accomplish that action.
+role.  Each action generally maps to an ansible playlist to
+accomplish that action.
 
 ### Benchmark Roles
 
@@ -104,18 +118,19 @@ stats roles are written to support the following actions:
 ### Playbooks
 
 The main playbook for executing benchmark runs is
-perform_benchrun.yml. The code is very readable and intuitive,
-and probably does not need more explanation.
+perform_benchrun.yml. The code is simple and readable, and
+probably does not need more explanation.
 
-Note that the playbook has an option, enabled by default, to drop
-caches between benchmark prepare and benchmark run phases.
-Currently, this is the only place where caches are dropped. The
-ability to drop caches at arbitrary points in a benchmarks
-execution has not yet been implemented. The drop caches
-functionality is currently only implemented for rook-ceph because
-that is the only storage solution this tool has been used with.
+The playbook has an option, enabled by default, to drop caches
+between benchmark prepare and benchmark run phases.  Currently,
+this is the only place where caches are dropped. The ability to
+drop caches at arbitrary points in a benchmark's execution has not
+yet been implemented. The drop-caches functionality is currently
+only implemented for rook-ceph because that is the only storage
+solution this tool has been used with.
 
 ## Additional Details
 
 Please refer to the documentation of individual roles for more
 details.
+
