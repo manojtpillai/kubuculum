@@ -5,12 +5,6 @@
   command: 'kubectl get pods -l {{ db_mongodb_podlabel }} -n {{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-- name: create directory for storing pod output
-  file: 
-    path: '{{ db_mongodb_dir }}/{{ item }}'
-    state: directory
-  with_items: "{{ podlist.stdout_lines }}"
-
 - name: fetch df output from pod
   shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.df_h.txt'
   with_items: "{{ podlist.stdout_lines }}"

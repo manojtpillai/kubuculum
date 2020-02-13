@@ -38,4 +38,18 @@
 - set_fact:
     db_mongodb_connurl: "{{ 'mongodb://' + podlist.stdout_lines|join('.mongo,') + '.mongo:' + db_mongodb_port + '/' }}"
 
+- name: create directory for storing pod output
+  file: 
+    path: '{{ db_mongodb_dir }}/{{ item }}'
+    state: directory
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch df output from pod
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.start.df_h.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch ls output from pod
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.start.ls_l.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+
 ...
