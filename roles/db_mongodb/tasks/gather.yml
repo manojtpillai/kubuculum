@@ -11,8 +11,12 @@
     state: directory
   with_items: "{{ podlist.stdout_lines }}"
 
-- name: fetch output from pod
+- name: fetch df output from pod
   shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.df_h.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch ls output from pod
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.ls_l.txt'
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: get mongodb pod locations

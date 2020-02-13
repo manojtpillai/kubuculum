@@ -19,7 +19,7 @@ metadata:
   name: mongo
 spec:
   serviceName: "mongo"
-  replicas: 1 # by default is 1
+  replicas: {{ db_mongodb_replicas }}
   template:
     metadata:
       labels:
@@ -27,17 +27,29 @@ spec:
         environment: test
     spec:
       terminationGracePeriodSeconds: 10
+{% if db_mongodb_nodelabel is defined %}
+      nodeSelector:
+        {{ db_mongodb_nodelabel.split("=")[0] }}: {{ db_mongodb_nodelabel.split("=")[1] }}
+{% endif %}
       containers:
       - name: mongo
         image: mongo
         command:
           - mongod
-          - "--bind_ip_all"
+          - "--replSet"
+          - rs0
+          - "--bind_ip"
+          - 0.0.0.0
         ports:
           - containerPort: 27017
         volumeMounts:
           - name: mongo-persistent-storage
             mountPath: /data/db
+      - name: mongo-sidecar
+        image: cvallance/mongo-k8s-sidecar
+        env:
+          - name: MONGO_SIDECAR_POD_LABELS
+            value: "role=mongo,environment=test"
   volumeClaimTemplates:
   - metadata:
       name: mongo-persistent-storage
@@ -45,4 +57,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 300Gi
+          storage: {{ db_mongodb_pvcsize_gb }}Gi
+...

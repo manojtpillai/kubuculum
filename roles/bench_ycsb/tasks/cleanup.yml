@@ -1,6 +1,6 @@
 ---
 
-- name: stop fio pod
+- name: stop pod
   command: 'kubectl delete -f {{ bench_ycsb_dir }}/ycsbrun_job.yaml -n {{ bench_ycsb_namespace }}'
 
 - include_role:

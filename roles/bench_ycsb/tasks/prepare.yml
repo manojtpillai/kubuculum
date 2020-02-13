@@ -5,6 +5,17 @@
   vars:
     db_mode: start
 
+- set_fact:
+    tmp_prefix: "mongodb.url='"
+    tmp_lsuffix: "ycsb?w=0'"
+    tmp_rsuffix: "ycsb'"
+  when: bench_ycsb_dbrole == "db_mongodb"
+
+- set_fact:
+    bench_ycsb_db_loadopts: "{{ tmp_prefix + db_mongodb_connurl + tmp_lsuffix }}"
+    bench_ycsb_db_runopts: "{{ tmp_prefix + db_mongodb_connurl + tmp_rsuffix }}"
+  when: bench_ycsb_dbrole == "db_mongodb"
+
 - name: create directory for storing role output
   file:
     path: '{{ bench_ycsb_dir }}'

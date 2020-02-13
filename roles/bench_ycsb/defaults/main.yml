@@ -39,9 +39,9 @@ bench_ycsb_nosqldb: mongodb
 # name of collection/table/db as specified on ycsb command line
 bench_ycsb_storename: ycsb
 
-# TODO: these need to be generated, not hard-coded
-bench_ycsb_db_loadopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb?w=0'"
-bench_ycsb_db_runopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb'"
+# below vars are generated based on db config; example values below
+# bench_ycsb_db_loadopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb?w=0'"
+# bench_ycsb_db_runopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb'"
 
 # ycsb workload to run
 bench_ycsb_workload: "workloads/workloada"

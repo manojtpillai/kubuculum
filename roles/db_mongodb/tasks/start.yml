@@ -1,14 +1,41 @@
 ---
 
-- name: start mongodb service
-  command: 'kubectl create -f {{ role_path }}/files/mongodb_service.yaml -n {{ db_mongodb_namespace }}'
+- name: create directory for storing role output
+  file:
+    path: '{{ db_mongodb_dir }}'
+    state: directory
 
-- name: get pod names
+- name: create job file from template
+  template:
+    src: '{{ role_path }}/templates/mongodb_statefulset.j2'
+    dest: '{{ db_mongodb_dir }}/mongodb_statefulset.yaml'
+
+- name: create rbac file from template
+  template:
+    src: '{{ role_path }}/templates/sidecar_rbac.j2'
+    dest: '{{ db_mongodb_dir }}/sidecar_rbac.yaml'
+  when: db_mongodb_rbac_dynamic
+
+- name: create role and rolebinding needed for sidecar
+  command: 'kubectl create -f {{ db_mongodb_dir }}/sidecar_rbac.yaml'
+  when: db_mongodb_rbac_dynamic
+
+- name: start mongodb service
+  command: 'kubectl create -f {{ db_mongodb_dir }}/mongodb_statefulset.yaml -n {{ db_mongodb_namespace }}'
+
+- name: get all pod names
   command: 'kubectl get pods -l {{ db_mongodb_podlabel }} -n {{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
+  until: podlist.stdout_lines|length == db_mongodb_replicas
+# choose retries based on number of replicas
+  retries: '{{ db_mongodb_replicas *4 }}'
+  delay: 60
 
 - name: wait for mongodb pods to be ready
   command: 'kubectl wait --for=condition=Ready pod/{{ item }} -n {{ db_mongodb_namespace }} --timeout={{ db_mongodb_timetoready_sec }}s'
   with_items: "{{ podlist.stdout_lines }}"
+
+- set_fact:
+    db_mongodb_connurl: "{{ 'mongodb://' + podlist.stdout_lines|join('.mongo,') + '.mongo:' + db_mongodb_port + '/' }}"
 
 ...
