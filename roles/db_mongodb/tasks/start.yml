@@ -1,5 +1,9 @@
 ---
 
+- set_fact:
+    db_mongodb_replicas: 1
+  when: db_mongodb_instancemode == "standalone"
+
 - name: create directory for storing role output
   file:
     path: '{{ db_mongodb_dir }}'
@@ -7,7 +11,7 @@
 
 - name: create job file from template
   template:
-    src: '{{ role_path }}/templates/mongodb_statefulset.j2'
+    src: '{{ role_path }}/templates/mongodb_{{ db_mongodb_instancemode }}.j2'
     dest: '{{ db_mongodb_dir }}/mongodb_statefulset.yaml'
 
 - name: create rbac file from template

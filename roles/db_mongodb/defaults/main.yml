@@ -34,6 +34,9 @@ db_mongodb_timetoready_sec: 600
 # set to False if role already exists in cluster
 db_mongodb_rbac_dynamic: False
 
+# standalone or replicated
+db_mongodb_instancemode: "replicated"
+
 # do not change; should match template
 db_mongodb_mntpt: /data/db # mongodb data directory
 db_mongodb_port: "27017"
