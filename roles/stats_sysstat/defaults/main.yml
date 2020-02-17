@@ -27,6 +27,9 @@ stats_sysstat_podoutdir: /data
 # variables specific to this role
 #
 
+# allow dropping caches
+stats_sysstat_allowdropcache: False
+
 # default monitoring interval
 stats_sysstat_interval_sec: 10
 

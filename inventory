@@ -35,6 +35,7 @@ dropcaches_postprepare=True
 
 # stats_sysstat specific
 # stats_sysstat_nodelabel="node-role.kubernetes.io/worker=''"
+# stats_sysstat_allowdropcache=True
 
 # 
 # calm specific options

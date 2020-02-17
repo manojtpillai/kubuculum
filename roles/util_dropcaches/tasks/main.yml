@@ -7,4 +7,10 @@
     action: drop_caches
   when: ceph_benchrun is defined and ceph_benchrun
 
+- include_role: 
+    name: stats_sysstat
+  vars: 
+    stats_mode: drop_caches
+  when: stats_enabled is defined and stats_enabled and "stats_sysstat" in stats_role 
+
 ...
