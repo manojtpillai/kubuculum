@@ -1,0 +1,17 @@
+---
+
+- name: get pod names 
+  command: 'kubectl get pods -l {{ db_mongodb_podlabel }} -n {{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: flush start timestamp
+  shell: 'date > {{ db_mongodb_dir }}/flush_caches.start.txt'
+
+- name: flush db caches 
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo ycsb --eval "db.adminCommand( { fsync: 1, lock: false } )"'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: flush start timestamp
+  shell: 'date > {{ db_mongodb_dir }}/flush_caches.finish.txt'
+
+...

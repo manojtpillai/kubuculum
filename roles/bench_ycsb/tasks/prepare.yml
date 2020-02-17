@@ -47,4 +47,10 @@
 - name: delete prep pod
   command: 'kubectl delete -f {{ bench_ycsb_dir }}/ycsbprep_job.yaml -n {{ bench_ycsb_namespace }}'
 
+- include_role:
+    name: '{{ bench_ycsb_dbrole }}'
+  vars:
+    db_mode: flush_caches
+  when: bench_ycsb_flushdbcaches
+
 ...

@@ -39,6 +39,9 @@ bench_ycsb_nosqldb: mongodb
 # name of collection/table/db as specified on ycsb command line
 bench_ycsb_storename: ycsb
 
+# tell db to flush caches after prepare phase
+bench_ycsb_flushdbcaches: True
+
 # below vars are generated based on db config; example values below
 # bench_ycsb_db_loadopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb?w=0'"
 # bench_ycsb_db_runopts: "mongodb.url='mongodb://mongo-0.mongo:27017/ycsb'"
