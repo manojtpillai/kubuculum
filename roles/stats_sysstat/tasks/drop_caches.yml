@@ -6,6 +6,7 @@
 
 - name: drop caches start timestamp
   shell: 'date >> {{ stats_sysstat_dir }}/drop_caches.start.txt'
+  when: stats_sysstat_allowdropcache
 
 - name: drop caches 
   shell: 'kubectl exec {{ item }} -n {{ stats_sysstat_namespace }} -- sysctl vm.drop_caches=3'
@@ -14,5 +15,6 @@
 
 - name: drop caches finish timestamp
   shell: 'date >> {{ stats_sysstat_dir }}/drop_caches.finish.txt'
+  when: stats_sysstat_allowdropcache
 
 ...
