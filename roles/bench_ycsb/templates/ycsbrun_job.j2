@@ -39,6 +39,9 @@ spec:
             -p recordcount={{ bench_ycsb_reccount }}
             -p operationcount={{ bench_ycsb_opcount }}
             -threads {{ bench_ycsb_run_thrds }}
+{% if bench_ycsb_run_addlopts is defined %}
+            {{ bench_ycsb_run_addlopts }}
+{% endif %}
             2>&1 | tee {{ bench_ycsb_podoutdir }}/ycsb.run.txt
 
       restartPolicy: Never

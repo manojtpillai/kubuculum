@@ -38,6 +38,9 @@ spec:
             -p {{ bench_ycsb_db_loadopts }}
             -p recordcount={{ bench_ycsb_reccount }}
             -threads {{ bench_ycsb_load_thrds }} 
+{% if bench_ycsb_load_addlopts is defined %}
+            {{ bench_ycsb_load_addlopts }}
+{% endif %}
             2>&1 | tee {{ bench_ycsb_podoutdir }}/ycsb.load.txt
 
       restartPolicy: Never
