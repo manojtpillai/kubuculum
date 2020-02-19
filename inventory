@@ -67,7 +67,6 @@ dropcaches_postprepare=True
 # bench_fiorand_fsz_gb=32
 # bench_fiorand_njobs=4
 # bench_fiorand_bs_kb=8
-# bench_fiorand_prep_sec=500
 # bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
 
 # bench_ycsb specific options
@@ -76,6 +75,11 @@ dropcaches_postprepare=True
 # bench_ycsb_reccount=100000000
 # bench_ycsb_opcount=10000000
 # bench_ycsb_run_thrds=32
+
+# db_mongodb specific options
+# db_mongodb_instancemode="standalone"
+# db_mongodb_pvcsize_replicas=3
+# db_mongodb_pvcsize_gb=300
 
 # bench_custompause specific options
 # bench_custompause_wait_sec=300
