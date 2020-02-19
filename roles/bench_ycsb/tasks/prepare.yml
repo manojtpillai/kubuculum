@@ -7,8 +7,8 @@
 
 - set_fact:
     tmp_prefix: "mongodb.url='"
-    tmp_lsuffix: "ycsb?w=0'"
-    tmp_rsuffix: "ycsb'"
+    tmp_lsuffix: "{{ bench_ycsb_storename }}?w=0'"
+    tmp_rsuffix: "{{ bench_ycsb_storename }}'"
   when: bench_ycsb_dbrole == "db_mongodb"
 
 - set_fact:
@@ -51,6 +51,7 @@
     name: '{{ bench_ycsb_dbrole }}'
   vars:
     db_mode: flush_caches
+    db_storename: '{{ bench_ycsb_storename }}'
   when: bench_ycsb_flushdbcaches
 
 ...
