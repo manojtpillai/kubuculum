@@ -20,6 +20,7 @@ stats_role="stats_sysstat"
 calm_role="calm_fioiops"
 benchmark_role="bench_fioseq"
 # benchmark_role="bench_fiorand"
+# benchmark_role="bench_fioforsql"
 # benchmark_role="bench_ycsb"
 # benchmark_role="bench_custompause"
 
@@ -68,6 +69,11 @@ dropcaches_postprepare=True
 # bench_fiorand_njobs=4
 # bench_fiorand_bs_kb=8
 # bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
+
+# bench_fioforsql specific options
+# bench_fioforsql_pvcsize_gb=200
+# bench_fioforsql_tblfsz_mb=8192
+# bench_fioforsql_nodelabel="node-role.kubernetes.io/worker=''"
 
 # bench_ycsb specific options
 # bench_ycsb_dbrole="db_mongodb"

@@ -1,0 +1,78 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio
+spec:
+  template:
+    metadata:
+      labels:
+        type: benchmark-pod
+    spec:
+{% if bench_fioforsql_nodelabel is defined %}
+      nodeSelector:
+        {{ bench_fioforsql_nodelabel.split("=")[0] }}: {{ bench_fioforsql_nodelabel.split("=")[1] }}
+{% endif %}
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+      - name: fio-pv
+        persistentVolumeClaim:
+          claimName: fio-pv-claim
+
+      containers:
+      - name: benchmark-complete
+        image: rhel7
+        volumeMounts:
+          - mountPath: {{ bench_fioforsql_podoutdir }}
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+        args: ["-c", "touch {{ bench_fioforsql_podoutdir }}/benchmark.run.completed.txt; sleep 3600"]
+
+      initContainers:
+      - name: fio-sqlrun
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fioforsql_podoutdir }}
+            name: output-volume
+          - mountPath: /dataset
+            name: fio-pv
+        command: ["/bin/sh"]
+{# 
+        seeing some mount-time I/O activity; added sleep to demarcate run phase 
+#}
+        args:
+          - "-c" 
+          - > 
+            sleep 60
+            ; ls -l /dataset > {{ bench_fioforsql_podoutdir }}/fio.sqlrun.ls_l.pre.txt
+            ; fio 
+            --name=logw 
+            --rw=write --ioengine=libaio --direct=1 
+            --filename=/dataset/{{ bench_fioforsql_txnlogfile }}
+            --filesize={{ bench_fioforsql_logfsz_gb }}g
+            --fdatasync=1 
+            --bs={{ bench_fioforsql_dbbs_kb }}k 
+            --iodepth=1
+            --numjobs=1
+            --time_based=1 
+            --runtime={{ bench_fioforsql_run_sec }} 
+            --name=tablerw 
+            --rw=randrw --ioengine=libaio --direct=1 
+            --rwmixread={{ bench_fioforsql_readpct }}
+            --directory=/dataset 
+            --filename_format='table.$jobnum'
+            --fdatasync=1 
+            --iodepth={{ bench_fioforsql_iodepth }} 
+            --bs={{ bench_fioforsql_dbbs_kb }}k 
+            --filesize={{ bench_fioforsql_tblfsz_mb }}m
+            --numjobs={{ bench_fioforsql_nthrds }} 
+            --time_based=1 
+            --runtime={{ bench_fioforsql_run_sec }} 
+            --output={{ bench_fioforsql_podoutdir }}/fio.sqlrun.out.txt 
+            ; ls -l /dataset > {{ bench_fioforsql_podoutdir }}/fio.sqlrun.ls_l.post.txt
+
+      restartPolicy: Never
+...
