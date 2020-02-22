@@ -75,6 +75,7 @@ dropcaches_postprepare=True
 # bench_ycsb_reccount=100000000
 # bench_ycsb_opcount=10000000
 # bench_ycsb_run_thrds=32
+# bench_ycsb_run_addlopts="-p requestdistribution=uniform"
 
 # db_mongodb specific options
 # db_mongodb_instancemode="standalone"
