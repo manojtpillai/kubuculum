@@ -49,6 +49,7 @@ spec:
             sleep 60
             ; ls -l /dataset > {{ bench_fioforsql_podoutdir }}/fio.sqlrun.ls_l.pre.txt
             ; fio 
+            --new_group
             --name=logw 
             --rw=write --ioengine=libaio --direct=1 
             --filename=/dataset/{{ bench_fioforsql_txnlogfile }}
@@ -59,6 +60,7 @@ spec:
             --numjobs=1
             --time_based=1 
             --runtime={{ bench_fioforsql_run_sec }} 
+            --new_group
             --name=tablerw 
             --rw=randrw --ioengine=libaio --direct=1 
             --rwmixread={{ bench_fioforsql_readpct }}
