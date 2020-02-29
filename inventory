@@ -69,7 +69,6 @@ dropcaches_postprepare=True
 # bench_fiorand_njobs=4
 # bench_fiorand_bs_kb=8
 # bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
-# bench_fiorand_storageclass="ocs-storagecluster-ceph-rbd"
 
 # bench_fioforsql specific options
 # bench_fioforsql_pvcsize_gb=200

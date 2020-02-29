@@ -9,6 +9,10 @@
     path: '{{ db_mongodb_dir }}'
     state: directory
 
+- set_fact:
+    db_mongodb_storageclass: '{{ run_storageclass }}'
+  when: db_mongodb_storageclass is not defined and run_storageclass is defined
+
 - name: create job file from template
   template:
     src: '{{ role_path }}/templates/mongodb_{{ db_mongodb_instancemode }}.j2'

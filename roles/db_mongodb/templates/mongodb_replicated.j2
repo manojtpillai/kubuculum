@@ -58,4 +58,8 @@ spec:
       resources:
         requests:
           storage: {{ db_mongodb_pvcsize_gb }}Gi
+{% if db_mongodb_storageclass is defined %}
+      storageClassName: {{ db_mongodb_storageclass }}
+{% endif %}
+
 ...

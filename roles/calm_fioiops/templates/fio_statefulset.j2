@@ -93,5 +93,8 @@ spec:
       resources:
         requests:
           storage: {{ calm_fioiops_pvcsize_gb }}Gi
+{% if calm_fioiops_storageclass is defined %}
+      storageClassName: {{ calm_fioiops_storageclass }}
+{% endif %}
 
 ...

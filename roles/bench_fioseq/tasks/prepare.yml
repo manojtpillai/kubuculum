@@ -5,6 +5,10 @@
     path: '{{ bench_fioseq_dir }}'
     state: directory
 
+- set_fact:
+    bench_fioseq_storageclass: '{{ run_storageclass }}'
+  when: bench_fioseq_storageclass is not defined and run_storageclass is defined
+
 - name: create job file from template
   template:
     src: '{{ role_path }}/templates/fio_job.j2'

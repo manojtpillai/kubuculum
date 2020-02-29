@@ -9,7 +9,12 @@ spec:
   resources:
     requests:
       storage: {{ bench_fioseq_pvcsize_gb }}Gi
+{% if bench_fioseq_storageclass is defined %}
+  storageClassName: {{ bench_fioseq_storageclass }}
+{% endif %}
+
 ...
+
 ---
 apiVersion: batch/v1
 kind: Job

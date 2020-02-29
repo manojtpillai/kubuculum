@@ -13,6 +13,11 @@ calm_fioiops_dir: '{{ run_dir }}/{{ role_name }}'
 # namespace
 calm_fioiops_namespace: '{{ run_namespace }}'
 
+# calm_fioiops_storageclass: 
+#   if calm_fioiops_storageclass is defined that is used
+#   else if run_storageclass is defined that is used
+#   else default storage class is used
+
 # label on pods
 calm_fioiops_podlabel: "role=calm-fioiops"
 

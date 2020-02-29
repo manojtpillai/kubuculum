@@ -4,6 +4,10 @@
   file: 
     path: '{{ calm_fioiops_dir }}'
     state: directory
+
+- set_fact:
+    calm_fioiops_storageclass: '{{ run_storageclass }}'
+  when: calm_fioiops_storageclass is not defined and run_storageclass is defined
   
 - name: create job file from template
   template:

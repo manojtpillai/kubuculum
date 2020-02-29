@@ -4,10 +4,10 @@
 
 - hosts: localhost
   vars:
-    benchmark_role: bench_fiorand
+    benchmark_role: bench_fioforsql
     run_dir: /tmp/run_ts
     run_namespace: nm-kubuculum
-    bench_fiorand_storageclass: ocs-storagecluster-ceph-rbd
+    bench_fioforsql_storageclass: ocs-storagecluster-ceph-rbd
 
   tasks:
 

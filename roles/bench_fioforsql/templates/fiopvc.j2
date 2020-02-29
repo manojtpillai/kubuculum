@@ -9,4 +9,7 @@ spec:
   resources:
     requests:
       storage: {{ bench_fioforsql_pvcsize_gb }}Gi
+{% if bench_fioforsql_storageclass is defined %}
+  storageClassName: {{ bench_fioforsql_storageclass }}
+{% endif %}
 ...

@@ -13,6 +13,11 @@ bench_fioforsql_dir: '{{ run_dir }}/{{ role_name }}'
 # namespace
 bench_fioforsql_namespace: '{{ run_namespace }}'
 
+# bench_fioforsql_storageclass: 
+#   if bench_fioforsql_storageclass is defined that is used
+#   else if run_storageclass is defined that is used
+#   else default storage class is used
+
 # label on pods
 bench_fioforsql_preppodlabel: "type=benchmark-prep-pod"
 bench_fioforsql_podlabel: "type=benchmark-pod"

@@ -13,6 +13,11 @@ db_mongodb_dir: '{{ db_mongodb_pdir }}/{{ role_name }}'
 # namespace
 db_mongodb_namespace: '{{ run_namespace }}'
 
+# db_mongodb_storageclass: 
+#   if db_mongodb_storageclass is defined that is used
+#   else if run_storageclass is defined that is used
+#   else default storage class is used
+
 # label on pods
 db_mongodb_podlabel: "role=mongo"
 
