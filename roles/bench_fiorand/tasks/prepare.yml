@@ -6,6 +6,10 @@
     path: '{{ bench_fiorand_dir }}'
     state: directory
 
+- set_fact:
+    bench_fiorand_storageclass: '{{ run_storageclass }}'
+  when: bench_fiorand_storageclass is not defined and run_storageclass is defined
+
 - name: create pvc yaml from template
   template:
     src: '{{ role_path }}/templates/fiopvc.j2'

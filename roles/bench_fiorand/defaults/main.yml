@@ -13,6 +13,11 @@ bench_fiorand_dir: '{{ run_dir }}/{{ role_name }}'
 # namespace
 bench_fiorand_namespace: '{{ run_namespace }}'
 
+# bench_fiorand_storageclass: 
+#   if bench_fiorand_storageclass is defined that is used
+#   else if run_storageclass is defined that is used
+#   else default storage class is used
+
 # label on pods
 bench_fiorand_preppodlabel: "type=benchmark-prep-pod"
 bench_fiorand_podlabel: "type=benchmark-pod"
