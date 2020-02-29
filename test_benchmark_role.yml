@@ -3,20 +3,13 @@
 # quickly test a particular role
 
 - hosts: localhost
+  vars:
+    benchmark_role: bench_fiorand
+    run_dir: /tmp/run_ts
+    run_namespace: nm-kubuculum
+    bench_fiorand_storageclass: ocs-storagecluster-ceph-rbd
 
   tasks:
-
-  - name: set benchmark role to be tested 
-    set_fact:
-      benchmark_role: bench_fiorand
-
-  - name: set run directory
-    set_fact:
-      run_dir: /tmp/run_ts
-
-  - name: set run namespace 
-    set_fact:
-      run_namespace: nm-kubuculum
 
   - name: create namespace for run
     command: 'kubectl create namespace {{ run_namespace }}'

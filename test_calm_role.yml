@@ -3,20 +3,12 @@
 # quickly test a particular role
 
 - hosts: localhost
+  vars:
+    benchmark_role: calm_fioiops
+    run_dir: /tmp/run_ts
+    run_namespace: nm-kubuculum
 
   tasks:
-
-  - name: set calm role to be tested
-    set_fact:
-      calm_role: calm_fioiops
-
-  - name: set run directory
-    set_fact:
-      run_dir: /tmp/run_ts
-
-  - name: set namespace for run
-    set_fact:
-      run_namespace: nm-kubuculum
 
   - name: create namespace for run
     command: 'kubectl create namespace {{ run_namespace }}'

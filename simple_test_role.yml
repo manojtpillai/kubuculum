@@ -3,7 +3,6 @@
 # quickly test a particular role
 
 - hosts: localhost
-
   vars:
     run_dir: "/tmp"
 
