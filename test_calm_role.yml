@@ -7,7 +7,7 @@
     calm_role: calm_fioiops
     run_dir: /tmp/run_ts
     run_namespace: nm-kubuculum
-    calm_fioiops_storageclass: ocs-storagecluster-ceph-rbd
+    run_storageclass: ocs-storagecluster-ceph-rbd
 
   tasks:
 

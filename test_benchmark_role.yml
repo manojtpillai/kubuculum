@@ -7,7 +7,7 @@
     benchmark_role: bench_fioforsql
     run_dir: /tmp/run_ts
     run_namespace: nm-kubuculum
-    bench_fioforsql_storageclass: ocs-storagecluster-ceph-rbd
+    run_storageclass: ocs-storagecluster-ceph-rbd
 
   tasks:
 
