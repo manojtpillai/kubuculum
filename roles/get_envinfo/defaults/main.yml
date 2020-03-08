@@ -1,6 +1,0 @@
----
-
-# default namespace
-get_envinfo_cephnodelabel: "cluster.ocs.openshift.io/openshift-storage="
-
-...

@@ -1,10 +1,18 @@
 ---
 # tasks file for get_info
 
-- name: get node info 
-  shell: 'kubectl get nodes >> {{ run_dir }}/out.{{ role_name }}.txt'
+- set_fact:
+    get_envinfo_outfile: '{{ run_dir }}/out.{{ role_name }}.txt'
 
-- name: get ceph nodes
-  shell: 'echo "OCS nodes:" >> {{ run_dir }}/out.{{ role_name }}.txt; kubectl get nodes -l {{ get_envinfo_cephnodelabel }} >> {{ run_dir }}/out.{{ role_name }}.txt'
+- name: get node info 
+  shell: 'kubectl get nodes >> {{ get_envinfo_outfile }}'
+
+- include_role:
+    name: storage_ceph
+  vars:
+    action: get_info
+    storage_ceph_pdir: '{{ run_dir }}'
+    storage_ceph_nodesappendfile: '{{ get_envinfo_outfile }}'
+  when: ceph_benchrun is defined and ceph_benchrun
 
 ...

@@ -3,6 +3,9 @@
 # namespace
 storage_ceph_nm: "openshift-storage"
 
+# label on ocs nodes
+storage_ceph_nodelabel: "cluster.ocs.openshift.io/openshift-storage="
+
 # label on tools pod
 storage_ceph_toolspodlabel: "app=rook-ceph-tools"
 

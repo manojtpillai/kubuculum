@@ -1,0 +1,32 @@
+---
+
+# passed vars: storage_ceph_pdir and storage_ceph_nodesappendfile
+
+- name: get OCS nodes
+  shell: 'echo "OCS nodes:" >> {{ storage_ceph_nodesappendfile }}; kubectl get nodes -l {{ storage_ceph_nodelabel }} >> {{ storage_ceph_nodesappendfile }}'
+
+- set_fact: 
+    storage_ceph_dir: '{{ storage_ceph_pdir }}/{{ role_name }}'
+
+- name: create directory for storing output
+  file: 
+    path: '{{ storage_ceph_dir }}'
+    state: directory
+
+- name: get tools pod 
+  command: 'kubectl get pods -n {{ storage_ceph_nm }} -l {{ storage_ceph_toolspodlabel }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- debug: msg='rook-ceph-tools pod not found; will skip ceph commands'
+  when: podlist.stdout == ""
+
+- name: get ceph command outputs
+  block:
+  - shell: 'kubectl exec {{ podlist.stdout }} -n {{ storage_ceph_nm }} -- ceph status > {{ storage_ceph_dir }}/ceph_status.txt'
+  - shell: 'kubectl exec {{ podlist.stdout }} -n {{ storage_ceph_nm }} -- ceph df > {{ storage_ceph_dir }}/ceph_df.txt'
+  - shell: 'kubectl exec {{ podlist.stdout }} -n {{ storage_ceph_nm }} -- ceph osd dump > {{ storage_ceph_dir }}/ceph_osd_dump.txt'
+  - shell: 'kubectl exec {{ podlist.stdout }} -n {{ storage_ceph_nm }} -- ceph osd tree > {{ storage_ceph_dir }}/ceph_osd_tree.txt'
+  - shell: 'kubectl exec {{ podlist.stdout }} -n {{ storage_ceph_nm }} -- ceph pg dump > {{ storage_ceph_dir }}/ceph_pg_dump.txt'
+  when: podlist.stdout != ""
+
+...
