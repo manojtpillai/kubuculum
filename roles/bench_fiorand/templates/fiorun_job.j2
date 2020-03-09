@@ -61,6 +61,7 @@ spec:
             --output={{ bench_fiorand_podoutdir }}/fio.randomread.out.txt 
             ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomread.ls_l.post.txt
 
+{% if bench_fiorand_testrwrite %}
       - name: fio-randomwrite
         image: quay.io/mpillai/fio
         volumeMounts:
@@ -84,6 +85,7 @@ spec:
             --runtime={{ bench_fiorand_run_sec }} 
             --output={{ bench_fiorand_podoutdir }}/fio.randomwrite.out.txt 
             ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomwrite.ls_l.post.txt
+{% endif %}
 
       restartPolicy: Never
 ...
