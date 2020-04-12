@@ -60,4 +60,14 @@
   shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.start.ls_l.txt'
   with_items: "{{ podlist.stdout_lines }}"
 
+- name: fetch replication configuration 
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.conf()" > {{ db_mongodb_dir }}/{{ item }}/mongo.start.rs_conf.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+  when: db_mongodb_instancemode == "replicated"
+
+- name: fetch replication status 
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.status()" > {{ db_mongodb_dir }}/{{ item }}/mongo.start.rs_status.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+  when: db_mongodb_instancemode == "replicated"
+
 ...

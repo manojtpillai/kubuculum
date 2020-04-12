@@ -5,6 +5,11 @@
   command: 'kubectl get pods -l {{ db_mongodb_podlabel }} -n {{ db_mongodb_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
+- name: fetch replication status
+  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.status()" > {{ db_mongodb_dir }}/{{ item }}/mongo.rs_status.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+  when: db_mongodb_instancemode == "replicated"
+
 - name: fetch mongodb parameter settings
   shell: "kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval \"db.adminCommand( { getParameter : '*' } )\" > {{ db_mongodb_dir }}/{{ item }}/mongo.settings.txt"
   with_items: "{{ podlist.stdout_lines }}"
