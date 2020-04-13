@@ -11,11 +11,14 @@ crystal ball]
 This tool is run on a system that has kubectl set up to control a
 kubernetes cluster. The prerequisites for running the tool are:
 - A kubernetes cluster up and running.
-- The kubernetes cluster has a default StorageClass. This will be
-used by the tool for dynamically provisioning storage.
 - The system running the tool should have kubectl set up to
 work against said kubernetes cluster.
+- The kubernetes cluster has a default StorageClass. This will be
+used by the tool for dynamically provisioning storage.
+Alternatively, you can specify a StorageClass to use; see below.
 - The system running the tool should have ansible installed.
+passwordless ssh to localhost should work [try a simple command 
+like 'ssh localhost date' to test that it does].
 
 ### Get Started
 
@@ -37,6 +40,16 @@ variables and values in the inventory file. The sample inventory
 file has most of the variables you'll need listed, but commented
 out. So typically, it is just a matter of uncommenting the ones
 you need.
+
+For example, you can specify results directory, and the 
+StorageClass for dynamically provisioning storage using the 
+variables below:
+
+```
+run_basedir="/home/mpillai/runs" 
+run_storageclass="ocs-storagecluster-ceph-rbd"
+```
+
 
 ## Overview
 
