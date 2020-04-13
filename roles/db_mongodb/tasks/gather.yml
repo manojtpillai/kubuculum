@@ -10,17 +10,14 @@
   with_items: "{{ podlist.stdout_lines }}"
   when: db_mongodb_instancemode == "replicated"
 
-- name: fetch mongodb parameter settings
-  shell: "kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval \"db.adminCommand( { getParameter : '*' } )\" > {{ db_mongodb_dir }}/{{ item }}/mongo.settings.txt"
-  with_items: "{{ podlist.stdout_lines }}"
-
-- name: fetch df output from pod
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.df_h.txt'
-  with_items: "{{ podlist.stdout_lines }}"
-
-- name: fetch ls output from pod
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.ls_l.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+- name: gather relevant info
+  block:
+    - shell: "kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval \"db.adminCommand( { getParameter : '*' } )\" > {{ db_mongodb_dir }}/{{ item }}/mongo.settings.txt"
+      with_items: "{{ podlist.stdout_lines }}"
+    - shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.df_h.txt'
+      with_items: "{{ podlist.stdout_lines }}"
+    - shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.ls_l.txt'
+      with_items: "{{ podlist.stdout_lines }}"
 
 - name: get mongodb pod locations
   shell: 'kubectl get pods -l {{ db_mongodb_podlabel }} --namespace={{ db_mongodb_namespace }} -o wide >> {{ db_mongodb_pdir }}/out.{{ role_name }}.txt'

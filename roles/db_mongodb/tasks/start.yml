@@ -52,22 +52,19 @@
     state: directory
   with_items: "{{ podlist.stdout_lines }}"
 
-- name: fetch df output from pod
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.start.df_h.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+- name: fetch df and ls at start
+  block:
+    - shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- df -h > {{ db_mongodb_dir }}/{{ item }}/mongo.start.df_h.txt'
+      with_items: "{{ podlist.stdout_lines }}"
+    - shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.start.ls_l.txt'
+      with_items: "{{ podlist.stdout_lines }}"
 
-- name: fetch ls output from pod
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- ls -l /data/db > {{ db_mongodb_dir }}/{{ item }}/mongo.start.ls_l.txt'
-  with_items: "{{ podlist.stdout_lines }}"
-
-- name: fetch replication configuration 
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.conf()" > {{ db_mongodb_dir }}/{{ item }}/mongo.start.rs_conf.txt'
-  with_items: "{{ podlist.stdout_lines }}"
-  when: db_mongodb_instancemode == "replicated"
-
-- name: fetch replication status 
-  shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.status()" > {{ db_mongodb_dir }}/{{ item }}/mongo.start.rs_status.txt'
-  with_items: "{{ podlist.stdout_lines }}"
+- name: fetch replication configuration  and status
+  block:
+    - shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.conf()" > {{ db_mongodb_dir }}/{{ item }}/mongo.start.rs_conf.txt'
+      with_items: "{{ podlist.stdout_lines }}"
+    - shell: 'kubectl exec {{ item }} -c {{ db_mongodb_container }} -n {{ db_mongodb_namespace }} -- mongo admin --eval "rs.status()" > {{ db_mongodb_dir }}/{{ item }}/mongo.start.rs_status.txt'
+      with_items: "{{ podlist.stdout_lines }}"
   when: db_mongodb_instancemode == "replicated"
 
 ...
