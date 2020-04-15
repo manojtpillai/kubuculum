@@ -17,6 +17,9 @@ bench_ycsb_namespace: '{{ run_namespace }}'
 bench_ycsb_preppodlabel: "type=benchmark-prep-pod"
 bench_ycsb_podlabel: "type=benchmark-pod"
 
+# for nodeSelector; see example below
+# bench_ycsb_nodelabel="node-role.kubernetes.io/worker=''"
+
 # directory where output files exist in pods/containers
 bench_ycsb_podoutdir: /benchout
 

@@ -9,6 +9,11 @@ spec:
       labels:
         type: benchmark-prep-pod
     spec:
+{% if bench_ycsb_nodelabel is defined %}
+      nodeSelector:
+        {{ bench_ycsb_nodelabel.split("=")[0] }}: {{ bench_ycsb_nodelabel.split("=")[1] }}
+{% endif %}
+
       volumes:
       - name: output-volume
         emptyDir: {}
