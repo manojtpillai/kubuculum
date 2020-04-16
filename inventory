@@ -85,7 +85,7 @@ dropcaches_postprepare=True
 
 # db_mongodb specific options
 # db_mongodb_instancemode="standalone"
-# db_mongodb_pvcsize_replicas=3
+# db_mongodb_replicas=3
 # db_mongodb_pvcsize_gb=300
 
 # bench_custompause specific options
