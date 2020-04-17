@@ -39,8 +39,9 @@ bench_fiorand_maxtime_sec: 36000
 # variables likely to be specific to this benchmark
 #
 
-# allow random write test to be optional
-bench_fiorand_testrwrite: True
+# allow tests to be optional
+bench_fiorand_testread: True
+bench_fiorand_testwrite: True
 
 # pvc size; limit on data set size
 bench_fiorand_pvcsize_gb: 8

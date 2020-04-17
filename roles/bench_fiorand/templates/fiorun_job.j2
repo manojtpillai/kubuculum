@@ -32,6 +32,8 @@ spec:
         args: ["-c", "touch {{ bench_fiorand_podoutdir }}/benchmark.run.completed.txt; sleep 3600"]
 
       initContainers:
+
+{% if bench_fiorand_testread %}
       - name: fio-randomread
         image: quay.io/mpillai/fio
         volumeMounts:
@@ -60,8 +62,9 @@ spec:
             --runtime={{ bench_fiorand_run_sec }} 
             --output={{ bench_fiorand_podoutdir }}/fio.randomread.out.txt 
             ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomread.ls_l.post.txt
+{% endif %}
 
-{% if bench_fiorand_testrwrite %}
+{% if bench_fiorand_testwrite %}
       - name: fio-randomwrite
         image: quay.io/mpillai/fio
         volumeMounts:
