@@ -1,7 +1,7 @@
 ---
 
 #
-# most roles have variables similar to the below
+# variables similar to the below are likely to be present in different bench roles
 #
 
 # output directory for run
@@ -25,6 +25,7 @@ bench_fiorand_podlabel: "type=benchmark-pod"
 # for nodeSelector
 # bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
 
+
 # directory where output files exist in pods/containers
 bench_fiorand_podoutdir: /benchout
 
@@ -42,14 +43,14 @@ bench_fiorand_maxtime_sec: 36000
 bench_fiorand_testread: True
 bench_fiorand_testwrite: True
 
-# pvc size will be this multiple of data set size
-bench_fiorand_pvc_scalefactor: 2
+# pvc size; limit on data set size
+bench_fiorand_pvcsize_gb: 8
 
-# block size for initial write
-bench_fiorand_sbs_kb: 1024
+# block size for initial write`
+bench_fiorand_sbs_kb: 128
 
 # block size for random IO
-bench_fiorand_bs_kb: 8
+bench_fiorand_bs_kb: 4
 
 # file size per job
 bench_fiorand_fsz_gb: 2
@@ -62,8 +63,5 @@ bench_fiorand_iodepth: 32
 
 # run time for time based job
 bench_fiorand_run_sec: 60
-
-# number of fio instances
-bench_fiorand_ninstances: 1
 
 ...

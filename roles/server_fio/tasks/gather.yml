@@ -1,0 +1,20 @@
+---
+
+- name: get pod names
+  command: 'kubectl get pods -l {{ server_fio_podlabel }} -n {{ server_fio_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+
+- name: create per-pod directory for storing output
+  file: 
+    path: '{{ server_fio_dir }}/{{ item }}'
+    state: directory
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch ls from pods
+  shell: 'kubectl exec {{ item }} -n {{ server_fio_namespace }} -- ls -l > {{ server_fio_dir }}/{{ item }}/ls_l.txt'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: fetch pod locations
+  shell: 'kubectl get pods -l {{ server_fio_podlabel }} -n {{ server_fio_namespace }} -o wide >> {{ server_fio_pdir }}/out.{{ role_name }}.txt'
+
+...

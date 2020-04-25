@@ -1,0 +1,34 @@
+---
+
+- name: create directory for storing role output
+  file:
+    path: '{{ server_fio_dir }}'
+    state: directory
+
+- set_fact:
+    server_fio_storageclass: '{{ run_storageclass }}'
+  when: server_fio_storageclass is not defined and run_storageclass is defined
+
+- name: create yaml file from template
+  template:
+    src: '{{ role_path }}/templates/fioserver_statefulset.j2'
+    dest: '{{ server_fio_dir }}/fioserver_statefulset.yaml'
+
+- name: create fio server statefulset
+  command: 'kubectl create -f {{ server_fio_dir }}/fioserver_statefulset.yaml -n {{ server_fio_namespace }}'
+
+- name: get all pod names
+  command: 'kubectl get pods -l {{ server_fio_podlabel }} -n {{ server_fio_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+  until: podlist.stdout_lines|length == server_fio_nservers
+  retries: 5
+  delay: 60
+
+- name: wait for pods to be ready
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} -n {{ server_fio_namespace }} --timeout={{ server_fio_wait_sec }}s'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- set_fact:
+    server_fio_serverist: "{{ podlist.stdout_lines|join('.server-fio,') + '.server-fio' }}"
+
+...

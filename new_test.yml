@@ -1,0 +1,37 @@
+
+---
+# quickly test a particular role
+
+- hosts: localhost
+  vars:
+    benchmark_role: bench_distfiorand
+    run_dir: /tmp/run_ts
+    run_namespace: nm-kubuculum
+    run_storageclass: ocs-storagecluster-ceph-rbd
+    bench_fiorand_ninstances: 2
+
+  tasks:
+
+  - name: create namespace for run
+    command: 'kubectl create namespace {{ run_namespace }}'
+
+  - name: create run directory
+    local_action:
+      module: file
+      path: '{{ run_dir }}'
+      state: directory
+
+  - include_role:
+      name: '{{ benchmark_role }}'
+    vars:
+      benchmark_mode: prepare
+
+  - include_role:
+      name: '{{ benchmark_role }}'
+    vars:
+      benchmark_mode: cleanup
+
+  - name: delete run namespace 
+    command: 'kubectl delete namespace {{ run_namespace }}'
+
+...

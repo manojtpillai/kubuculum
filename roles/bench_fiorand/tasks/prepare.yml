@@ -1,37 +1,73 @@
 ---
-# tasks file for prepare phase
+
+- set_fact:
+    bench_fiorand_storageclass: '{{ run_storageclass }}'
+  when: bench_fiorand_storageclass is not defined and run_storageclass is defined
+
+- set_fact:
+    server_fio_storageclass: '{{ bench_fiorand_storageclass }}'
+  when: bench_fiorand_storageclass is defined
+
+- set_fact:
+    server_fio_nodelabel: '{{ bench_fiorand_servernodelabel }}'
+  when: bench_fiorand_servernodelabel is defined
+
+- set_fact:
+    bench_fiorand_spacereq_gb: 8
+
+- include_role:
+    name: server_fio
+  vars:
+    server_mode: start
+    server_fio_namespace: '{{ bench_fiorand_namespace }}'
+    server_fio_nservers: '{{ bench_fiorand_ninstances }}'
+    server_fio_pvcsize_gb: '{{ bench_fiorand_spacereq_gb }}'
+
+- set_fact:
+    # bench_fiorand_datadir: '{{ server_fio_datadir }}'
+    bench_fiorand_datadir: "/dataset"
+    # bench_fiorand_serverlist: '{{ server_fio_serverlist.split(",") }}'
+    # bench_fiorand_connstr: "server-fio-0.server-fio"
 
 - name: create directory for storing role output
   file:
     path: '{{ bench_fiorand_dir }}'
     state: directory
 
-- set_fact:
-    bench_fiorand_storageclass: '{{ run_storageclass }}'
-  when: bench_fiorand_storageclass is not defined and run_storageclass is defined
-
-- name: create pvc yaml from template
-  template:
-    src: '{{ role_path }}/templates/fiopvc.j2'
-    dest: '{{ bench_fiorand_dir }}/fiopvc.yaml'
-
-- name: create job file from template
+- name: create job yaml from template
   template:
     src: '{{ role_path }}/templates/fioprep_job.j2'
     dest: '{{ bench_fiorand_dir }}/fioprep_job.yaml'
 
-- name: create pvc
-  command: 'kubectl create -f {{ bench_fiorand_dir }}/fiopvc.yaml -n {{ bench_fiorand_namespace }}'
+- name: create job file from template
+  template:
+    src: '{{ role_path }}/templates/jobfile.fioinit.j2'
+    dest: '{{ bench_fiorand_dir }}/jobfile.fioinit'
+
+- name: create hosts file from template
+  template:
+    src: '{{ role_path }}/templates/hostlist.j2'
+    dest: '{{ bench_fiorand_dir }}/hostlist'
 
 - name: create fioprep pod
   command: 'kubectl create -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
 
+# MTP_TODO
+- name: brief pause
+  command: 'sleep 30'
+
 - name: get pod name
-  command: 'kubectl get pods -l {{ bench_fiorand_preppodlabel }} --namespace={{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  command: 'kubectl get pods -l {{ bench_fiorand_preppodlabel }} -n {{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
+- name: copy jobfile to pod 
+  command: 'kubectl cp {{ bench_fiorand_dir }}/jobfile.fioinit {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} -c fio-checkfiles'
+
+- name: copy hostlist to pod 
+  command: 'kubectl cp {{ bench_fiorand_dir }}/hostlist {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} -c fio-checkfiles'
+
 - name: wait for fio prepare phase completion
-  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} --namespace={{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
+  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} -n {{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
 
 - name: create directory for storing fioprep pod output
   file: 
