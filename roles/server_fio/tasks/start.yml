@@ -31,5 +31,6 @@
 
 - set_fact:
     server_fio_serverlist: "{{ podlist.stdout_lines|join('.server-fio,') + '.server-fio' }}"
+    server_fio_datadir: "{{ server_fio_datadir }}" # weird! 
 
 ...

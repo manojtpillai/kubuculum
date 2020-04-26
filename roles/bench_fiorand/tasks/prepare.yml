@@ -25,10 +25,8 @@
     server_fio_pvcsize_gb: '{{ bench_fiorand_spacereq_gb }}'
 
 - set_fact:
-    # bench_fiorand_datadir: '{{ server_fio_datadir }}'
-    bench_fiorand_datadir: "/dataset"
+    bench_fiorand_datadir: '{{ server_fio_datadir }}'
     bench_fiorand_serverlist: '{{ server_fio_serverlist.split(",") }}'
-    # bench_fiorand_connstr: "server-fio-0.server-fio"
 
 - name: create directory for storing role output
   file:
@@ -39,11 +37,6 @@
   template:
     src: '{{ role_path }}/templates/fioprep_job.j2'
     dest: '{{ bench_fiorand_dir }}/fioprep_job.yaml'
-
-- name: create hostsfile yaml from template
-  template:
-    src: '{{ role_path }}/templates/hostlist.j2'
-    dest: '{{ bench_fiorand_dir }}/hostlist'
 
 - name: create fioprep pod
   command: 'kubectl create -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
