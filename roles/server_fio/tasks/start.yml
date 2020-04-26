@@ -21,14 +21,15 @@
   command: 'kubectl get pods -l {{ server_fio_podlabel }} -n {{ server_fio_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
   until: podlist.stdout_lines|length == server_fio_nservers
-  retries: 5
-  delay: 60
+# choose retries based on number of servers
+  retries: '{{ server_fio_nservers *4 }}'
+  delay: 30
 
 - name: wait for pods to be ready
   command: 'kubectl wait --for=condition=Ready pod/{{ item }} -n {{ server_fio_namespace }} --timeout={{ server_fio_wait_sec }}s'
   with_items: "{{ podlist.stdout_lines }}"
 
 - set_fact:
-    server_fio_serverist: "{{ podlist.stdout_lines|join('.server-fio,') + '.server-fio' }}"
+    server_fio_serverlist: "{{ podlist.stdout_lines|join('.server-fio,') + '.server-fio' }}"
 
 ...

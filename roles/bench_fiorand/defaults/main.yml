@@ -42,8 +42,9 @@ bench_fiorand_maxtime_sec: 36000
 bench_fiorand_testread: True
 bench_fiorand_testwrite: True
 
-# pvc size will be this multiple of data set size
-bench_fiorand_pvc_scalefactor: 2
+# calculate pvc size instead of relying on user input
+bench_fiorand_pvc_scalefactor: 1 # multiply required data set size by this 
+bench_fiorand_pvc_extra_gb: 32 # add this extra space
 
 # block size for initial write
 bench_fiorand_sbs_kb: 1024

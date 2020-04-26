@@ -11,7 +11,7 @@
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: fetch ls from pods
-  shell: 'kubectl exec {{ item }} -n {{ server_fio_namespace }} -- ls -l > {{ server_fio_dir }}/{{ item }}/ls_l.txt'
+  shell: 'kubectl exec {{ item }} -n {{ server_fio_namespace }} -- ls -l {{ server_fio_datadir }} > {{ server_fio_dir }}/{{ item }}/ls_l.txt'
   with_items: "{{ podlist.stdout_lines }}"
 
 - name: fetch pod locations

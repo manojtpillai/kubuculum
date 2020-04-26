@@ -12,8 +12,9 @@
     server_fio_nodelabel: '{{ bench_fiorand_servernodelabel }}'
   when: bench_fiorand_servernodelabel is defined
 
+# calculate per-server space requirement
 - set_fact:
-    bench_fiorand_spacereq_gb: 8
+    bench_fiorand_spacereq_gb: "{{ bench_fiorand_pvc_scalefactor * bench_fiorand_njobs * bench_fiorand_fsz_gb + bench_fiorand_pvc_extra_gb }}"
 
 - include_role:
     name: server_fio
@@ -26,7 +27,7 @@
 - set_fact:
     # bench_fiorand_datadir: '{{ server_fio_datadir }}'
     bench_fiorand_datadir: "/dataset"
-    # bench_fiorand_serverlist: '{{ server_fio_serverlist.split(",") }}'
+    bench_fiorand_serverlist: '{{ server_fio_serverlist.split(",") }}'
     # bench_fiorand_connstr: "server-fio-0.server-fio"
 
 - name: create directory for storing role output
@@ -39,12 +40,7 @@
     src: '{{ role_path }}/templates/fioprep_job.j2'
     dest: '{{ bench_fiorand_dir }}/fioprep_job.yaml'
 
-- name: create job file from template
-  template:
-    src: '{{ role_path }}/templates/jobfile.fioinit.j2'
-    dest: '{{ bench_fiorand_dir }}/jobfile.fioinit'
-
-- name: create hosts file from template
+- name: create hostsfile yaml from template
   template:
     src: '{{ role_path }}/templates/hostlist.j2'
     dest: '{{ bench_fiorand_dir }}/hostlist'
@@ -52,19 +48,9 @@
 - name: create fioprep pod
   command: 'kubectl create -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
 
-# MTP_TODO
-- name: brief pause
-  command: 'sleep 30'
-
 - name: get pod name
   command: 'kubectl get pods -l {{ bench_fiorand_preppodlabel }} -n {{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
-
-- name: copy jobfile to pod 
-  command: 'kubectl cp {{ bench_fiorand_dir }}/jobfile.fioinit {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} -c fio-checkfiles'
-
-- name: copy hostlist to pod 
-  command: 'kubectl cp {{ bench_fiorand_dir }}/hostlist {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} -c fio-checkfiles'
 
 - name: wait for fio prepare phase completion
   command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} -n {{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
@@ -76,6 +62,11 @@
 
 - name: fetch output from fioprep pod
   command: 'kubectl cp {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} {{ bench_fiorand_dir }}/prepare_{{ podlist.stdout }}'
+
+- include_role:
+    name: server_fio
+  vars:
+    server_mode: gather
 
 - name: delete fioprep pod
   command: 'kubectl delete -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
