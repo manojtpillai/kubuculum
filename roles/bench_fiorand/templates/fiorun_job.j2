@@ -65,6 +65,7 @@ spec:
             bs={{ bench_fiorand_bs_kb }}k
             filesize={{ bench_fiorand_fsz_gb }}g
             numjobs={{ bench_fiorand_njobs }}
+            EOF
 
       - name: fio-randomread
         image: quay.io/mpillai/fio
@@ -105,6 +106,7 @@ spec:
             bs={{ bench_fiorand_bs_kb }}k
             filesize={{ bench_fiorand_fsz_gb }}g
             numjobs={{ bench_fiorand_njobs }}
+            EOF
 
       - name: fio-randomwrite
         image: quay.io/mpillai/fio
