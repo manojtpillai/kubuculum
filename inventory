@@ -64,11 +64,14 @@ dropcaches_postprepare=True
 # bench_fioseq_njobs=64
 
 # bench_fiorand specific options
-# bench_fiorand_pvcsize_gb=200
+# bench_fiorand_ninstances=3
 # bench_fiorand_fsz_gb=32
 # bench_fiorand_njobs=4
 # bench_fiorand_bs_kb=8
+# bench_fiorand_iodepth=32
+# bench_fiorand_run_sec=120
 # bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
+# bench_fiorand_servernodelabel="node-role.kubernetes.io/worker=''"
 
 # bench_fioforsql specific options
 # bench_fioforsql_pvcsize_gb=200
