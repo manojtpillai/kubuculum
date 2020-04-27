@@ -1,8 +1,13 @@
 ---
 
+- name: delete fio pvc
+  command: 'kubectl delete -f {{ bench_fiorand_dir }}/fiopvc.yaml -n {{ bench_fiorand_namespace }}'
+  when: not bench_fiorand_distributed
+
 - include_role:
     name: server_fio
   vars:
     server_mode: stop
+  when: bench_fiorand_distributed
 
 ...

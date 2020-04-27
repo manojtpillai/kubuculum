@@ -23,6 +23,13 @@
 - name: fetch output from fiorun pod
   command: 'kubectl cp {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} {{ bench_fiorand_dir }}/{{ podlist.stdout }}'
 
+- name: gather relevant info
+  block:
+    - shell: "kubectl exec {{ podlist.stdout }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- df -h > {{ bench_fiorand_dir }}/{{ podlist.stdout }}/df_h.txt"
+    - shell: "kubectl exec {{ podlist.stdout }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- mount > {{ bench_fiorand_dir }}/{{ podlist.stdout }}/mount.txt"
+    - shell: "kubectl exec {{ podlist.stdout }} -c {{ bench_fiorand_container }} -n {{ bench_fiorand_namespace }} -- ls -l {{ bench_fiorand_datadir }} > {{ bench_fiorand_dir }}/{{ podlist.stdout }}/ls_l.txt"
+  when: not bench_fiorand_distributed
+
 - name: get fio pod location
   shell: 'kubectl get pods -l {{ bench_fiorand_podlabel }} -n {{ bench_fiorand_namespace }} -o wide >> {{ bench_fiorand_pdir }}/out.{{ role_name }}.txt'
 

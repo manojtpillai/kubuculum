@@ -6,11 +6,11 @@
 
 - set_fact:
     server_fio_storageclass: '{{ bench_fiorand_storageclass }}'
-  when: bench_fiorand_storageclass is defined
+  when: bench_fiorand_distributed and bench_fiorand_storageclass is defined
 
 - set_fact:
     server_fio_nodelabel: '{{ bench_fiorand_servernodelabel }}'
-  when: bench_fiorand_servernodelabel is defined
+  when: bench_fiorand_distributed and bench_fiorand_servernodelabel is defined
 
 # calculate per-server space requirement
 - set_fact:
@@ -23,20 +23,32 @@
     server_fio_namespace: '{{ bench_fiorand_namespace }}'
     server_fio_nservers: '{{ bench_fiorand_ninstances }}'
     server_fio_pvcsize_gb: '{{ bench_fiorand_spacereq_gb }}'
+  when: bench_fiorand_distributed
 
 - set_fact:
     bench_fiorand_datadir: '{{ server_fio_datadir }}'
     bench_fiorand_serverlist: '{{ server_fio_serverlist.split(",") }}'
+  when: bench_fiorand_distributed
 
 - name: create directory for storing role output
   file:
     path: '{{ bench_fiorand_dir }}'
     state: directory
 
+- name: create pvc yaml from template
+  template:
+    src: '{{ role_path }}/templates/fiopvc.j2'
+    dest: '{{ bench_fiorand_dir }}/fiopvc.yaml'
+  when: not bench_fiorand_distributed
+
 - name: create job yaml from template
   template:
     src: '{{ role_path }}/templates/fioprep_job.j2'
     dest: '{{ bench_fiorand_dir }}/fioprep_job.yaml'
+
+- name: create pvc
+  command: 'kubectl create -f {{ bench_fiorand_dir }}/fiopvc.yaml -n {{ bench_fiorand_namespace }}'
+  when: not bench_fiorand_distributed
 
 - name: create fioprep pod
   command: 'kubectl create -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
@@ -58,4 +70,5 @@
 
 - name: delete fioprep pod
   command: 'kubectl delete -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
+
 ...

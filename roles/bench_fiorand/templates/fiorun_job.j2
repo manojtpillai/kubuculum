@@ -16,6 +16,11 @@ spec:
       volumes:
       - name: output-volume
         emptyDir: {}
+{% if not bench_fiorand_distributed %}
+      - name: fio-pv
+        persistentVolumeClaim:
+          claimName: fio-pv-claim
+{% endif %}
 
       containers:
       - name: benchmark-complete
@@ -23,11 +28,16 @@ spec:
         volumeMounts:
           - mountPath: {{ bench_fiorand_podoutdir }}
             name: output-volume
+{% if not bench_fiorand_distributed %}
+          - mountPath: {{ bench_fiorand_datadir }}
+            name: fio-pv
+{% endif %}
         command: ["/bin/sh"]
         args: ["-c", "touch {{ bench_fiorand_podoutdir }}/benchmark.run.completed.txt; sleep 3600"]
 
       initContainers:
 
+{% if bench_fiorand_distributed %}
       - name: fio-genhosts
         image: quay.io/mpillai/fio
         volumeMounts:
@@ -41,6 +51,7 @@ spec:
 {% for ii in range(bench_fiorand_ninstances) %}
             ; echo {{ bench_fiorand_serverlist[ii] }} >> {{ bench_fiorand_podoutdir }}/hostlist
 {% endfor %}
+{% endif %}
 
 {% if bench_fiorand_testread %}
 
@@ -58,6 +69,7 @@ spec:
             rw=randread
             ioengine=libaio
             direct=1
+            iodepth={{ bench_fiorand_iodepth }}
             time_based=1
             runtime={{ bench_fiorand_run_sec }}
             directory={{ bench_fiorand_datadir }}
@@ -72,13 +84,19 @@ spec:
         volumeMounts:
           - mountPath: {{ bench_fiorand_podoutdir }}
             name: output-volume
+{% if not bench_fiorand_distributed %}
+          - mountPath: {{ bench_fiorand_datadir }}
+            name: fio-pv
+{% endif %}
         command: ["/bin/sh"]
         args:
           - "-c"
           - >
             fio
             --output={{ bench_fiorand_podoutdir }}/fio.randread.run.txt
+{% if bench_fiorand_distributed %}
             --client={{ bench_fiorand_podoutdir }}/hostlist
+{% endif %}
             {{ bench_fiorand_podoutdir }}/jobfile.fiorandread
 
 {% endif %}
@@ -99,6 +117,7 @@ spec:
             rw=randwrite
             ioengine=libaio
             direct=1
+            iodepth={{ bench_fiorand_iodepth }}
             time_based=1
             runtime={{ bench_fiorand_run_sec }}
             directory={{ bench_fiorand_datadir }}
@@ -113,13 +132,19 @@ spec:
         volumeMounts:
           - mountPath: {{ bench_fiorand_podoutdir }}
             name: output-volume
+{% if not bench_fiorand_distributed %}
+          - mountPath: {{ bench_fiorand_datadir }}
+            name: fio-pv
+{% endif %}
         command: ["/bin/sh"]
         args:
           - "-c"
           - >
             fio
             --output={{ bench_fiorand_podoutdir }}/fio.randwrite.run.txt
+{% if bench_fiorand_distributed %}
             --client={{ bench_fiorand_podoutdir }}/hostlist
+{% endif %}
             {{ bench_fiorand_podoutdir }}/jobfile.fiorandwrite
 
 {% endif %}
