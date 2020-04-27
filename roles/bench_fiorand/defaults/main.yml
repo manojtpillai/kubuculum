@@ -46,7 +46,7 @@ bench_fiorand_testread: True
 bench_fiorand_testwrite: True
 
 # calculate pvc size instead of relying on user input
-bench_fiorand_pvc_scalefactor: 1 # multiply required data set size by this 
+bench_fiorand_pvc_scalefactor: 2 # multiply required data set size by this 
 bench_fiorand_pvc_extra_gb: 32 # add this extra space
 
 # block size for initial write
