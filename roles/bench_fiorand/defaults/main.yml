@@ -45,7 +45,7 @@ bench_fiorand_maxtime_sec: 36000
 #
 
 # mode: is this fio in distributed mode, aka client-server mode
-bench_fiorand_distributed: False
+bench_fiorand_distributed: True
 
 # allow tests to be optional
 bench_fiorand_testread: True
