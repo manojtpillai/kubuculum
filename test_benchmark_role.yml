@@ -8,7 +8,7 @@
     run_dir: /tmp/run_ts
     run_namespace: nm-kubuculum
     run_storageclass: ocs-storagecluster-ceph-rbd
-    bench_fiorand_ninstances: 1
+    bench_fiorand_ninstances: 3
 
   tasks:
 
