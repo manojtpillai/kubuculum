@@ -22,8 +22,11 @@ bench_fiorand_namespace: '{{ run_namespace }}'
 bench_fiorand_preppodlabel: "type=benchmark-prep-pod"
 bench_fiorand_podlabel: "type=benchmark-pod"
 
-# for nodeSelector
+# nodeSelector, for fio client pod
 # bench_fiorand_nodelabel="node-role.kubernetes.io/worker=''"
+
+# nodeSelector, for fio server pods
+# bench_fiorand_servernodelabel="node-role.kubernetes.io/worker=''"
 
 # directory where output files exist in pods/containers
 bench_fiorand_podoutdir: /benchout
