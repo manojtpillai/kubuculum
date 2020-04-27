@@ -51,18 +51,20 @@ spec:
         command: ["/bin/sh"]
         args:
           - "-c"
-          - >
-            echo [initwrite] > {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo rw=write >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo ioengine=sync >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo direct=0 >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo create_on_open=1 >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo end_fsync=1 >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo directory={{ bench_fiorand_datadir }} >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo filename_format='f.$jobnum.$filenum' >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo bs={{ bench_fiorand_sbs_kb }}k >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo filesize={{ bench_fiorand_fsz_gb }}g >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
-            ; echo numjobs={{ bench_fiorand_njobs }} >> {{ bench_fiorand_podoutdir }}/jobfile.fioinit
+          - |
+            cat > {{ bench_fiorand_podoutdir }}/jobfile.fioinit <<EOF
+            [initwrite]
+            rw=write 
+            ioengine=sync 
+            direct=0
+            create_on_open=1
+            end_fsync=1
+            directory={{ bench_fiorand_datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ bench_fiorand_sbs_kb }}k
+            filesize={{ bench_fiorand_fsz_gb }}g
+            numjobs={{ bench_fiorand_njobs }}
+            EOF
 
       - name: fio-initwrite
         image: quay.io/mpillai/fio
