@@ -56,11 +56,6 @@
 - name: fetch output from fioprep pod
   command: 'kubectl cp {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} {{ bench_fiorand_dir }}/prepare_{{ podlist.stdout }}'
 
-- include_role:
-    name: server_fio
-  vars:
-    server_mode: gather
-
 - name: delete fioprep pod
   command: 'kubectl delete -f {{ bench_fiorand_dir }}/fioprep_job.yaml -n {{ bench_fiorand_namespace }}'
 ...

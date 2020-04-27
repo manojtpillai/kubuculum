@@ -16,9 +16,6 @@ spec:
       volumes:
       - name: output-volume
         emptyDir: {}
-      - name: fio-pv
-        persistentVolumeClaim:
-          claimName: fio-pv-claim
 
       containers:
       - name: benchmark-complete
@@ -26,68 +23,103 @@ spec:
         volumeMounts:
           - mountPath: {{ bench_fiorand_podoutdir }}
             name: output-volume
-          - mountPath: /dataset
-            name: fio-pv
         command: ["/bin/sh"]
         args: ["-c", "touch {{ bench_fiorand_podoutdir }}/benchmark.run.completed.txt; sleep 3600"]
 
       initContainers:
 
+      - name: fio-genhosts
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            touch {{ bench_fiorand_podoutdir }}/hostlist
+{% for ii in range(bench_fiorand_ninstances) %}
+            ; echo {{ bench_fiorand_serverlist[ii] }} >> {{ bench_fiorand_podoutdir }}/hostlist
+{% endfor %}
+
 {% if bench_fiorand_testread %}
+
+      - name: fio-genrreadjob
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ bench_fiorand_podoutdir }}/jobfile.fiorandread <<EOF
+            [randomread]
+            rw=randread
+            ioengine=libaio
+            direct=1
+            time_based=1
+            runtime={{ bench_fiorand_run_sec }}
+            directory={{ bench_fiorand_datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ bench_fiorand_bs_kb }}k
+            filesize={{ bench_fiorand_fsz_gb }}g
+            numjobs={{ bench_fiorand_njobs }}
+
       - name: fio-randomread
         image: quay.io/mpillai/fio
         volumeMounts:
           - mountPath: {{ bench_fiorand_podoutdir }}
             name: output-volume
-          - mountPath: /dataset
-            name: fio-pv
         command: ["/bin/sh"]
-{# 
-        seeing some mount-time I/O activity; added sleep to demarcate run phase 
-#}
         args:
-          - "-c" 
-          - > 
-            sleep 60
-            ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomread.ls_l.pre.txt
-            ; fio --name=randomread --rw=randread 
-            --ioengine=libaio --direct=1 
-            --time_based=1 
-            --directory=/dataset 
-            --filename_format='f.$jobnum.$filenum'
-            --iodepth={{ bench_fiorand_iodepth }} 
-            --bs={{ bench_fiorand_bs_kb }}k 
-            --filesize={{ bench_fiorand_fsz_gb }}g 
-            --numjobs={{ bench_fiorand_njobs }} 
-            --runtime={{ bench_fiorand_run_sec }} 
-            --output={{ bench_fiorand_podoutdir }}/fio.randomread.out.txt 
-            ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomread.ls_l.post.txt
+          - "-c"
+          - >
+            fio
+            --output={{ bench_fiorand_podoutdir }}/fio.randread.run.txt
+            --client={{ bench_fiorand_podoutdir }}/hostlist
+            {{ bench_fiorand_podoutdir }}/jobfile.fiorandread
+
 {% endif %}
 
 {% if bench_fiorand_testwrite %}
+
+      - name: fio-genrwritejob
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ bench_fiorand_podoutdir }}/jobfile.fiorandwrite <<EOF
+            [randomwrite]
+            rw=randwrite
+            ioengine=libaio
+            direct=1
+            time_based=1
+            runtime={{ bench_fiorand_run_sec }}
+            directory={{ bench_fiorand_datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ bench_fiorand_bs_kb }}k
+            filesize={{ bench_fiorand_fsz_gb }}g
+            numjobs={{ bench_fiorand_njobs }}
+
       - name: fio-randomwrite
         image: quay.io/mpillai/fio
         volumeMounts:
           - mountPath: {{ bench_fiorand_podoutdir }}
             name: output-volume
-          - mountPath: /dataset
-            name: fio-pv
         command: ["/bin/sh"]
         args:
-          - "-c" 
-          - > 
-            fio --name=randomwrite --rw=randwrite 
-            --ioengine=libaio --direct=1 
-            --time_based=1 
-            --directory=/dataset 
-            --filename_format='f.$jobnum.$filenum'
-            --iodepth={{ bench_fiorand_iodepth }} 
-            --bs={{ bench_fiorand_bs_kb }}k 
-            --filesize={{ bench_fiorand_fsz_gb }}g 
-            --numjobs={{ bench_fiorand_njobs }} 
-            --runtime={{ bench_fiorand_run_sec }} 
-            --output={{ bench_fiorand_podoutdir }}/fio.randomwrite.out.txt 
-            ; ls -l /dataset > {{ bench_fiorand_podoutdir }}/fio.randomwrite.ls_l.post.txt
+          - "-c"
+          - >
+            fio
+            --output={{ bench_fiorand_podoutdir }}/fio.randwrite.run.txt
+            --client={{ bench_fiorand_podoutdir }}/hostlist
+            {{ bench_fiorand_podoutdir }}/jobfile.fiorandwrite
+
 {% endif %}
 
       restartPolicy: Never

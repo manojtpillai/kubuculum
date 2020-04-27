@@ -1,5 +1,6 @@
 ---
-- name: create fiorun job file from template
+
+- name: create job yaml from template
   template:
     src: '{{ role_path }}/templates/fiorun_job.j2'
     dest: '{{ bench_fiorand_dir }}/fiorun_job.yaml'
@@ -7,11 +8,25 @@
 - name: create fiorun pod
   command: 'kubectl create -f {{ bench_fiorand_dir }}/fiorun_job.yaml -n {{ bench_fiorand_namespace }}'
 
-- name: get fio pod name
-  command: 'kubectl get pods -l {{ bench_fiorand_podlabel }} --namespace={{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
+- name: get pod name
+  command: 'kubectl get pods -l {{ bench_fiorand_podlabel }} -n {{ bench_fiorand_namespace }} --no-headers -o custom-columns=":metadata.name"'
   register: podlist
 
-- name: wait for fio test completion
-  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} --namespace={{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
+- name: wait for test completion
+  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} -n {{ bench_fiorand_namespace }} --timeout={{ bench_fiorand_maxtime_sec }}s'
+
+- name: create directory for storing pod output
+  file: 
+    path: '{{ bench_fiorand_dir }}/{{ podlist.stdout }}'
+    state: directory
+
+- name: fetch output from fiorun pod
+  command: 'kubectl cp {{ bench_fiorand_namespace }}/{{ podlist.stdout }}:{{ bench_fiorand_podoutdir }} {{ bench_fiorand_dir }}/{{ podlist.stdout }}'
+
+- name: get fio pod location
+  shell: 'kubectl get pods -l {{ bench_fiorand_podlabel }} -n {{ bench_fiorand_namespace }} -o wide >> {{ bench_fiorand_pdir }}/out.{{ role_name }}.txt'
+
+- name: delete fiorun pod
+  command: 'kubectl delete -f {{ bench_fiorand_dir }}/fiorun_job.yaml -n {{ bench_fiorand_namespace }}'
 
 ...
