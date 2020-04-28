@@ -58,6 +58,7 @@ spec:
             rw=randread
             ioengine=libaio
             direct=1
+            iodepth={{ bench_fiorand_iodepth }}
             time_based=1
             runtime={{ bench_fiorand_run_sec }}
             directory={{ bench_fiorand_datadir }}
@@ -99,6 +100,7 @@ spec:
             rw=randwrite
             ioengine=libaio
             direct=1
+            iodepth={{ bench_fiorand_iodepth }}
             time_based=1
             runtime={{ bench_fiorand_run_sec }}
             directory={{ bench_fiorand_datadir }}
