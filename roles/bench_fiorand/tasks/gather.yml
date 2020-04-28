@@ -4,6 +4,5 @@
     name: server_fio
   vars:
     server_mode: gather
-  when: bench_fiorand_distributed
 
 ...
