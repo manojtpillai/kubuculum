@@ -14,7 +14,8 @@
 
 # calculate per-server space requirement
 - set_fact:
-    bench_fiorand_spacereq_gb: "{{ bench_fiorand_pvc_scalefactor * bench_fiorand_njobs * bench_fiorand_fsz_gb + bench_fiorand_pvc_extra_gb }}"
+    bench_fiorand_pvcsz_req_gb: "{{ bench_fiorand_pvcsz_scalefactor * bench_fiorand_njobs * bench_fiorand_fsz_gb + bench_fiorand_pvcsz_extra_gb }}"
+  when: bench_fiorand_pvcsz_req_gb is not defined
 
 - include_role:
     name: server_fio
@@ -22,7 +23,7 @@
     server_mode: start
     server_fio_namespace: '{{ bench_fiorand_namespace }}'
     server_fio_nservers: '{{ bench_fiorand_ninstances }}'
-    server_fio_pvcsize_gb: '{{ bench_fiorand_spacereq_gb }}'
+    server_fio_pvcsize_gb: '{{ bench_fiorand_pvcsz_req_gb }}'
 
 - set_fact:
     bench_fiorand_datadir: '{{ server_fio_datadir }}'
