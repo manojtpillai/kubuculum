@@ -1,7 +1,7 @@
 ---
 
 #
-# variables similar to the below are likely to be present in different bench roles
+# most roles have variables similar to the below
 #
 
 # output directory for run
@@ -19,7 +19,15 @@ bench_fioseq_namespace: '{{ run_namespace }}'
 #   else default storage class is used
 
 # label on pods
-bench_fioseq_podlabel: "type=benchmark-pod"
+bench_fioseq_wpodlabel: "type=fio-seqwr-pod"
+bench_fioseq_rpodlabel: "type=fio-seqrd-pod"
+
+# optional nodeSelector, for fio client pods
+# bench_fioseq_nodelabel="node-role.kubernetes.io/worker=''"
+
+# optional nodeSelector, for fio server pods
+#
+# bench_fioseq_servernodelabel="node-role.kubernetes.io/worker=''"
 
 # directory where output files exist in pods/containers
 bench_fioseq_podoutdir: /benchout
@@ -30,15 +38,14 @@ bench_fioseq_container: "benchmark-complete"
 # maximum time for a run; used for wait timeout
 bench_fioseq_maxtime_sec: 36000
 
-# this benchmark has a trivial prepare phase
-# does not need vars that are in other benchmarks
-
 #
 # variables likely to be specific to this benchmark
 #
 
-# pvc size; limit on data set size
-bench_fioseq_pvcsize_gb: 8
+# prefer to calculate pvc size instead of relying on user input
+bench_fioseq_pvcsz_scalefactor: 2 # multiply required data set size by this 
+bench_fioseq_pvcsz_extra_gb: 32 # add this extra space
+# bench_fioseq_pvcsz_req_gb: 8 # use this variable to specify size manually
 
 # block size
 bench_fioseq_bs_kb: 128
@@ -48,5 +55,8 @@ bench_fioseq_fsz_gb: 2
 
 # number of jobs
 bench_fioseq_njobs: 2
+
+# number of fio instances
+bench_fioseq_ninstances: 1
 
 ...

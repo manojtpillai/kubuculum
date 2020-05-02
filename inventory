@@ -59,9 +59,11 @@ dropcaches_postprepare=True
 #
 
 # bench_fioseq specific options
-# bench_fioseq_pvcsize_gb=200
+# bench_fioseq_ninstances=3
 # bench_fioseq_fsz_gb=2
 # bench_fioseq_njobs=64
+# bench_fioseq_nodelabel="node-role.kubernetes.io/worker=''"
+# bench_fioseq_servernodelabel="node-role.kubernetes.io/worker=''"
 
 # bench_fiorand specific options
 # bench_fiorand_ninstances=3

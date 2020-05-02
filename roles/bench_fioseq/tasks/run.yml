@@ -1,13 +1,18 @@
 ---
 
-- name: start pod
-  command: 'kubectl create -f {{ bench_fioseq_dir }}/fio_job.yaml -n {{ bench_fioseq_namespace }}'
+- set_fact:
+    bench_fioseq_test: seqwr
+    bench_fioseq_podlabel: "{{ bench_fioseq_wpodlabel }}"
 
-- name: get fio pod name
-  command: 'kubectl get pods -l {{ bench_fioseq_podlabel }} --namespace={{ bench_fioseq_namespace }} --no-headers -o custom-columns=":metadata.name"'
-  register: podlist
+- include_tasks: run_test.yml
 
-- name: wait for fio test completion
-  command: 'kubectl wait --for=condition=Ready pod/{{ podlist.stdout }} --namespace={{ bench_fioseq_namespace }} --timeout={{ bench_fioseq_maxtime_sec }}s'
+- include_role:
+    name: util_dropcaches
+
+- set_fact:
+    bench_fioseq_test: seqrd
+    bench_fioseq_podlabel: "{{ bench_fioseq_rpodlabel }}"
+
+- include_tasks: run_test.yml
 
 ...

@@ -1,6 +1,8 @@
 ---
 
-- name: stop fio pod
-  command: 'kubectl delete -f {{ bench_fioseq_dir }}/fio_job.yaml -n {{ bench_fioseq_namespace }}'
+- include_role:
+    name: server_fio
+  vars:
+    server_mode: stop
 
 ...
