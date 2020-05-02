@@ -1,14 +1,11 @@
 ---
 
-# passed vars: storage_ceph_pdir and storage_ceph_nodesappendfile
+# passed vars: storage_ceph_nodesappendfile
 
 - name: get OCS nodes
   shell: 'echo "OCS nodes:" >> {{ storage_ceph_nodesappendfile }}; kubectl get nodes -l {{ storage_ceph_nodelabel }} >> {{ storage_ceph_nodesappendfile }}'
 
-- set_fact: 
-    storage_ceph_dir: '{{ storage_ceph_pdir }}/{{ role_name }}'
-
-- name: create directory for storing output
+- name: create directory if not present for storing output 
   file: 
     path: '{{ storage_ceph_dir }}'
     state: directory

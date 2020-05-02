@@ -11,7 +11,6 @@
     name: storage_ceph
   vars:
     action: get_info
-    storage_ceph_pdir: '{{ run_dir }}'
     storage_ceph_nodesappendfile: '{{ get_envinfo_outfile }}'
   when: ceph_benchrun is defined and ceph_benchrun
 
