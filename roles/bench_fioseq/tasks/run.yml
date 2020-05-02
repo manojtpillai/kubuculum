@@ -4,7 +4,8 @@
     bench_fioseq_test: seqwr
     bench_fioseq_podlabel: "{{ bench_fioseq_wpodlabel }}"
 
-- include_tasks: run_test.yml
+- name: run sequential write test
+  include_tasks: run_test.yml
 
 - include_role:
     name: util_dropcaches
@@ -13,6 +14,8 @@
     bench_fioseq_test: seqrd
     bench_fioseq_podlabel: "{{ bench_fioseq_rpodlabel }}"
 
-- include_tasks: run_test.yml
+
+- name: run sequential read test
+  include_tasks: run_test.yml
 
 ...

@@ -26,7 +26,6 @@ bench_fioseq_rpodlabel: "type=fio-seqrd-pod"
 # bench_fioseq_nodelabel="node-role.kubernetes.io/worker=''"
 
 # optional nodeSelector, for fio server pods
-#
 # bench_fioseq_servernodelabel="node-role.kubernetes.io/worker=''"
 
 # directory where output files exist in pods/containers
