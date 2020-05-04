@@ -7,7 +7,7 @@
 - name: drop kernel caches 
   block:
     - shell: 'date >> {{ stats_sysstat_dir }}/drop_caches.start.txt'
-    - shell: 'kubectl exec {{ item }} -n {{ stats_sysstat_namespace }} -- sysctl vm.drop_caches=3'
+    - shell: 'kubectl exec {{ item }} -n {{ stats_sysstat_namespace }} -- sync; sysctl vm.drop_caches=3'
       with_items: "{{ podlist.stdout_lines }}"
     - shell: 'date >> {{ stats_sysstat_dir }}/drop_caches.finish.txt'
   when: stats_sysstat_allowdropcache
