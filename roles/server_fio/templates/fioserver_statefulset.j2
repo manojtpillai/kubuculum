@@ -14,11 +14,14 @@ spec:
     role: server-fio
 ...
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: server-fio
 spec:
+  selector:
+    matchLabels:
+      role: server-fio
   serviceName: "server-fio"
   replicas: {{ server_fio_nservers }}
   template:
