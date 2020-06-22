@@ -1,0 +1,13 @@
+
+---
+- hosts: localhost
+
+  tasks:
+  - name: delete daemonset for sysstat pods
+    # MTP_TODO: fix hard-coded daemonset name and namespace
+    command: 'kubectl delete daemonset sysstat -n kube-system'
+    when: stats_enabled is defined and stats_enabled and "stats_sysstat" in stats_role
+
+  - name: delete namespace for benchmark resources 
+    command: 'kubectl delete namespace {{ run_namespace }}'
+...
