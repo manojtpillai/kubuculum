@@ -1,0 +1,22 @@
+---
+
+- name: create role binding yaml from template
+  template:
+    src: '{{ role_path }}/templates/kubuculum_rolebinding.j2'
+    dest: '/tmp/kubuculum_rolebinding.yaml'
+
+- name: delete role binding
+  command: 'kubectl delete -f /tmp/kubuculum_rolebinding.yaml'
+
+- name: create role yaml from template
+  template:
+    src: '{{ role_path }}/templates/kubuculum_role.j2'
+    dest: '/tmp/kubuculum_role.yaml'
+
+- name: delete role
+  command: 'kubectl delete -f /tmp/kubuculum_role.yaml'
+
+- name: delete namespace
+  command: 'kubectl delete namespace {{ run_namespace }}'
+
+...

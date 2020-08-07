@@ -9,7 +9,6 @@ run_basedir="/tmp" # run output is stored in a timestamped directory here
 
 # namespaces used
 run_namespace="nm-kubuculum" # "default" namespace no longer allowed
-# stats_namespace="kube-system" # fixed for now
 
 # optional high-level features 
 # stats_enabled=True

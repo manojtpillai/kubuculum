@@ -1,0 +1,21 @@
+
+---
+- hosts: localhost
+
+  tasks:
+
+  - include_role: 
+      name: do_setup
+    vars:
+      action: delete
+
+  - pause: 
+      prompt: "recreating namespace"
+      seconds: 20
+
+  - include_role: 
+      name: do_setup
+    vars:
+      action: create
+
+...

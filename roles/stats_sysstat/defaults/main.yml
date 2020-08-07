@@ -11,8 +11,7 @@ stats_sysstat_pdir: '{{ run_dir }}'
 stats_sysstat_dir: '{{ run_dir }}/{{ role_name }}'
 
 # namespace
-# stats_sysstat_namespace: '{{ stats_namespace }}'
-stats_sysstat_namespace: kube-system
+stats_sysstat_namespace: '{{ run_namespace }}'
 
 # label on sysstat pods
 stats_sysstat_podlabel: "name=sysstat-collection"

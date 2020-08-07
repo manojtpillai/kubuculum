@@ -12,9 +12,6 @@
   - include_role:
       name: create_rundir
 
-  - name: create namespace for benchmark resources 
-    command: 'kubectl create namespace {{ run_namespace }}'
-
   - include_role:
       name: '{{ stats_role }}'
     vars: 
@@ -88,6 +85,4 @@
       stats_mode: stop
     when: stats_enabled is defined and stats_enabled
 
-  - name: delete namespace for benchmark resources 
-    command: 'kubectl delete namespace {{ run_namespace }}'
 ...
