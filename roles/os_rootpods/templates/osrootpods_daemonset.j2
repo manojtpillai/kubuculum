@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: os-rootpod
+spec:
+  selector:
+    matchLabels:
+      name: os-rootpod
+  template:
+    metadata:
+      labels:
+        name: os-rootpod
+    spec:
+{% if os_rootpods_nodelabel is defined %}
+      nodeSelector:
+        {{ os_rootpods_nodelabel.split("=")[0] }}: {{ os_rootpods_nodelabel.split("=")[1] }}
+{% endif %}
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
+      containers:
+      - name: os-rootpod
+        image: rhel7
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 36000"]
+
+      hostNetwork: true
+      hostPID: true
+...

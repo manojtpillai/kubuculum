@@ -5,12 +5,12 @@
     name: storage_ceph
   vars: 
     action: drop_caches
-  when: ceph_benchrun is defined and ceph_benchrun
+  when: ceph_benchrun is defined and ceph_benchrun and util_dropcaches_ceph
 
 - include_role: 
-    name: stats_sysstat
+    name: os_rootpods
   vars: 
-    stats_mode: drop_caches
-  when: stats_enabled is defined and stats_enabled and "stats_sysstat" in stats_role 
+    action: drop_caches
+  when: deploy_osrootpods is defined and deploy_osrootpods and util_dropcaches_os
 
 ...
