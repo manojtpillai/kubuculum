@@ -3,8 +3,10 @@
 - hosts: localhost
 
   tasks:
+
   - include_role: 
       name: do_setup
     vars:
-      action: create
+      action: delete
+
 ...

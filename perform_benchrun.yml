@@ -9,6 +9,11 @@
 
   tasks:
 
+  - include_role: 
+      name: do_setup
+    vars:
+      action: create
+
   - include_role:
       name: create_rundir
 
@@ -96,5 +101,10 @@
     vars: 
       stats_mode: stop
     when: stats_enabled is defined and stats_enabled
+
+  - include_role: 
+      name: do_setup
+    vars:
+      action: delete
 
 ...
