@@ -21,13 +21,22 @@ spec:
         effect: NoSchedule
 
       containers:
-      - name: os-rootpod
+      - name: os-rootpod-completed
         image: rhel7
         securityContext:
           privileged: true
           runAsUser: 0
         command: ["/bin/sh"]
-        args: ["-c", "sleep 36000"]
+        args: ["-c", "sleep 3600"]
+
+      initContainers:
+      - name: os-rootpod-command
+        image: rhel7
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        command: ["/bin/sh"]
+        args: ["-c", "{{ os_rootpods_command }}"]
 
       hostNetwork: true
       hostPID: true

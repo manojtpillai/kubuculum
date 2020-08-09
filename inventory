@@ -13,7 +13,7 @@ run_namespace="nm-kubuculum" # "default" namespace no longer allowed
 # optional high-level features 
 # stats_enabled=True
 # calm_enabled=True
-# deploy_osrootpods=True
+# allow_osrootpods=True
 dropcaches_postprepare=True # drop caches after prepare phase
 # below is needed for dropping of ceph osd/mgr caches
 # ceph_benchrun=True # set this to true if storageclass is ceph-based

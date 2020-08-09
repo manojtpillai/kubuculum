@@ -24,12 +24,6 @@
     when: stats_enabled is defined and stats_enabled
 
   - include_role:
-      name: os_rootpods
-    vars: 
-      action: start
-    when: deploy_osrootpods is defined and deploy_osrootpods
-
-  - include_role:
       name: '{{ benchmark_role }}'
     vars: 
       benchmark_mode: prepare
@@ -89,12 +83,6 @@
     vars: 
       calm_mode: stop
     when: calm_enabled is defined and calm_enabled
-
-  - include_role:
-      name: os_rootpods
-    vars: 
-      action: stop
-    when: deploy_osrootpods is defined and deploy_osrootpods
 
   - include_role:
       name: '{{ stats_role }}'

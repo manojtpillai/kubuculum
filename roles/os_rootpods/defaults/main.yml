@@ -15,4 +15,7 @@ os_rootpods_podlabel: "name=os-rootpod"
 # for nodeSelector
 # os_rootpods_nodelabel: "node-role.kubernetes.io/worker=''"
 
+# command to execute as root; overridden by caller
+os_rootpods_command: "date"
+
 ...

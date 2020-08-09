@@ -10,7 +10,7 @@
 - include_role: 
     name: os_rootpods
   vars: 
-    action: drop_caches
-  when: deploy_osrootpods is defined and deploy_osrootpods and util_dropcaches_os
+    os_rootpods_command: "sync; sysctl vm.drop_caches=3"
+  when: allow_osrootpods is defined and allow_osrootpods and util_dropcaches_os
 
 ...

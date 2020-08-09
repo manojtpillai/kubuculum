@@ -1,4 +1,48 @@
 ---
-- include_tasks: '{{ action }}.yml'
+
+- name: create directory for storing output
+  file: 
+    path: '{{ os_rootpods_dir }}'
+    state: directory
+  
+- name: create yaml from template
+  template:
+    src: '{{ role_path }}/templates/osrootpods_daemonset.j2'
+    dest: '{{ os_rootpods_dir }}/osrootpods_daemonset.yaml'
+
+- name: record command start
+  block:
+    - shell: 'echo -n "started: {{ os_rootpods_command }} at: " >> {{ os_rootpods_dir }}/command.log.txt'
+    - shell: 'date >> {{ os_rootpods_dir }}/command.log.txt'
+
+- name: start pods
+  command: 'kubectl create -f /tmp/osrootpods_daemonset.yaml -n {{ os_rootpods_namespace }}'
+
+- command: 'kubectl get nodes --no-headers -o custom-columns=":metadata.name"'
+  register: nodelist
+  when: os_rootpods_nodelabel is not defined
+
+- command: 'kubectl get nodes -l {{ os_rootpods_nodelabel }} --no-headers -o custom-columns=":metadata.name"'
+  register: nodelist
+  when: os_rootpods_nodelabel is defined
+
+- name: wait for all pods to start
+  command: 'kubectl get pods -l {{ os_rootpods_podlabel }} -n {{ os_rootpods_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+  until: podlist.stdout_lines|length == nodelist.stdout_lines|length
+  retries: 30
+  delay: 10
+
+- name: wait for pods to be ready
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} -n {{ os_rootpods_namespace }} --timeout=300s'
+  with_items: "{{ podlist.stdout_lines }}"
+
+- name: record command completion
+  block:
+    - shell: 'echo -n "completed: {{ os_rootpods_command }} at: " >> {{ os_rootpods_dir }}/command.log.txt'
+    - shell: 'date >> {{ os_rootpods_dir }}/command.log.txt'
+
+- name: stop pods
+  command: 'kubectl delete -f {{ os_rootpods_dir }}/osrootpods_daemonset.yaml -n {{ os_rootpods_namespace }}'
 
 ...

@@ -1,5 +1,0 @@
----
-
-- name: stop pods
-  command: 'kubectl delete -f {{ os_rootpods_dir }}/osrootpods_daemonset.yaml -n {{ os_rootpods_namespace }}'
-...
