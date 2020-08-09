@@ -13,7 +13,23 @@
 - name: start sysstat pods
   command: 'kubectl create -f {{ stats_sysstat_dir }}/sysstat_daemonset.yaml -n {{ stats_sysstat_namespace }}'
 
-# MTP_TODO
-- name: wait for sysstat pods to come up
-  command: 'sleep 30'
+- command: 'kubectl get nodes --no-headers -o custom-columns=":metadata.name"'
+  register: nodelist
+  when: stats_sysstat_nodelabel is not defined
+
+- command: 'kubectl get nodes -l {{ stats_sysstat_nodelabel }} --no-headers -o custom-columns=":metadata.name"'
+  register: nodelist
+  when: stats_sysstat_nodelabel is defined
+
+- name: wait for all pods to start
+  command: 'kubectl get pods -l {{ stats_sysstat_podlabel }} -n {{ stats_sysstat_namespace }} --no-headers -o custom-columns=":metadata.name"'
+  register: podlist
+  until: podlist.stdout_lines|length == nodelist.stdout_lines|length
+  retries: 30
+  delay: 10
+
+- name: wait for pods to be ready
+  command: 'kubectl wait --for=condition=Ready pod/{{ item }} -n {{ stats_sysstat_namespace }} --timeout=300s'
+  with_items: "{{ podlist.stdout_lines }}"
+
 ...
