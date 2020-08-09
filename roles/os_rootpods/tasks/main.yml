@@ -16,7 +16,7 @@
     - shell: 'date >> {{ os_rootpods_dir }}/command.log.txt'
 
 - name: start pods
-  command: 'kubectl create -f /tmp/osrootpods_daemonset.yaml -n {{ os_rootpods_namespace }}'
+  command: 'kubectl create -f {{ os_rootpods_dir }}/osrootpods_daemonset.yaml -n {{ os_rootpods_namespace }}'
 
 - command: 'kubectl get nodes --no-headers -o custom-columns=":metadata.name"'
   register: nodelist
