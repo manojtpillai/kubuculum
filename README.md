@@ -10,15 +10,39 @@ crystal ball]
 
 This tool is run on a system that has kubectl set up to control a
 kubernetes cluster. The prerequisites for running the tool are:
+
 - A kubernetes cluster up and running.
+
 - The system running the tool should have kubectl set up to
 work against said kubernetes cluster.
-- The kubernetes cluster has a default StorageClass. This will be
-used by the tool for dynamically provisioning storage.
+
+- The access policy for the kubernetes cluster should allow the
+of the kubectl commands issued by the tool: create a
+namespace, get nodes, create statefulsets and pods, to list a
+few.
+
+    - kubuculum has an option to collect system stats (iostat,
+sar, top) during runs. This option is disabled by default; if
+enabled, this spawns a daemonset of privileged pods.
+
+    - kubuculum has an option to drop linux kernel caches at
+points in the benchmark runs. This option is disabled by default;
+if enabled, this spawns a daemonset of privileged pods with root
+access that execute vm.drop_caches command.
+
+- The kubernetes cluster should have a default StorageClass. This
+is used by the tool for dynamically provisioning storage.
 Alternatively, you can specify a StorageClass to use; see below.
+
 - The system running the tool should have ansible installed.
 passwordless ssh to localhost should work [try a simple command 
 like 'ssh localhost date' to test that it does].
+
+#### Optional Features
+
+
+
+
 
 ### Get Started
 
