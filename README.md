@@ -9,32 +9,36 @@ crystal ball]
 kubuculum is a tool for running fio and other benchmarks in a k8s
 environment.  One of its main goals is to support troubleshooting
 of performance problems across organizational boundaries. A
-typical scenario is, a user outside your organization who is not
-an expert in your storage solution, running it and reporting
+typical scenario: a user outside your organization who is not an
+expert in your storage solution, is running it and reporting
 performance issues; with kubuculum, you can have them run
-specific benchmarks and share with you benchmark output and
+specific benchmarks and share benchmark output and system
 statistics for analysis. To this end:
 
 - The tool is written to be very simple to use. It should be
 possible to get going with it in a few minutes.
 
 - Output from a run is collected into a timestamped directory.
-You can then *tar/zip* this directory and share, it e.g. by
+You can then *tar/zip* this directory and share it, e.g. by
 attaching it to a defect tracking tool.
 
 - Output from a run includes not only output of the benchmark but
 also other information that is useful in validating the run.  For
 example, the fio benchmarks in kubuculum store not only fio
 output, but also *ls -l* output of the data directory that shows
-number of files created and their sizes. Simiilarly, mongodb runs
-include output of commands like replication status and db
-settings.
+number of files created and their sizes. 
 
-- kubuculum can also collect system stats (iostat, sar, top) in
-text format from specified nodes into the run output directory
+- kubuculum can also collect system statistics (iostat, sar, top)
+in text format from specified nodes into the run output directory
 to facilitate analysis of the run.
 
-## Quick Start
+Another goal of the tool is to support experimentation with
+benchmarking techniques for noisy-neighbor environments like k8s.
+In particular, the tool currently provides basic support for a
+technique called Controlled Ambient Load Mixing (CALM), where a
+background load can be applied to simulate noisy neighbors.
+
+## Getting Started
 
 ### Prerequisites
 
@@ -55,7 +59,7 @@ passwordless ssh to localhost should work [try a simple command
 like 'ssh localhost date' to test that it does].
 
 In addition, the access policy for the kubernetes cluster should
-should allow the kubectl commands issued by the tool: create a
+allow the kubectl commands issued by the tool: create a
 namespace, list nodes, create statefulsets and pods, to list a
 few. In this context, note that:
 
@@ -64,12 +68,12 @@ top) during runs. This option is disabled by default; when enabled,
 it creates a daemonset of privileged pods.
 
 - kubuculum has an option to drop linux kernel caches at points
-in the benchmark runs. This option is disabled by default; when
-enabled, it creates a daemonset of privileged pods with root
-access, on specified nodes, that execute sysctl vm.drop_caches
-command.
+during the benchmark runs. This option is disabled by default;
+when enabled, it creates a daemonset of privileged pods with root
+access, on specified nodes, that execute the sysctl
+vm.drop_caches command.
 
-### Get Started
+### Quick Start
 
 ```
 git clone https://github.com/manojtpillai/kubuculum.git
@@ -84,21 +88,55 @@ timestamped directory /tmp/run_\<timestamp\>.
 The tool creates the k8s resources that it needs, e.g. pods, in a
 separate namespace, nm-kubuculum by default.
 
+### A More Realistic Run
+
 It is easiest to control your benchmark runs by supplying
 variables and values in the inventory file. The sample inventory
 file has most of the variables you'll need listed, but commented
 out. So typically, it is just a matter of uncommenting the ones
 you need.
 
-For example, you can specify results directory, and the 
-StorageClass for dynamically provisioning storage using the 
-variables below:
+Below is the inventory file modified for a typical run of the
+bench_fiorand benchmark, which runs an fio random I/O workload:
 
 ```
-run_basedir="/home/mpillai/runs" 
-run_storageclass="ocs-storagecluster-ceph-rbd"
+[hosts]
+localhost
+
+[all:vars]
+
+run_basedir="/root/mpillai/runs"
+run_storageclass="gp2"
+run_namespace="nm-kubuculum"
+
+stats_enabled=True
+stats_role="stats_sysstat"
+dropcaches_postprepare=True
+allow_osrootpods=True
+
+os_rootpods_nodelabel="node-role.kubernetes.io/worker=''"
+stats_sysstat_nodelabel="node-role.kubernetes.io/worker=''"
+
+benchmark_role="bench_fiorand"
+bench_fiorand_ninstances=1
+bench_fiorand_fsz_gb=16
+bench_fiorand_njobs=4
+bench_fiorand_bs_kb=8
+bench_fiorand_run_sec=120
+bench_fiorand_servernodelabel="node-role.kubernetes.io/worker=''"
 ```
 
+This run enables stats collection and dropping of OS caches on
+worker nodes. It also provides more realistic parameters for the
+fio test.
+
+```
+# cat run_2020-08-12_1597246044/bench_fiorand/fio-pjkt4/fio.randread.run.txt | grep -A 1 "All clients"
+
+All clients: (groupid=0, jobs=4): err= 0: pid=0: Wed Aug 12
+15:40:00 2020
+   read: IOPS=3025, BW=23.6Mi (24.8M)(2837MiB/120012msec)
+```
 
 ## Overview
 
