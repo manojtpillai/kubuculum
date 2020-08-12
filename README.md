@@ -4,6 +4,36 @@ Benchmarking tool for predicting I/O performance of Kubernetes clusters.
 [It's not a word, but it could be. BTW, orbuculum is a crystal orb, or
 crystal ball]
 
+## Introduction
+
+kubuculum is a tool for running fio and other benchmarks in a k8s
+environment.  One of its main goals is to support troubleshooting
+of performance problems across organizational boundaries. A
+typical scenario is a user outside your organization who is not
+an expert in your storage solution, running it and reporting
+performance issues; with kubuculum, you can have them run
+specific benchmarks and share with you benchmark output and
+statistics from the run for analysis. To this end:
+
+- The tool is written to be very simple to use. It should be
+possible to get it up and running in under 10 minutes.
+
+- Output from a run is collected into a timestamped directory.
+This directory can be tarred and shared, e.g. by attaching it to
+a defect tracking tool.
+
+- Output from a run includes not only output of the benchmark but
+also other information that is needed to validate that the run.
+For example, the fio benchmarks in kubuculum store not only fio
+output, but also ls -l output of the data directory that shows
+number of files created and their sizes. Simiilarly, mongodb runs
+include output of commands like replication status and db
+settings.
+
+- kubuculum can also collect system stats (iostat, sar, top) from
+specified nodes in text format into the run output directory, to
+facilitate analysis of the run.
+
 ## Quick Start
 
 ### Prerequisites
@@ -16,20 +46,6 @@ kubernetes cluster. The prerequisites for running the tool are:
 - The system running the tool should have kubectl set up to
 work against said kubernetes cluster.
 
-- The access policy for the kubernetes cluster should allow the
-of the kubectl commands issued by the tool: create a
-namespace, get nodes, create statefulsets and pods, to list a
-few.
-
-    - kubuculum has an option to collect system stats (iostat,
-sar, top) during runs. This option is disabled by default; if
-enabled, this spawns a daemonset of privileged pods.
-
-    - kubuculum has an option to drop linux kernel caches at
-points in the benchmark runs. This option is disabled by default;
-if enabled, this spawns a daemonset of privileged pods with root
-access that execute vm.drop_caches command.
-
 - The kubernetes cluster should have a default StorageClass. This
 is used by the tool for dynamically provisioning storage.
 Alternatively, you can specify a StorageClass to use; see below.
@@ -38,10 +54,20 @@ Alternatively, you can specify a StorageClass to use; see below.
 passwordless ssh to localhost should work [try a simple command 
 like 'ssh localhost date' to test that it does].
 
-#### Optional Features
+In addition, the access policy for the kubernetes cluster should
+should allow the kubectl commands issued by the tool: create a
+namespace, list nodes, create statefulsets and pods, to list a
+few. In this context, note that:
 
+- kubuculum has an option to collect system stats (iostat, sar,
+top) during runs. This option is disabled by default; if enabled,
+it needs to create a daemonset of privileged pods.
 
-
+- kubuculum has an option to drop linux kernel caches at points
+in the benchmark runs. This option is disabled by default; if
+enabled, it needs to create a daemonset of privileged pods with
+root access that execute vm.drop_caches command on specified
+nodes.
 
 
 ### Get Started
