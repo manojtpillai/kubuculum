@@ -1,5 +1,5 @@
 # kubuculum
-Benchmarking tool for predicting I/O performance of Kubernetes clusters.
+Storage performance benchmarking in Kubernetes.
 
 [It's not a word, but it could be. BTW, orbuculum is a crystal orb, or
 crystal ball]
@@ -9,30 +9,30 @@ crystal ball]
 kubuculum is a tool for running fio and other benchmarks in a k8s
 environment.  One of its main goals is to support troubleshooting
 of performance problems across organizational boundaries. A
-typical scenario is a user outside your organization who is not
+typical scenario is, a user outside your organization who is not
 an expert in your storage solution, running it and reporting
 performance issues; with kubuculum, you can have them run
 specific benchmarks and share with you benchmark output and
-statistics from the run for analysis. To this end:
+statistics for analysis. To this end:
 
 - The tool is written to be very simple to use. It should be
-possible to get it up and running in under 10 minutes.
+possible to get going with it in a few minutes.
 
 - Output from a run is collected into a timestamped directory.
-This directory can be tarred and shared, e.g. by attaching it to
-a defect tracking tool.
+You can then *tar/zip* this directory and share, it e.g. by
+attaching it to a defect tracking tool.
 
 - Output from a run includes not only output of the benchmark but
-also other information that is needed to validate that the run.
-For example, the fio benchmarks in kubuculum store not only fio
-output, but also ls -l output of the data directory that shows
+also other information that is useful in validating the run.  For
+example, the fio benchmarks in kubuculum store not only fio
+output, but also *ls -l* output of the data directory that shows
 number of files created and their sizes. Simiilarly, mongodb runs
 include output of commands like replication status and db
 settings.
 
-- kubuculum can also collect system stats (iostat, sar, top) from
-specified nodes in text format into the run output directory, to
-facilitate analysis of the run.
+- kubuculum can also collect system stats (iostat, sar, top) in
+text format from specified nodes into the run output directory
+to facilitate analysis of the run.
 
 ## Quick Start
 
@@ -60,15 +60,14 @@ namespace, list nodes, create statefulsets and pods, to list a
 few. In this context, note that:
 
 - kubuculum has an option to collect system stats (iostat, sar,
-top) during runs. This option is disabled by default; if enabled,
-it needs to create a daemonset of privileged pods.
+top) during runs. This option is disabled by default; when enabled,
+it creates a daemonset of privileged pods.
 
 - kubuculum has an option to drop linux kernel caches at points
-in the benchmark runs. This option is disabled by default; if
-enabled, it needs to create a daemonset of privileged pods with
-root access that execute vm.drop_caches command on specified
-nodes.
-
+in the benchmark runs. This option is disabled by default; when
+enabled, it creates a daemonset of privileged pods with root
+access, on specified nodes, that execute sysctl vm.drop_caches
+command.
 
 ### Get Started
 
