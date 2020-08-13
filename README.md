@@ -19,7 +19,7 @@ this end:
 possible to get going with it in a few minutes.
 
 - Output from a run is collected into a timestamped directory.
-You can then *tar/zip* this directory and share it, e.g. by
+Users can then *tar/zip* this directory and share it, e.g. by
 attaching it to a defect tracking tool.
 
 - Output from a run includes not only output of the benchmark but
@@ -38,6 +38,12 @@ In particular, the tool currently provides basic support for a
 technique called Controlled Ambient Load Mixing (CALM), where a
 background load can be applied during benchmark runs to simulate
 noisy neighbors.
+
+## Scope
+
+Testing during development has been limited to Red Hat's
+Openshift. Known usage of the tool has also been on Openshift.
+
 
 ## Getting Started
 
@@ -145,7 +151,6 @@ and the relevant output from the run is shown below:
 
 ```
 # cat run_2020-08-12_1597246044/bench_fiorand/fio-pjkt4/fio.randread.run.txt | grep -A 1 "All clients"
-
 All clients: (groupid=0, jobs=4): err= 0: pid=0: Wed Aug 12 15:40:00 2020
    read: IOPS=3025, BW=23.6Mi (24.8M)(2837MiB/120012msec)
 
@@ -165,7 +170,7 @@ The major role types are:
 - stats roles: These gather various statistics to help analyze
 benchmark runs.
 
-By convention, the role name prefix (e.g. bench_ ) is chosen to
+By convention, the role name prefix (e.g. *bench_* ) is chosen to
 denote the type of role.
 
 ## Additional Details
