@@ -9,11 +9,11 @@ crystal ball]
 kubuculum is a tool for running fio and other benchmarks in a k8s
 environment.  One of its main goals is to support troubleshooting
 of performance problems across organizational boundaries. A
-typical scenario: a user outside your organization who is not an
-expert in your storage solution, is running it and reporting
-performance issues; with kubuculum, you can have them run
-specific benchmarks and share benchmark output and system
-statistics for analysis. To this end:
+typical scenario: a user outside your organization is running
+your storage solution and reporting performance issues; with
+kubuculum, you can have them run specific benchmarks and share
+benchmark output and system statistics with you for analysis. To
+this end:
 
 - The tool is written to be very simple to use. It should be
 possible to get going with it in a few minutes.
@@ -28,15 +28,16 @@ example, the fio benchmarks in kubuculum store not only fio
 output, but also *ls -l* output of the data directory that shows
 number of files created and their sizes. 
 
-- kubuculum can also collect system statistics (iostat, sar, top)
-in text format from specified nodes into the run output directory
-to facilitate analysis of the run.
+- kubuculum can also collect system statistics (*iostat, sar,
+top*) in text format from specified nodes into the run output
+directory to facilitate analysis of the run.
 
 Another goal of the tool is to support experimentation with
 benchmarking techniques for noisy-neighbor environments like k8s.
 In particular, the tool currently provides basic support for a
 technique called Controlled Ambient Load Mixing (CALM), where a
-background load can be applied to simulate noisy neighbors.
+background load can be applied during benchmark runs to simulate
+noisy neighbors.
 
 ## Getting Started
 
@@ -55,23 +56,23 @@ is used by the tool for dynamically provisioning storage.
 Alternatively, you can specify a StorageClass to use; see below.
 
 - The system running the tool should have ansible installed.
-passwordless ssh to localhost should work [try a simple command 
-like 'ssh localhost date' to test that it does].
+Passwordless ssh to localhost should work [try a simple command 
+like '*ssh localhost date*' to test that it does].
 
 In addition, the access policy for the kubernetes cluster should
 allow the kubectl commands issued by the tool: create a
 namespace, list nodes, create statefulsets and pods, to list a
 few. In this context, note that:
 
-- kubuculum has an option to collect system stats (iostat, sar,
-top) during runs. This option is disabled by default; when enabled,
+- kubuculum has an option to collect system stats (*iostat, sar,
+top*) during runs. This option is disabled by default; when enabled,
 it creates a daemonset of privileged pods.
 
 - kubuculum has an option to drop linux kernel caches at points
 during the benchmark runs. This option is disabled by default;
 when enabled, it creates a daemonset of privileged pods with root
-access, on specified nodes, that execute the sysctl
-vm.drop_caches command.
+access, on specified nodes, that execute the *sysctl
+vm.drop_caches* command.
 
 ### Quick Start
 
@@ -81,20 +82,28 @@ cd kubuculum
 ansible-playbook -i inventory perform_benchrun.yml
 ```
 
-This will run an fio test, against the default StorageClass of
-your kubernetes cluster, and collect results of the run in a
-timestamped directory /tmp/run_\<timestamp\>.
+Based on settings in the inventory file, this will run an fio
+test, against the default StorageClass of your kubernetes
+cluster, and collect results of the run in a timestamped
+directory */tmp/run_\<timestamp\>*.  A quick examination of this
+directory should give a sense of how the tool organizes output.
 
 The tool creates the k8s resources that it needs, e.g. pods, in a
-separate namespace, nm-kubuculum by default.
+separate namespace, *nm-kubuculum* by default. In case of a failed
+run, use the cleanup playbook:
+
+```
+ansible-playbook -i inventory cleanup.yml
+```
 
 ### A More Realistic Run
 
-It is easiest to control your benchmark runs by supplying
-variables and values in the inventory file. The sample inventory
-file has most of the variables you'll need listed, but commented
-out. So typically, it is just a matter of uncommenting the ones
-you need.
+The default values for the run parameters are appropriate for
+quickly trying things out; for actual performance bencmarking you
+should expect to provide more reasonable values for them.  It is
+easiest to control your benchmark runs by supplying variables and
+values in the inventory file. The sample inventory file has most
+of the variables you'll need listed, but commented out. 
 
 Below is the inventory file modified for a typical run of the
 bench_fiorand benchmark, which runs an fio random I/O workload:
@@ -127,29 +136,25 @@ bench_fiorand_servernodelabel="node-role.kubernetes.io/worker=''"
 ```
 
 This run enables stats collection and dropping of OS caches on
-worker nodes. It also provides more realistic parameters for the
-fio test.
+k8s worker nodes. It also provides more reasonable parameters for
+the fio test. 
+
+The output is collected in the bench_fiorand sub-directory in the
+run output directory. The key metric for this benchmark is IOPS,
+and the relevant output from the run is shown below:
 
 ```
 # cat run_2020-08-12_1597246044/bench_fiorand/fio-pjkt4/fio.randread.run.txt | grep -A 1 "All clients"
 
-All clients: (groupid=0, jobs=4): err= 0: pid=0: Wed Aug 12
-15:40:00 2020
+All clients: (groupid=0, jobs=4): err= 0: pid=0: Wed Aug 12 15:40:00 2020
    read: IOPS=3025, BW=23.6Mi (24.8M)(2837MiB/120012msec)
+
+# cat run_2020-08-12_1597246044/bench_fiorand/fio-pjkt4/fio.randwrite.run.txt | grep -A 1 "All clients"
+All clients: (groupid=0, jobs=4): err= 0: pid=0: Wed Aug 12 15:42:05 2020
+  write: IOPS=3025, BW=23.6Mi (24.8M)(2837MiB/120022msec)
 ```
 
-## Overview
-
-### Goals
-
-This tool is meant as much for experimenting with benchmarking
-techniques for platforms like k8s, as it is for evaluating
-storage performance of a cluster.  It came about from a feeling
-that performance benchmarking methodology for such platforms,
-where many performance critical applications run concurrently,
-still needs refining.
-
-### Structure
+## Architecture
 
 The tool is evolving. It is written as a collection of ansible
 roles and a few ansible playbooks that tie these roles together.
@@ -162,72 +167,6 @@ benchmark runs.
 
 By convention, the role name prefix (e.g. bench_ ) is chosen to
 denote the type of role.
-
-The playbooks expect each type of role to support certain
-"actions" like start, stop, that make sense for that type of
-role.  Each action generally maps to an ansible playlist to
-accomplish that action.
-
-### Benchmark Roles
-
-Many storage benchmarks, e.g. ycsb, sysbench, have a load
-phase, where a data set is created, and a run phase, where a
-representative workload is executed against the previously
-created data set. It is useful for various reasons to have
-benchmark roles that maintain this separation.
-
-Benchmark roles are written to support the following actions:
-1. prepare: corresponds to the load phase of many benchmarks.
-1. run: corresponds to the run phase of many benchmarks.
-1. gather: collect benchmark results and any related output.
-1. cleanup: delete any resources created by the role.
-
-It is upto the individual benchmark role to decide what tasks are
-performed for each action. 
-
-### CALM Roles
-
-CALM stands for Controlled Ambient Load Mixing, a benchmarking
-technique meant for environments where applications coexist with
-noisy-neighbors. These roles generally setup a steady background
-load, so that a benchmark role can then be run with that load in
-the background to gauge the impact of such noise.
-
-
-CALM roles are written to support the following actions:
-1. start:
-1. ensure_ready: will wait until initialization has completed
-and the steady load is being generated.
-1. gather: collect output for the calm role.
-1. stop:
-
-### Stats Roles
-
-These roles collect CPU, memory, disk and other statistics during
-the run.  Currently, a single stats role exists: stats_sysstat,
-but that will likely change in future. stats_systat uses a
-daemonset to start privileged pods on each of a subset of the
-kubernetes nodes. The pods collect iostat, top (thread and
-process level) and sar output from the nodes.
-
-stats roles are written to support the following actions:
-1. start
-1. gather
-1. stop
-
-### Playbooks
-
-The main playbook for executing benchmark runs is
-perform_benchrun.yml. The code is simple and readable, and
-probably does not need more explanation.
-
-The playbook has an option, enabled by default, to drop caches
-between benchmark prepare and benchmark run phases.  Currently,
-this is the only place where caches are dropped. The ability to
-drop caches at arbitrary points in a benchmark's execution has not
-yet been implemented. The drop-caches functionality is currently
-only implemented for rook-ceph because that is the only storage
-solution this tool has been used with.
 
 ## Additional Details
 
