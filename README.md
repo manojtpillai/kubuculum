@@ -1,8 +1,8 @@
 # kubuculum
 Storage performance benchmarking in Kubernetes.
 
-[It's not a word, but it could be. BTW, orbuculum is a crystal orb, or
-crystal ball]
+[kubuculum's not a word, but it could be. BTW, orbuculum is a
+crystal orb, or crystal ball]
 
 ## Introduction
 
@@ -23,8 +23,8 @@ Users can then *tar/zip* this directory and share it, e.g. by
 attaching it to a defect tracking tool.
 
 - Output from a run includes not only output of the benchmark but
-also other information that is useful in validating the run.  For
-example, the fio benchmarks in kubuculum store not only fio
+also other information that is useful in validating the run.  As
+an example, the fio benchmarks in kubuculum store not only fio
 output, but also *ls -l* output of the data directory that shows
 number of files created and their sizes. 
 
@@ -37,7 +37,7 @@ benchmarking techniques for noisy-neighbor environments like k8s.
 In particular, the tool currently provides basic support for a
 technique called Controlled Ambient Load Mixing (CALM), where a
 background load can be applied during benchmark runs to simulate
-noisy neighbors.
+noisy neighbors and their impact.
 
 ## Scope
 
@@ -49,7 +49,7 @@ Openshift. Known usage of the tool has also been on Openshift.
 
 ### Prerequisites
 
-This tool is run on a system that has kubectl set up to control a
+kubuculum is run on a system that has kubectl set up to control a
 kubernetes cluster. The prerequisites for running the tool are:
 
 - A kubernetes cluster up and running.
@@ -71,13 +71,14 @@ namespace, list nodes, create statefulsets and pods, to list a
 few. In this context, note that:
 
 - kubuculum has an option to collect system stats (*iostat, sar,
-top*) during runs. This option is disabled by default; when enabled,
-it creates a daemonset of privileged pods.
+top*) during runs. This option is disabled by default; when
+enabled, it creates a daemonset of privileged pods on selected
+nodes.
 
 - kubuculum has an option to drop linux kernel caches at points
 during the benchmark runs. This option is disabled by default;
 when enabled, it creates a daemonset of privileged pods with root
-access, on specified nodes, that execute the *sysctl
+access, on selected nodes, that execute the *sysctl
 vm.drop_caches* command.
 
 ### Quick Start
@@ -112,7 +113,7 @@ values in the inventory file. The sample inventory file has most
 of the variables you'll need listed, but commented out. 
 
 Below is the inventory file modified for a typical run of the
-bench_fiorand benchmark, which runs an fio random I/O workload:
+*bench_fiorand* benchmark, which runs an fio random I/O workload:
 
 ```
 [hosts]
@@ -145,9 +146,9 @@ This run enables stats collection and dropping of OS caches on
 k8s worker nodes. It also provides more reasonable parameters for
 the fio test. 
 
-The output is collected in the bench_fiorand sub-directory in the
-run output directory. The key metric for this benchmark is IOPS,
-and the relevant output from the run is shown below:
+fio output is collected in the *bench_fiorand* sub-directory in
+the run output directory. The key metric for this benchmark is
+IOPS, and the relevant output from the run is shown below:
 
 ```
 # cat run_2020-08-12_1597246044/bench_fiorand/fio-pjkt4/fio.randread.run.txt | grep -A 1 "All clients"
@@ -159,22 +160,24 @@ All clients: (groupid=0, jobs=4): err= 0: pid=0: Wed Aug 12 15:42:05 2020
   write: IOPS=3025, BW=23.6Mi (24.8M)(2837MiB/120022msec)
 ```
 
-## Architecture
+## Structure
 
-The tool is evolving. It is written as a collection of ansible
-roles and a few ansible playbooks that tie these roles together.
-The major role types are:
+The tool is still evolving. It is written as a collection of
+ansible roles and a few ansible playbooks that tie these roles
+together.  The major role types are:
 
-- benchmark roles: The reason we are here. 
-- CALM roles: These serve to set up a background load for benchmarking.
+- benchmark roles: The reason we are here.
 - stats roles: These gather various statistics to help analyze
 benchmark runs.
+- CALM roles: These serve to set up a background load for benchmarking.
 
 By convention, the role name prefix (e.g. *bench_* ) is chosen to
-denote the type of role.
+denote the type of role. Each role has default parameters under
+*default/main.yml*.  The values provided in the inventory file
+overrides the defaults.
 
 ## Additional Details
 
-Please refer to the documentation of individual roles for more
+Please refer to the README under roles and under individual roles for more
 details.
 
