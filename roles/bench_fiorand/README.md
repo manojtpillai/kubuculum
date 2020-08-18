@@ -12,28 +12,36 @@ In the prepare phase, it starts *n* fio server pods using the
 server_fio role.  The nodes where there fio server pods run can
 be specified using a node label.
 
-When the fio server pods are ready, a data set is created using
-an fio sequential write workload. The random I/O workload in the
-run phase is run against this data set.
+When the fio server pods are ready, a client fio pod initiates
+the creation of a data set using an fio sequential write job. The
+random I/O workload in the run phase is run against this data
+set.
+
+The size of the persistent volume claim can be specified using an
+option (*bench_fiorand_pvcsz_req_gb*); if left unspecified, it is
+calculated based on file size (*bench_fiorand_fsz_gb*) and number
+of jobs (*bench_fiorand_njobs*). Note that file size and number
+of jobs is per fio server.
 
 ### Run Phase
 
-In the run phase of the benchmark, an fio random read test is
-first run against the data set created in the prepare phase,
-followed by an fio random write test. There are options to skip
-the random read or the random write test, if only one of these is
-desired.
+In the run phase of the benchmark, a client fio pod first
+initiates an fio random read test on the data set created in the
+prepare phase. This is followed by an fio random write test.
+There are options to skip the random read or the random write
+test, if only one of these is desired.
 
 ### Dropping Caches
 
 Currently, bench_fiorand does not explicitly drop caches.
-kubuculum has an option to drop caches between the prepare and
-run phases. At present, this is sufficient for the benchmark.
+kubuculum has an option (*dopcaches_postprepare*) to drop caches
+between the prepare and run phases. At present, this is
+sufficient for this benchmark.
 
-## Example and Output
+## Example: Typical Parameters and Output
 
-This section looks at a fairly realistic run of the bench_fiorand
-benchmark. The options specified below serve to specify the
+This section looks at a typical run of the bench_fiorand
+benchmark. The options below serve to specify the
 benchmark parameters. For simplicity, stats collection and
 dropping caches are not enabled for this run.
 
@@ -61,8 +69,8 @@ bench_fiorand_servernodelabel="node-role.kubernetes.io/worker=''"
 ```
 
 The output directory from this run includes output from the roles
-bench_fiorand and server_fio, as well as some files recording
-where different pods were scheduled:
+bench_fiorand and server_fio, as well as some files that capture
+the nodes where different pods were scheduled:
 
 ```
 # ls -l run_2020-08-18_1597731688/
