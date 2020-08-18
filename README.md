@@ -1,8 +1,7 @@
 # kubuculum
 Storage performance benchmarking in Kubernetes.
 
-[kubuculum's not a word, but it could be. BTW, orbuculum is a
-crystal orb, or crystal ball]
+The name kubuculum comes from orbuculum, which means crystal ball.
 
 ## Introduction
 
@@ -72,8 +71,8 @@ few. In this context, note that:
 
 - kubuculum has an option to collect system stats (*iostat, sar,
 top*) during runs. This option is disabled by default; when
-enabled, it creates a daemonset of privileged pods on selected
-nodes.
+enabled, it creates a daemonset of privileged pods on
+all/selected nodes.
 
 - kubuculum has an option to drop linux kernel caches at points
 during the benchmark runs. This option is disabled by default;
@@ -174,10 +173,13 @@ benchmark runs.
 By convention, the role name prefix (e.g. *bench_* ) is chosen to
 denote the type of role. Each role has default parameters under
 *default/main.yml*.  The values provided in the inventory file
-overrides the defaults.
+override the defaults.
 
 ## Additional Details
 
-Please refer to the README under roles and under individual roles for more
-details.
+Please refer to the README under roles and under individual roles
+for more details. The benchmark roles *bench_fioseq* and
+*bench_fiorand*, that report sequention I/O and random I/O
+performance respectively, together usually provide a good quick
+overview of the I/O performance capabilities of a cluster.
 
