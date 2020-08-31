@@ -1,0 +1,21 @@
+
+setup:
+  namespace: nm-kubuculum
+
+run_control:
+  benchmark: fio_random
+
+benchmarks:
+  fio_random:
+    filesize_gb: 4
+    runtime_sec: 60
+
+multirun_control:
+  test_list:
+    - benchmarks:
+       fio_random:
+         bs_kb: 8
+    - benchmarks:
+       fio_random:
+         bs_kb: 16
+
