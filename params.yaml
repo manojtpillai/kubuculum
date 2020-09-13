@@ -16,6 +16,7 @@ multirun_control:
   test_list:
     - benchmarks:
        fio_random:
+         ninstances: 2
          bs_kb: 8
     - benchmarks:
        fio_random:

@@ -1,6 +1,7 @@
 
 from kubuculum.setup import setup
-from kubuculum.benchmarks import util_functions
+import kubuculum.benchmarks.util_functions
+import kubuculum.util_functions
 
 def perform_singlerun (params_dict):
 
@@ -14,40 +15,48 @@ def perform_singlerun (params_dict):
     #
     # perform setup tasks
     #
-    callee = 'setup'
-    callee_params = params_dict.get (callee, {})
+    callee_label = 'setup'
+    callee_params = params_dict.get (callee_label, {})
     if callee_params is None:
         callee_params = {}
 
-    setup_handle = setup.environment (callee_params)
-    setup_handle.do_setup ()
+    setup_handle = setup.environs (callee_params)
+    setup_params = setup_handle.do_setup ()
 
     # 
-    # execute benchmark prepare phase
+    # create handle for enabled benchmark 
     #
-    callee = module_params['benchmark']
-    if callee is not None:
+    benchmark_module = module_params['benchmark']
+    if benchmark_module is not None:
         benchmarks_dict = params_dict.get ('benchmarks', {})
         if benchmarks_dict is None:
             benchmarks_dict = {}
 
-        callee_params = benchmarks_dict.get (callee, {})
-        if callee_params is None:
-            callee_params = {}
+        passed_params = benchmarks_dict.get (benchmark_module, {})
+        if passed_params is None:
+            passed_params = {}
 
-        benchmark_handle = util_functions.create_object (callee, callee_params)
+        callee_params = kubuculum.util_functions.prepare_call \
+            (benchmark_module, passed_params, setup_params)
 
+        benchmark_handle = kubuculum.benchmarks.util_functions.create_object (benchmark_module, callee_params)
+
+
+    # 
+    # execute benchmark prepare phase
+    #
+    if benchmark_module is not None:
         benchmark_handle.prepare()
 
     # 
     # execute benchmark run phase
     #
-    benchmark_handle.run ()
+    if benchmark_module is not None:
+        benchmark_handle.run ()
 
     #
     # perform cleanup tasks
     #
     setup_handle.cleanup ()
-
 
 

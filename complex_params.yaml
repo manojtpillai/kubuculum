@@ -28,5 +28,4 @@ multirun_control:
         benchmark: dummy_pause
       benchmarks:
         dummy_pause:
-          duration: 60
 

@@ -7,7 +7,12 @@ parser = argparse. ArgumentParser()
 parser.add_argument("-n", "--namespace", help="namespace to cleanup")
 
 args = parser.parse_args()
-environment_params = { 'namespace' : args.namespace }
+default_namespace = "nm-kubuculum"
 
-callee_handle = setup.environment (environment_params)
+if args.namespace:
+    environment_params = { 'namespace' : args.namespace }
+else:
+    environment_params = { 'namespace' : default_namespace }
+
+callee_handle = setup.environs (environment_params)
 callee_handle.cleanup()

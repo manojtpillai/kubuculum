@@ -1,6 +1,7 @@
 
 setup:
   namespace: nm-kubuculum
+  basedir: /root/mpillai/runs
 
 run_control:
   benchmark: fio_random
@@ -8,14 +9,13 @@ run_control:
 benchmarks:
   fio_random:
     filesize_gb: 4
+    numjobs: 2
     runtime_sec: 60
 
 multirun_control:
   test_list:
     - benchmarks:
        fio_random:
+         ninstances: 2
          bs_kb: 8
-    - benchmarks:
-       fio_random:
-         bs_kb: 16
 

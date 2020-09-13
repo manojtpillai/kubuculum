@@ -2,7 +2,7 @@
 import subprocess
 import time
 
-class environment:
+class environs:
 
     def __init__ (self, p={}):
 
@@ -19,6 +19,12 @@ class environment:
         ts = str (time.time ())
         subdir = self.params['basedir'] + "/run_" + ts
         subprocess.run (["mkdir", subdir])
+
+        self.globalparams = {}
+        self.globalparams['namespace'] = self.params['namespace']
+        self.globalparams['dir'] = subdir
+
+        return self.globalparams
 
     def cleanup(self):
 
