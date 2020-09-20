@@ -50,7 +50,7 @@ class fio_random:
     # prepare phase: create data set
     def prepare (self):
 
-        # shortcuts for commonly used paramters
+        # shortcuts for commonly used parameters
         namespace = self.params['namespace']
         run_dir = self.params['dir']
         preparep_dir = run_dir + "/prepare_phase"
@@ -92,7 +92,31 @@ class fio_random:
     # run phase : execute test on previously created data set
     def run (self):
 
-        subprocess.run (["sleep", "60"])
+        # shortcuts for commonly used parameters
+        namespace = self.params['namespace']
+        run_dir = self.params['dir']
+        podlabel = self.params['podlabel']
+
+        templates_dir = self.dirpath + '/' + self.params['templates_dir']
+        template_file = self.params['run_template']
+        yaml_file = run_dir + '/' + self.params['run_yaml']
+
+        # create yaml for run phase
+        util_functions.instantiate_template ( templates_dir, \
+            template_file, yaml_file, self.params)
+
+        # create pod, and wait for its completion
+        # expected pod count is 1, pause of 5 sec, 0 retries
+        k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
+            1, 5, 0, self.params['maxruntime_sec'])
+
+        # copy output from pod
+        k8s_wrappers.copyfrompods (namespace, podlabel, \
+            self.params['podoutdir'], run_dir)
+
+        # delete prep pod
+        k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+
         self.serverhandle.stop ()
 
 
