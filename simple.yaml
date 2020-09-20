@@ -8,14 +8,13 @@ run_control:
 
 benchmarks:
   fio_random:
-    filesize_gb: 4
+    filesize_gb: 2
     numjobs: 2
-    runtime_sec: 60
 
 multirun_control:
   test_list:
     - benchmarks:
        fio_random:
          ninstances: 2
-         bs_kb: 8
+         bs_kb: 4
 

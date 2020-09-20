@@ -1,0 +1,130 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio
+spec:
+  template:
+    metadata:
+      labels:
+        type: benchmark-pod
+    spec:
+{% if bench_fiorand_nodelabel is defined %}
+      nodeSelector:
+        {{ bench_fiorand_nodelabel.split("=")[0] }}: {{ bench_fiorand_nodelabel.split("=")[1] }}
+{% endif %}
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+
+      containers:
+      - name: benchmark-complete
+        image: rhel7
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args: ["-c", "touch {{ bench_fiorand_podoutdir }}/benchmark.run.completed.txt; sleep 3600"]
+
+      initContainers:
+
+      - name: fio-genhosts
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            touch {{ bench_fiorand_podoutdir }}/hostlist
+{% for ii in range(bench_fiorand_ninstances) %}
+            ; echo {{ bench_fiorand_serverlist[ii] }} >> {{ bench_fiorand_podoutdir }}/hostlist
+{% endfor %}
+
+{% if bench_fiorand_testread %}
+
+      - name: fio-genrreadjob
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ bench_fiorand_podoutdir }}/jobfile.fiorandread <<EOF
+            [randomread]
+            rw=randread
+            ioengine=libaio
+            direct=1
+            iodepth={{ bench_fiorand_iodepth }}
+            time_based=1
+            runtime={{ bench_fiorand_run_sec }}
+            directory={{ bench_fiorand_datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ bench_fiorand_bs_kb }}k
+            filesize={{ bench_fiorand_fsz_gb }}g
+            numjobs={{ bench_fiorand_njobs }}
+            EOF
+
+      - name: fio-randomread
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            fio
+            --output={{ bench_fiorand_podoutdir }}/fio.randread.run.txt
+            --client={{ bench_fiorand_podoutdir }}/hostlist
+            {{ bench_fiorand_podoutdir }}/jobfile.fiorandread
+
+{% endif %}
+
+{% if bench_fiorand_testwrite %}
+
+      - name: fio-genrwritejob
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ bench_fiorand_podoutdir }}/jobfile.fiorandwrite <<EOF
+            [randomwrite]
+            rw=randwrite
+            ioengine=libaio
+            direct=1
+            iodepth={{ bench_fiorand_iodepth }}
+            time_based=1
+            runtime={{ bench_fiorand_run_sec }}
+            directory={{ bench_fiorand_datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ bench_fiorand_bs_kb }}k
+            filesize={{ bench_fiorand_fsz_gb }}g
+            numjobs={{ bench_fiorand_njobs }}
+            EOF
+
+      - name: fio-randomwrite
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ bench_fiorand_podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            fio
+            --output={{ bench_fiorand_podoutdir }}/fio.randwrite.run.txt
+            --client={{ bench_fiorand_podoutdir }}/hostlist
+            {{ bench_fiorand_podoutdir }}/jobfile.fiorandwrite
+
+{% endif %}
+
+      restartPolicy: Never
+...

@@ -1,15 +1,18 @@
 
-# output directory for this module; always overridden by caller
-dir: /tmp
+# output directory for this module; always set by caller
+# dir: /tmp
 
-# namespace for k8s resources; always overridden by caller
-namespace: default
+# namespace for k8s resources; always set by caller
+# namespace: default
+
+# optional; uses default storageclass, if not set
+# storageclass: 
 
 # label on pods
 podlabel: role=server-fio
 
-# number of fio servers
-nservers: 1
+# optional nodeselector
+# nodeselector: "node-role.kubernetes.io/worker=''"
 
 # sub-directory where templates are stored
 templates_dir: templates
@@ -17,17 +20,17 @@ templates_dir: templates
 # name of template file
 template_file: server_fio.statefulset.j2
 
-# name of yaml file to be created from template
+# name of yaml file derived from template
 yaml_file: server_fio.statefulset.yaml
 
-# size of PVC; always overridden by caller
+# number of fio servers; usually overridden by caller
+nservers: 1
+
+# size of PVC; usually overridden by caller
 pvcsize_gb: 8
 
 # mount point for PVC; client should use this directory
 datadir: /dataset
-
-# used if set by caller; else uses default
-# storageclass: 
 
 # fio port; not used
 port: 8765

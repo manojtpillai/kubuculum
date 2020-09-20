@@ -40,7 +40,7 @@ def prepare_call (module_label, module_params, setup_params):
 def instantiate_template (template_dir, template_file, dest_file, dict):
 
     file_loader = FileSystemLoader (template_dir)
-    env = Environment (loader = file_loader)
+    env = Environment (loader=file_loader, trim_blocks=True)
     template = env.get_template (template_file)
 
     rendered_yaml = template.render (dict)
@@ -65,5 +65,9 @@ def dict_from_file (filename):
 # create a directory 
 def create_dir (path):
     subprocess.run (["mkdir", path])
+
+# pause for specified duration
+def pause (pause_sec):
+    subprocess.run (["sleep", str (pause_sec)])
 
 

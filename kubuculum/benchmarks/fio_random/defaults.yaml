@@ -1,0 +1,81 @@
+
+# 
+# options likely to be tuned
+# 
+
+# tests to run
+testrread: true
+testrwrite: true
+
+# number of fio instances
+ninstances: 1
+
+# number of jobs per instance
+numjobs: 2
+
+# block size for random I/O
+bs_kb: 8
+
+# file size per job
+filesize_gb: 1
+
+# fio iodepth
+iodepth: 32
+
+# run time for each test in run phase
+runtime_sec: 30
+
+# optional; size of PVC, auto-calculated if not set
+# pvcsize_gb:
+
+# parameters for auto-calculating PVC size 
+# used if pvcsize_gb is not set
+scalefactor: 1.25
+extraspace_gb: 2
+
+# block size for initial write
+sbs_kb: 1024
+
+#
+# options not likely to be tuned, similar to ones in most modules
+# 
+
+# output directory for this module; always overridden by caller
+# dir: /tmp
+
+# namespace for k8s resources; always overridden by caller
+# namespace: default
+
+# optional; uses default storageclass, if not set
+# storageclass: 
+
+# label on pods
+prep_podlabel: type=benchmark-prep-pod
+podlabel: type=benchmark-pod
+
+# optional nodeselector, for fio client
+# nodeselector: "node-role.kubernetes.io/worker=''"
+
+# optional nodeselector, for fio server
+# server_nodeselector: "node-role.kubernetes.io/worker=''"
+
+# sub-directory where templates are stored
+templates_dir: templates
+
+# names of template files
+prepare_template: fio_random.prep.job.j2
+run_template: fio_random.run.job.j2
+
+# names for yaml files derived from templates
+prepare_yaml: fio_random.prep.yaml
+run_yaml: fio_random.run.yaml
+
+# name of main container
+container_name: benchmark-complete
+
+# location of output files in pod
+podoutdir: /benchout
+
+# used for a wait timeout
+maxruntime_sec: 36000
+

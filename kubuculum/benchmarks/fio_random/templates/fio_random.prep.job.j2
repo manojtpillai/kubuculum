@@ -1,0 +1,84 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio
+spec:
+  template:
+    metadata:
+      labels:
+        type: benchmark-prep-pod
+    spec:
+{% if nodeselector is defined %}
+      nodeSelector:
+        {{ nodeselector.split("=")[0] }}: {{ nodeselector.split("=")[1] }}
+{% endif %}
+
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+
+      containers:
+      - name: benchmark-complete
+        image: rhel7
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args: ["-c", "touch {{ podoutdir }}/benchmark.prepare.completed.txt; sleep 3600"]
+
+      initContainers:
+
+      - name: fio-genhosts
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            touch {{ podoutdir }}/hostlist
+{% for ii in range(ninstances) %}
+            ; echo {{ serverlist[ii] }} >> {{ podoutdir }}/hostlist
+{% endfor %}
+
+      - name: fio-genjob
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ podoutdir }}/jobfile.fioinit <<EOF
+            [initwrite]
+            rw=write 
+            ioengine=sync 
+            direct=0
+            create_on_open=1
+            end_fsync=1
+            directory={{ datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ sbs_kb }}k
+            filesize={{ filesize_gb }}g
+            numjobs={{ numjobs }}
+            EOF
+
+      - name: fio-initwrite
+        image: quay.io/mpillai/fio
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            fio 
+            --output={{ podoutdir }}/fio.initwrite.run.txt
+            --client={{ podoutdir }}/hostlist
+            {{ podoutdir }}/jobfile.fioinit
+
+      restartPolicy: Never
+...
