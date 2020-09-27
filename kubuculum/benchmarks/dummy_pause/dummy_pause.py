@@ -1,5 +1,8 @@
 
 import time
+import logging
+
+logger = logging.getLogger (__name__)
 
 class dummy_pause:
 
@@ -18,8 +21,8 @@ class dummy_pause:
     # run phase : sleep for duration
     def run (self):
 
-        print('sleeping at: %s' % time.ctime())
+        logger.info ('dummy_pause: run: start')
         time.sleep(self.params['duration'])
-        print('woke up at: %s' % time.ctime())
+        logger.info ('dummy_pause: run: completed')
 
 

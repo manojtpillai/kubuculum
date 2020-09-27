@@ -1,6 +1,7 @@
 
 import yaml
 import subprocess
+import time
 from jinja2 import Environment, FileSystemLoader
 
 # return deep update of base_dict with new_dict
@@ -23,17 +24,17 @@ def deep_update (base_dict, new_dict):
     return updated_dict
 
 # prepare for calling a module
-def prepare_call (module_label, module_params, setup_params):
+def prepare_call (module_label, module_params, global_params):
 
-    updated_dict = setup_params
+    updated_globals = global_params
     module_dict = module_params
 
-    module_dir = updated_dict['dir'] + '/' + module_label
-    module_dict['dir'] = module_dir
+    module_dir = updated_globals['dir'] + '/' + module_label
+    updated_globals['dir'] = module_dir
     create_dir (module_dir)
 
-    updated_dict.update (module_dict)
-    return updated_dict
+    module_dict.update (updated_globals)
+    return module_dict
 
 # instantiate jinja2 template to produce yaml
 # uses entries in dict to render the template 
@@ -61,6 +62,14 @@ def dict_from_file (filename):
 
     return params
 
+# create a subdirectory based on a tag and current time
+def createdir_ts (path, tag):
+
+    ts = str (time.time ())
+    subdir = path + '/' + tag + ts
+
+    subprocess.run (["mkdir", subdir])
+    return subdir
 
 # create a directory 
 def create_dir (path):

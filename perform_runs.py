@@ -2,7 +2,7 @@
 
 import argparse
 import yaml
-from kubuculum.multirun_control import multirun_control
+from kubuculum import process_and_execute
 
 parser = argparse.ArgumentParser ()
 parser.add_argument ("-i", "--input_file", help="name of yaml file with run parameters") 
@@ -19,4 +19,4 @@ else:
 if run_params is None:
     run_params = {}
 
-multirun_control.perform_runs (run_params)
+process_and_execute.perform_runs (run_params)

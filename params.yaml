@@ -1,7 +1,7 @@
 
-setup:
+global:
   namespace: nm-kubuculum
-  basedir: /root/mpillai/runs
+  base_directory: /root/mpillai/runs
 
 run_control:
   benchmark: fio_random

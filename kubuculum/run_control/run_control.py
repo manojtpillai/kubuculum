@@ -3,9 +3,9 @@ from kubuculum.setup import setup
 import kubuculum.benchmarks.util_functions
 import kubuculum.util_functions
 
-def perform_singlerun (params_dict):
+def perform_singlerun (params_dict, global_params):
 
-    module_label = "run_control"
+    module_label = 'run_control'
 
     # create updated params for self
     module_params = params_dict.get (module_label, {})
@@ -20,8 +20,9 @@ def perform_singlerun (params_dict):
     if callee_params is None:
         callee_params = {}
 
+    callee_params.update (global_params)
     setup_handle = setup.environs (callee_params)
-    setup_params = setup_handle.do_setup ()
+    setup_handle.do_setup ()
 
     # 
     # create handle for enabled benchmark 
@@ -37,7 +38,7 @@ def perform_singlerun (params_dict):
             passed_params = {}
 
         callee_params = kubuculum.util_functions.prepare_call \
-            (benchmark_module, passed_params, setup_params)
+            (benchmark_module, passed_params, global_params)
 
         benchmark_handle = kubuculum.benchmarks.util_functions.create_object (benchmark_module, callee_params)
 

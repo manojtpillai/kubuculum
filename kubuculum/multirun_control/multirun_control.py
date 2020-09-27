@@ -1,10 +1,14 @@
 
+import logging
 from kubuculum import util_functions
 from kubuculum.run_control import run_control
 
-def perform_runs (params_dict):
+logger = logging.getLogger (__name__)
 
-    module_label = "multirun_control"
+
+def perform_runs (params_dict, global_params):
+
+    module_label = 'multirun_control'
 
     # remove my parameters from params_dict
     module_params = params_dict.pop (module_label, {})
@@ -16,13 +20,32 @@ def perform_runs (params_dict):
     if test_list is None:
         test_list = []
 
+    run_dir = global_params['dir']
+    iter = 0
     for test_dict in test_list:
+
         if test_dict is None:
             test_dict = {}
+
+        if 'test_tag' in test_dict:
+            test_subdir = test_dict['test_tag']
+        else:
+            test_subdir = 'test-' + str(iter)
+
+        # set directory for this test
+        test_dir = run_dir + '/' + test_subdir
+        util_functions.create_dir (test_dir)
+        global_params['dir'] = test_dir
 
         # generate single dict: params_dict updated with test_dict
         run_params = util_functions.deep_update (params_dict, test_dict)
 
+        logger.info ('starting test: %s', test_subdir)
+
         # run_params is now in a form that perform_singlerun expects
-        run_control.perform_singlerun (run_params) 
+        run_control.perform_singlerun (run_params, global_params) 
+
+        iter += 1
+
+    logger.info ('all tests completed')
 
