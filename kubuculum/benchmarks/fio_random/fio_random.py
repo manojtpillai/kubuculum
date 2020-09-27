@@ -1,10 +1,13 @@
 
+import logging
 import os
 import subprocess
 import time
 from kubuculum.server_fio import server_fio
 from kubuculum import util_functions
 from kubuculum import k8s_wrappers
+
+logger = logging.getLogger (__name__)
 
 class fio_random:
 
@@ -19,7 +22,7 @@ class fio_random:
         self.params = util_functions.dict_from_file (yaml_file)
 
         # update params; this will override some of the defaults
-        self.params.update (p)
+        util_functions.deep_update (self.params, p)
 
         #
         # derive parameters for fio server
@@ -81,13 +84,16 @@ class fio_random:
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
+        logger.info ("fio_random prepare pod completed")
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], preparep_dir)
+        logger.info ("copied output from fio_random prepare pod")
 
         # delete prep pod
         k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+        logger.info ("deleted fio_random prepare pod")
 
     # run phase : execute test on previously created data set
     def run (self):
@@ -109,14 +115,18 @@ class fio_random:
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
+        logger.info ("fio_random run pod completed")
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], run_dir)
+        logger.info ("copied output from fio_random run pod")
 
         # delete prep pod
         k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+        logger.info ("deleted fio_random run pod")
 
+        logger.info ("stopping server_fio pods")
         self.serverhandle.stop ()
 
 

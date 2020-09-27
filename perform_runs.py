@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import yaml
+import os
 from kubuculum import process_and_execute
 
 parser = argparse.ArgumentParser ()
@@ -10,13 +10,8 @@ parser.add_argument ("-i", "--input_file", help="name of yaml file with run para
 args = parser.parse_args ()
 
 if args.input_file:
-    yaml_input = open (args.input_file)
-    run_params = yaml.safe_load (yaml_input)
-    yaml_input.close ()
+    abs_filename = os.path.abspath (args.input_file)
+    process_and_execute.perform_runs (abs_filename)
 else:
-    run_params = {}
+    process_and_execute.perform_runs ()
 
-if run_params is None:
-    run_params = {}
-
-process_and_execute.perform_runs (run_params)

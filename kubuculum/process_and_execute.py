@@ -1,9 +1,15 @@
 
 import logging
+import subprocess
 from kubuculum import util_functions
 from kubuculum.multirun_control import multirun_control
 
-def perform_runs (params_dict):
+def perform_runs (input_file=""):
+
+    if input_file: 
+        params_dict = util_functions.dict_from_file (input_file)
+    else: 
+        params_dict = {}
 
     #
     # handle global parameters
@@ -24,13 +30,18 @@ def perform_runs (params_dict):
     }
 
     # update global defaults with passed values
-    global_params = util_functions.deep_update (global_params, passed_globals) 
+    util_functions.deep_update (global_params, passed_globals) 
 
     # create a directory for runs, if needed
     if 'dir' not in global_params:
-        global_params['dir'] = util_functions.createdir_ts \
+        global_rundir = util_functions.createdir_ts \
             (global_params['base_directory'], 'run_')
+    global_params['dir'] = global_rundir
     global_params.pop ('base_directory') 
+
+    if input_file: 
+        input_file_cp = global_rundir + '/' + 'input.kubuculum.yanl'
+        subprocess.run (["cp", input_file, input_file_cp])
 
     #
     # setup logging
@@ -41,8 +52,8 @@ def perform_runs (params_dict):
     }
 
     # update logging defaults with passed values
-    logging_params = util_functions.deep_update (logging_params, passed_logparams) 
-    logging_params['dir'] = global_params['dir']
+    util_functions.deep_update (logging_params, passed_logparams) 
+    logging_params['dir'] = global_rundir
 
     logger = logging.getLogger ()
     logger.setLevel (logging.DEBUG)
@@ -67,7 +78,7 @@ def perform_runs (params_dict):
         fh.setFormatter (fmt)
         logger.addHandler (fh)
 
-    logger.info ("output directory: %s" , global_params['dir'])
+    logger.info ("output directory: %s" , global_rundir)
 
     #
     # perform runs

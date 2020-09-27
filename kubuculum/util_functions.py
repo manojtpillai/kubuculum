@@ -4,37 +4,31 @@ import subprocess
 import time
 from jinja2 import Environment, FileSystemLoader
 
-# return deep update of base_dict with new_dict
+# deep update of base_dict with new_dict
 # base_dict and new_dict are possibly nested
+# new_dict is unchanged
 def deep_update (base_dict, new_dict):
 
-    updated_dict = base_dict
-    
     for new_key, new_value in new_dict.items ():
         if new_key in base_dict:
-            base_value = base_dict[new_key]
+            base_value = base_dict.pop (new_key)
             if isinstance (new_value, dict) and isinstance (base_value, dict):
-                updated_value = deep_update (base_value, new_value)
-                updated_dict[new_key] = updated_value
+                deep_update (base_value, new_value)
+                base_dict[new_key] = base_value
             else:
-                updated_dict[new_key] = new_value
+                base_dict[new_key] = new_value
         else:
-            updated_dict[new_key] = new_value
-
-    return updated_dict
+            base_dict[new_key] = new_value
 
 # prepare for calling a module
+# updates module_params; global_params is unchanged
 def prepare_call (module_label, module_params, global_params):
 
-    updated_globals = global_params
-    module_dict = module_params
-
-    module_dir = updated_globals['dir'] + '/' + module_label
-    updated_globals['dir'] = module_dir
+    module_dir = global_params['dir'] + '/' + module_label
     create_dir (module_dir)
 
-    module_dict.update (updated_globals)
-    return module_dict
+    deep_update (module_params, global_params)
+    module_params['dir'] = module_dir
 
 # instantiate jinja2 template to produce yaml
 # uses entries in dict to render the template 
@@ -75,6 +69,7 @@ def createdir_ts (path, tag):
 def create_dir (path):
     subprocess.run (["mkdir", path])
 
+# TODO: make it interruptible ala ansible pause
 # pause for specified duration
 def pause (pause_sec):
     subprocess.run (["sleep", str (pause_sec)])

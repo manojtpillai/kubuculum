@@ -8,6 +8,7 @@ class dummy_pause:
 
     def __init__ (self, p={}):
 
+        # TODO: read from defaults file
         self.params = { 
             'duration': 5 
         }

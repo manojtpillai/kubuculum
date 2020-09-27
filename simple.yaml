@@ -12,7 +12,7 @@ benchmarks:
 
 multirun_control:
   test_list:
-    - benchmarks:
-       dummy_pause:
-         duration: 3
-
+    - test_tag: dummy-3
+      benchmarks:
+        dummy_pause:
+          duration: 3

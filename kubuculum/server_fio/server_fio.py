@@ -16,6 +16,7 @@ class server_fio:
         yaml_file = self.dirpath + '/defaults.yaml'
         self.params = util_functions.dict_from_file (yaml_file)
 
+        # TODO: deep update
         # update params
         self.params.update(p)
 
