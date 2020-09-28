@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from kubuculum.setup import setup
+from kubuculum.setup_run import setup_run
 
 parser = argparse. ArgumentParser()
 parser.add_argument("-n", "--namespace", help="namespace to cleanup")
@@ -14,5 +14,5 @@ if args.namespace:
 else:
     environment_params = { 'namespace' : default_namespace }
 
-callee_handle = setup.environs (environment_params)
+callee_handle = setup_run.environs (environment_params)
 callee_handle.cleanup()

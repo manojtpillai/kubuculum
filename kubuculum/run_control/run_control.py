@@ -1,7 +1,7 @@
 
 import logging
 import copy
-from kubuculum.setup import setup
+from kubuculum.setup_run import setup_run
 import kubuculum.benchmarks.util_functions
 import kubuculum.util_functions
 
@@ -19,7 +19,7 @@ def perform_singlerun (params_dict, global_params):
     #
     # perform setup tasks
     #
-    setup_handle = setup.environs (global_params)
+    setup_handle = setup_run.environs (global_params)
     setup_handle.do_setup ()
     logger.info ("setup completed")
 
@@ -39,7 +39,6 @@ def perform_singlerun (params_dict, global_params):
         if bench_params is None:
             bench_params = {}
 
-        # deepcopy optional at this point; may need with added functionality
         callee_params = copy.deepcopy (bench_params)
         kubuculum.util_functions.prepare_call \
             (benchmark_module, callee_params, global_params)
@@ -48,6 +47,7 @@ def perform_singlerun (params_dict, global_params):
             callee_params['storageclass'] = module_params['storageclass']
 
         benchmark_handle = kubuculum.benchmarks.util_functions.create_object (benchmark_module, callee_params)
+
     else:
         benchmark_module = None
         logger.info ("no benchmark enabled")

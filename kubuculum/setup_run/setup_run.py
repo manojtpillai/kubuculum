@@ -12,10 +12,11 @@ class environs:
     def __init__ (self, p):
 
         self.params = copy.deepcopy (p)
-        logger.debug (f'setup parameters: {self.params}')
+        logger.debug (f'setup_run parameters: {self.params}')
 
     def do_setup (self):
 
+        # TODO: add roles and rolebindings
         logger.info (f'creating namespace: {self.params["namespace"]}')
         k8s_wrappers.create_namespace (self.params['namespace'])
 
