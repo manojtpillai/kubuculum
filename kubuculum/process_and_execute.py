@@ -26,7 +26,7 @@ def perform_runs (run_params):
     # global params minus log_control params
     global_params = {
         'namespace': 'nm-kubuculum',
-        'base_directory': '/tmp'
+        'base_directory': '/tmp',
         'input_copy': 'kubuculum.input.yaml'
     }
 
@@ -43,7 +43,8 @@ def perform_runs (run_params):
     global_params.pop ('base_directory') 
 
     # write a copy of input params as yaml
-    input_file_copy = global_rundir + '/' + global_params['input_copy']
+    input_file_copy = global_params.pop ('input_copy')
+    input_file_copy = global_rundir + '/' + input_file_copy
     util_functions.dict_to_file (run_params, input_file_copy)
 
     # TODO: read from defaults file

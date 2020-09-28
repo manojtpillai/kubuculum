@@ -28,7 +28,7 @@ def perform_runs (params_dict, global_params):
             test_dict = {}
 
         if 'test_tag' in test_dict:
-            test_subdir = test_dict['test_tag']
+            test_subdir = test_dict.pop ('test_tag')
         else:
             test_subdir = 'test-' + str(iter)
 
@@ -39,11 +39,14 @@ def perform_runs (params_dict, global_params):
         passed_globals = copy.deepcopy (global_params)
         passed_globals['dir'] = test_dir
 
-        logger.info ('starting test: %s', test_subdir)
 
         # generate single dict: params_dict updated with test_dict
         run_params = copy.deepcopy (params_dict)
         util_functions.deep_update (run_params, test_dict)
+
+        logger.info ('starting test: %s', test_subdir)
+        logger.debug (run_params)
+        logger.debug (passed_globals)
 
         # run_params is now in a form that perform_singlerun expects
         run_control.perform_singlerun (run_params, passed_globals) 
