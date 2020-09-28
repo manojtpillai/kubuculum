@@ -1,15 +1,14 @@
 
 import logging
 import subprocess
+import copy
 from kubuculum import util_functions
 from kubuculum.multirun_control import multirun_control
 
-def perform_runs (input_file=""):
+def perform_runs (module_params):
 
-    if input_file: 
-        params_dict = util_functions.dict_from_file (input_file)
-    else: 
-        params_dict = {}
+    # make a copy of params
+    params_dict = copy.deepcopy (module_params)
 
     #
     # handle global parameters
@@ -39,9 +38,9 @@ def perform_runs (input_file=""):
     global_params['dir'] = global_rundir
     global_params.pop ('base_directory') 
 
-    if input_file: 
-        input_file_cp = global_rundir + '/' + 'input.kubuculum.yanl'
-        subprocess.run (["cp", input_file, input_file_cp])
+    # write a copy of input params as yaml
+    input_file_copy = global_rundir + '/' + 'kubuculum.input.yaml'
+    util_functions.dict_to_file (module_params, input_file_copy)
 
     #
     # setup logging

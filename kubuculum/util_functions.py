@@ -47,14 +47,19 @@ def instantiate_template (template_dir, template_file, dest_file, dict):
 # given a yaml file containing a dict, return the dict
 def dict_from_file (filename):
 
-    yaml_input = open (filename)
-    params = yaml.safe_load (yaml_input)
-    yaml_input.close ()
+    with open (filename, 'r') as yaml_input:
+        params = yaml.safe_load (yaml_input)
 
     if params is None:
         params = {}
 
     return params
+
+# given a dict, write it to a yaml file
+def dict_to_file (dict, filename):
+
+    with open (filename, 'w') as outfile:
+        yaml.dump (dict, outfile, default_flow_style=False, sort_keys=False)
 
 # create a subdirectory based on a tag and current time
 def createdir_ts (path, tag):
