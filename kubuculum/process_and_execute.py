@@ -5,10 +5,10 @@ import copy
 from kubuculum import util_functions
 from kubuculum.multirun_control import multirun_control
 
-def perform_runs (module_params):
+def perform_runs (run_params):
 
     # make a copy of params
-    params_dict = copy.deepcopy (module_params)
+    params_dict = copy.deepcopy (run_params)
 
     #
     # handle global parameters
@@ -22,10 +22,12 @@ def perform_runs (module_params):
     if passed_logparams is None:
         passed_logparams = {}
 
+    # TODO: read from defaults file
     # global params minus log_control params
     global_params = {
         'namespace': 'nm-kubuculum',
         'base_directory': '/tmp'
+        'input_copy': 'kubuculum.input.yaml'
     }
 
     # update global defaults with passed values
@@ -35,13 +37,16 @@ def perform_runs (module_params):
     if 'dir' not in global_params:
         global_rundir = util_functions.createdir_ts \
             (global_params['base_directory'], 'run_')
-    global_params['dir'] = global_rundir
+        global_params['dir'] = global_rundir
+    else:
+        global_rundir = global_params['dir']
     global_params.pop ('base_directory') 
 
     # write a copy of input params as yaml
-    input_file_copy = global_rundir + '/' + 'kubuculum.input.yaml'
-    util_functions.dict_to_file (module_params, input_file_copy)
+    input_file_copy = global_rundir + '/' + global_params['input_copy']
+    util_functions.dict_to_file (run_params, input_file_copy)
 
+    # TODO: read from defaults file
     #
     # setup logging
     #
@@ -52,7 +57,6 @@ def perform_runs (module_params):
 
     # update logging defaults with passed values
     util_functions.deep_update (logging_params, passed_logparams) 
-    logging_params['dir'] = global_rundir
 
     logger = logging.getLogger ()
     logger.setLevel (logging.DEBUG)
@@ -68,7 +72,7 @@ def perform_runs (module_params):
         if 'dirname' in file_params:
             dir = file_params['dirname']
         else:
-            dir = logging_params['dir']
+            dir = global_rundir
 
         file = dir + '/' + file_params['filename']
         fh = logging.FileHandler (file)
