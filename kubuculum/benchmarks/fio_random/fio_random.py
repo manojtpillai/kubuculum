@@ -23,6 +23,7 @@ class fio_random:
 
         # update params; this will override some of the defaults
         util_functions.deep_update (self.params, p)
+        logger.debug (f'fio_random parameters: {self.params}')
 
         #
         # derive parameters for fio server
@@ -69,6 +70,7 @@ class fio_random:
         self.serverhandle = server_fio.server_fio (self.serverparams)
         conn_params = self.serverhandle.start ()
 
+        # TODO: deep update
         # update self.params with parameters required for server_fio
         self.params.update (conn_params)
 

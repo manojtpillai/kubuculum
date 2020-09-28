@@ -5,20 +5,17 @@ global:
 
 run_control:
   benchmark: fio_random
+  storageclass: ocs-storagecluster-ceph-rbd
 
 benchmarks:
   fio_random:
     filesize_gb: 4
     numjobs: 2
-    runtime_sec: 60
+    runtime_sec: 20
 
 multirun_control:
   test_list:
     - benchmarks:
-       fio_random:
-         ninstances: 2
-         bs_kb: 8
-    - benchmarks:
-       fio_random:
-         bs_kb: 16
-
+        fio_random:
+          ninstances: 2
+          bs_kb: 4

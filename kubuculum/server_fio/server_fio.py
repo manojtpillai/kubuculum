@@ -1,8 +1,11 @@
 
+import logging
 import os
 import subprocess
 from kubuculum import util_functions
 from kubuculum import k8s_wrappers
+
+logger = logging.getLogger (__name__)
 
 class server_fio:
 
@@ -16,9 +19,9 @@ class server_fio:
         yaml_file = self.dirpath + '/defaults.yaml'
         self.params = util_functions.dict_from_file (yaml_file)
 
-        # TODO: deep update
         # update params
-        self.params.update(p)
+        util_functions.deep_update (self.params, p)
+        logger.debug (f'server_fio parameters: {self.params}')
 
         # parameters clients need in order to use this object
         self.returnparams = {}

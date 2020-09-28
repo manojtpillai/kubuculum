@@ -77,7 +77,7 @@ def perform_runs (run_params):
 
         file = dir + '/' + file_params['filename']
         fh = logging.FileHandler (file)
-        fmt = logging.Formatter ('%(asctime)s - %(message)s')
+        fmt = logging.Formatter ('%(asctime)s - %(levelname)s - %(message)s')
         fh.setLevel (get_loglevel (file_params['level']))
         fh.setFormatter (fmt)
         logger.addHandler (fh)

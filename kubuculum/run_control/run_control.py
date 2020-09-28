@@ -27,14 +27,14 @@ def perform_singlerun (params_dict, global_params):
     kubuculum.util_functions.deep_update (callee_params, global_params)
     setup_handle = setup.environs (callee_params)
     setup_handle.do_setup ()
-    logger.debug ("setup completed")
+    logger.info ("setup completed")
 
     # 
     # create handle for enabled benchmark 
     #
-    benchmark_module = module_params['benchmark']
-    if benchmark_module is not None:
+    if 'benchmark' in module_params:
 
+        benchmark_module = module_params['benchmark']
         logger.debug ("benchmark %s enabled", benchmark_module)
 
         benchmarks_dict = params_dict.get ('benchmarks', {})
@@ -45,30 +45,40 @@ def perform_singlerun (params_dict, global_params):
         if bench_params is None:
             bench_params = {}
 
+        # deepcopy optional at this point; may need with added functionality
         callee_params = copy.deepcopy (bench_params)
         kubuculum.util_functions.prepare_call \
             (benchmark_module, callee_params, global_params)
 
+        if 'storageclass' in module_params:
+            callee_params['storageclass'] = module_params['storageclass']
+
         benchmark_handle = kubuculum.benchmarks.util_functions.create_object (benchmark_module, callee_params)
     else:
-        logger.debug ("no benchmark enabled")
+        benchmark_module = None
+        logger.info ("no benchmark enabled")
 
 
     # 
     # execute benchmark prepare phase
     #
     if benchmark_module is not None:
+        logger.info ("initiating benchmark prepare phase")
         benchmark_handle.prepare()
+        logger.info ("benchmark prepare phase completed")
 
     # 
     # execute benchmark run phase
     #
     if benchmark_module is not None:
+        logger.info ("initiating benchmark run phase")
         benchmark_handle.run ()
+        logger.info ("benchmark run phase completed")
 
     #
     # perform cleanup tasks
     #
     setup_handle.cleanup ()
+    logger.info ("cleanup completed")
 
 

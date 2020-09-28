@@ -2,6 +2,7 @@
 import subprocess
 import time
 import logging
+from kubuculum import util_functions
 
 logger = logging.getLogger (__name__)
 
@@ -15,15 +16,16 @@ class environs:
             'namespace': 'nm-kubuculum',
             'dir': '/tmp'
         }
-        self.params.update (p)
+        util_functions.deep_update (self.params, p)
+        logger.debug (f'setup parameters: {self.params}')
 
     def do_setup (self):
 
-        logger.info ("creating namespace: %s", self.params['namespace'])
+        logger.info (f'creating namespace: {self.params["namespace"]}')
         subprocess.run (["kubectl", "create", "namespace", self.params['namespace']])
 
     def cleanup (self):
 
-        logger.info ("deleting namespace: %s", self.params['namespace'])
+        logger.info (f'deleting namespace: {self.params["namespace"]}')
         subprocess.run (["kubectl", "delete", "namespace", self.params['namespace']])
 

@@ -45,8 +45,6 @@ def perform_runs (params_dict, global_params):
         util_functions.deep_update (run_params, test_dict)
 
         logger.info ('starting test: %s', test_subdir)
-        logger.debug (run_params)
-        logger.debug (passed_globals)
 
         # run_params is now in a form that perform_singlerun expects
         run_control.perform_singlerun (run_params, passed_globals) 

@@ -1,6 +1,7 @@
 
 import time
 import logging
+from kubuculum import util_functions
 
 logger = logging.getLogger (__name__)
 
@@ -12,7 +13,8 @@ class dummy_pause:
         self.params = { 
             'duration': 5 
         }
-        self.params.update(p)
+        util_functions.deep_update (self.params, p)
+        logger.debug (f'dummy_pause parameters: {self.params}')
 
     # prepare phase: nothing to do 
     def prepare (self):
