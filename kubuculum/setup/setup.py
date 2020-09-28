@@ -2,7 +2,7 @@
 import subprocess
 import time
 import logging
-from kubuculum import util_functions
+import copy
 
 logger = logging.getLogger (__name__)
 
@@ -10,13 +10,7 @@ class environs:
 
     def __init__ (self, p):
 
-        # TODO: read from defaults file
-        # TODO: add roles and rolebindings
-        self.params = {
-            'namespace': 'nm-kubuculum',
-            'dir': '/tmp'
-        }
-        util_functions.deep_update (self.params, p)
+        self.params = copy.deepcopy (p)
         logger.debug (f'setup parameters: {self.params}')
 
     def do_setup (self):

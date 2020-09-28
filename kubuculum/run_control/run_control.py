@@ -19,13 +19,7 @@ def perform_singlerun (params_dict, global_params):
     #
     # perform setup tasks
     #
-    callee_label = 'setup'
-    callee_params = params_dict.pop (callee_label, {})
-    if callee_params is None:
-        callee_params = {}
-
-    kubuculum.util_functions.deep_update (callee_params, global_params)
-    setup_handle = setup.environs (callee_params)
+    setup_handle = setup.environs (global_params)
     setup_handle.do_setup ()
     logger.info ("setup completed")
 
