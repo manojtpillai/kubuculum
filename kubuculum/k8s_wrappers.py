@@ -1,6 +1,9 @@
 
 import subprocess
+import logging
 from kubuculum import util_functions
+
+logger = logging.getLogger (__name__)
 
 # create pod(s) from yaml and wait till ready
 def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, retries, timeout_sec):
@@ -21,12 +24,15 @@ def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, ret
         # get podlist into the form [ "pod/podname-a", "pod/podname-b" ]
         podlist = podlist_bytes.decode('utf-8').strip('\n').split('\n')
 
-        if (expected_count == 0) or (len (podlist) == expected_count):
+        actual_count = len (podlist)
+        if (expected_count == 0) or (actual_count == expected_count):
             break
 
         tried += 1
         if (retries == 0) or (tried == retries):
             break
+
+        logger.debug (f'pod count: expected {expected_count} found {actual_count} on try {tried}; retrying ...')
 
     # TODO: handle error case: pod count != expected count
 

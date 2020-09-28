@@ -9,13 +9,13 @@ run_control:
 
 benchmarks:
   fio_random:
-    filesize_gb: 4
-    numjobs: 2
-    runtime_sec: 20
+    filesize_gb: 1
+    numjobs: 1
+    runtime_sec: 10
 
 multirun_control:
   test_list:
-    - benchmarks:
+    - test_tag: bs-4
+      benchmarks:
         fio_random:
-          ninstances: 2
           bs_kb: 4

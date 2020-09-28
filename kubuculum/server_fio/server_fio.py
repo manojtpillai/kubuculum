@@ -38,6 +38,7 @@ class server_fio:
         util_functions.instantiate_template ( templates_dir, \
             template_file, yaml_file, self.params)
 
+        logger.debug (f'starting server_fio pods')
         # create the pods
         # expected count is nservers
         # set retries to nservers with pause of 30 sec
@@ -45,6 +46,7 @@ class server_fio:
         k8s_wrappers.createpods_sync (self.params['namespace'], \
             yaml_file, self.params['podlabel'], \
             self.params['nservers'], 30, self.params['nservers'], 300)
+        logger.debug (f'server_fio pods ready')
 
         # TODO: use list of pods as returned by k8s
         # update returnparams with server list
