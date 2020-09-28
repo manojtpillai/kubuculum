@@ -49,6 +49,12 @@ def deletefrom_label (namespace, label, resource_type):
     subprocess.run (["kubectl", "delete", resource_type,  "-l", \
         label, "-n", namespace])
 
+def create_namespace (namespace):
+    subprocess.run (["kubectl", "create", "namespace", namespace])
+
+def delete_namespace (namespace):
+    subprocess.run (["kubectl", "delete", "namespace", namespace])
+
 
 # copy from directory in pod(s)
 # for each pod, creates directory with pod name to store contents
