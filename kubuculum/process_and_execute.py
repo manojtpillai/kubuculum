@@ -25,7 +25,6 @@ def perform_runs (run_params):
     # TODO: read from defaults file
     # global params minus log_control params
     global_params = {
-        'namespace': 'nm-kubuculum',
         'base_directory': '/tmp',
         'input_copy': 'kubuculum.input.yaml'
     }
@@ -37,9 +36,8 @@ def perform_runs (run_params):
     if 'dir' not in global_params:
         global_rundir = util_functions.createdir_ts \
             (global_params['base_directory'], 'run_')
-        global_params['dir'] = global_rundir
     else:
-        global_rundir = global_params['dir']
+        global_rundir = global_params.pop ('dir')
     global_params.pop ('base_directory') 
 
     # write a copy of input params as yaml
@@ -87,7 +85,7 @@ def perform_runs (run_params):
     #
     # perform runs
     #
-    multirun_control.perform_runs (params_dict, global_params)
+    multirun_control.perform_runs (global_rundir, params_dict)
 
 
 def get_loglevel (level_str):

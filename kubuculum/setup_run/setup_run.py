@@ -9,19 +9,19 @@ logger = logging.getLogger (__name__)
 
 class environs:
 
-    def __init__ (self, p):
+    def __init__ (self, run_dir, params_dict, globals):
 
-        self.params = copy.deepcopy (p)
-        logger.debug (f'setup_run parameters: {self.params}')
+        self.ns = globals['namespace']
+        logger.debug (f'setup_run parameters: {self.ns}')
 
     def do_setup (self):
 
         # TODO: add roles and rolebindings
-        logger.info (f'creating namespace: {self.params["namespace"]}')
-        k8s_wrappers.create_namespace (self.params['namespace'])
+        logger.info (f'creating namespace: {self.ns}')
+        k8s_wrappers.create_namespace (self.ns)
 
     def cleanup (self):
 
-        logger.info (f'deleting namespace: {self.params["namespace"]}')
-        k8s_wrappers.delete_namespace (self.params['namespace'])
+        logger.info (f'deleting namespace: {self.ns}')
+        k8s_wrappers.delete_namespace (self.ns)
 

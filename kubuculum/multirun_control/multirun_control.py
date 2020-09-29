@@ -6,7 +6,7 @@ from kubuculum.run_control import run_control
 
 logger = logging.getLogger (__name__)
 
-def perform_runs (params_dict, global_params):
+def perform_runs (run_dir, params_dict):
 
     module_label = 'multirun_control'
 
@@ -20,7 +20,6 @@ def perform_runs (params_dict, global_params):
     if test_list is None:
         test_list = []
 
-    run_dir = global_params['dir']
     iter = 0
     for test_dict in test_list:
 
@@ -32,13 +31,9 @@ def perform_runs (params_dict, global_params):
         else:
             test_subdir = 'test-' + str(iter)
 
+        # TODO: handle exception
         # set directory for this test
-        test_dir = run_dir + '/' + test_subdir
-        util_functions.create_dir (test_dir)
-
-        passed_globals = copy.deepcopy (global_params)
-        passed_globals['dir'] = test_dir
-
+        test_dir = util_functions.create_subdir (run_dir, test_subdir)
 
         # generate single dict: params_dict updated with test_dict
         run_params = copy.deepcopy (params_dict)
@@ -47,7 +42,7 @@ def perform_runs (params_dict, global_params):
         logger.info ('starting test: %s', test_subdir)
 
         # run_params is now in a form that perform_singlerun expects
-        run_control.perform_singlerun (run_params, passed_globals) 
+        run_control.perform_singlerun (test_dir, run_params) 
 
         iter += 1
 

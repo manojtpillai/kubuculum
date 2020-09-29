@@ -7,7 +7,7 @@ import kubuculum.util_functions
 
 logger = logging.getLogger (__name__)
 
-def perform_singlerun (params_dict, global_params):
+def perform_singlerun (run_dir, params_dict):
 
     module_label = 'run_control'
 
@@ -16,10 +16,17 @@ def perform_singlerun (params_dict, global_params):
     if module_params is None:
         module_params = {}
 
+    # TODO: read from defaults file
+    run_globals = { 'namespace': 'nm-kubuculum' }
+    if 'storageclass' in module_params:
+        run_globals['storageclass'] = module_params['storageclass']
+    if 'namespace' in module_params:
+        run_globals['namespace'] = module_params['namespace']
+
     #
     # perform setup tasks
     #
-    setup_handle = setup_run.environs (global_params)
+    setup_handle = setup_run.environs (run_dir, params_dict, run_globals)
     setup_handle.do_setup ()
     logger.info ("setup completed")
 
@@ -31,22 +38,8 @@ def perform_singlerun (params_dict, global_params):
         benchmark_module = module_params['benchmark']
         logger.debug ("benchmark %s enabled", benchmark_module)
 
-        benchmarks_dict = params_dict.get ('benchmarks', {})
-        if benchmarks_dict is None:
-            benchmarks_dict = {}
-
-        bench_params = benchmarks_dict.get (benchmark_module, {})
-        if bench_params is None:
-            bench_params = {}
-
-        callee_params = copy.deepcopy (bench_params)
-        kubuculum.util_functions.prepare_call \
-            (benchmark_module, callee_params, global_params)
-
-        if 'storageclass' in module_params:
-            callee_params['storageclass'] = module_params['storageclass']
-
-        benchmark_handle = kubuculum.benchmarks.util_functions.create_object (benchmark_module, callee_params)
+        benchmark_handle = kubuculum.benchmarks.util_functions.create_object \
+            (benchmark_module, run_dir, params_dict, run_globals)
 
     else:
         benchmark_module = None

@@ -9,19 +9,24 @@ logger = logging.getLogger (__name__)
 
 class server_fio:
 
-    # p has params that override the defaults for this class
-    def __init__ (self, p):
+    def __init__ (self, run_dir, params_dict, globals):
 
         # get directory pathname for module
         self.dirpath = os.path.dirname (os.path.abspath (__file__))
+
+        # output directory for self
+        self.tag = 'server_fio' # TODO: make it unique
 
         # load defaults from file
         yaml_file = self.dirpath + '/defaults.yaml'
         self.params = util_functions.dict_from_file (yaml_file)
 
         # update params
-        util_functions.deep_update (self.params, p)
-        logger.debug (f'server_fio parameters: {self.params}')
+        labels_path = ['server_fio']
+        new_params = util_functions.get_modparams (params_dict, labels_path)
+        util_functions.deep_update (self.params, new_params)
+        util_functions.update_modparams (self.params, globals)
+        self.params['dir'] = run_dir + '/' + self.tag
 
         # parameters clients need in order to use this object
         self.returnparams = {}
@@ -29,7 +34,14 @@ class server_fio:
         self.returnparams['serverlist'] = [] # populated at start
 
     # start: create StatefulSet
-    def start (self):
+    def start (self, passed_params):
+
+        logger.debug (f'server_fio start')
+        util_functions.deep_update (self.params, passed_params)
+        logger.debug (f'server_fio parameters: {self.params}')
+
+        # create directory for self
+        util_functions.create_dir (self.params['dir'])
 
         templates_dir = self.dirpath + '/' + self.params['templates_dir']
         template_file = self.params['template_file']

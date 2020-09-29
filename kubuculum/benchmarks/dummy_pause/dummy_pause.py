@@ -7,13 +7,16 @@ logger = logging.getLogger (__name__)
 
 class dummy_pause:
 
-    def __init__ (self, p={}):
+    def __init__ (self, run_dir, params_dict, globals):
 
         # TODO: read from defaults file
         self.params = { 
             'duration': 5 
         }
-        util_functions.deep_update (self.params, p)
+        labels_path = ['benchmarks', 'dummy_pause']
+        new_params = util_functions.get_modparams (params_dict, labels_path)
+        util_functions.deep_update (self.params, new_params)
+      
         logger.debug (f'dummy_pause parameters: {self.params}')
 
     # prepare phase: nothing to do 

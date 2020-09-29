@@ -2,6 +2,7 @@
 import yaml
 import subprocess
 import time
+import copy
 from jinja2 import Environment, FileSystemLoader
 
 # deep update of base_dict with new_dict
@@ -20,15 +21,35 @@ def deep_update (base_dict, new_dict):
         else:
             base_dict[new_key] = new_value
 
-# prepare for calling a module
-# updates module_params; global_params is unchanged
-def prepare_call (module_label, module_params, global_params):
 
-    module_dir = global_params['dir'] + '/' + module_label
-    create_dir (module_dir)
+# extract module dictionary from a run dictionary
+# label_list has elements on path to the module's dictionary
+# result should be deepcopied, if changes need to be made
+def get_modparams (run_params, label_list):
 
-    deep_update (module_params, global_params)
-    module_params['dir'] = module_dir
+    mod_params = run_params
+    for label in label_list:
+        parent_params = mod_params
+        if label in parent_params:
+            mod_params = parent_params[label]
+            if mod_params is None:
+                mod_params = {}
+                break
+        else:
+            mod_params = {}
+            break
+
+    return mod_params
+
+
+# global_params has namespace and storageclass
+def update_modparams (mod_params, global_params):
+
+    for new_key, new_value in global_params.items ():
+        if new_key not in base_dict:
+            mod_params[new_key] = new_value
+        # TODO: log a warning if namespace already in modparams
+
 
 # instantiate jinja2 template to produce yaml
 # uses entries in dict to render the template 
@@ -70,9 +91,18 @@ def createdir_ts (path, tag):
     subprocess.run (["mkdir", subdir])
     return subdir
 
+# TODO: handle exception, if dir exists
 # create a directory 
 def create_dir (path):
     subprocess.run (["mkdir", path])
+
+# TODO: handle exception, if subdir exists
+# create a directory 
+def create_subdir (parent, child):
+    path = parent + '/' + child
+    subprocess.run (["mkdir", path])
+
+    return path
 
 # TODO: make it interruptible ala ansible pause
 # pause for specified duration
