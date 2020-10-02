@@ -50,8 +50,8 @@ def perform_runs (run_params):
     # setup logging
     #
     logging_params = {
-        'stderr': { 'enabled': True, 'level': 'info' },
-        'file': { 'enabled': True, 'filename': 'kubuculum.log', 'level': 'debug' }
+        'stderr': { 'enabled': True, 'level': 'INFO' },
+        'file': { 'enabled': True, 'filename': 'kubuculum.log', 'level': 'DEBUG' }
     }
 
     # update logging defaults with passed values
@@ -63,7 +63,7 @@ def perform_runs (run_params):
     stderr_params = logging_params['stderr']
     if stderr_params['enabled']:
         ch = logging.StreamHandler ()
-        ch.setLevel (get_loglevel (stderr_params['level']))
+        ch.setLevel (stderr_params['level'])
         logger.addHandler (ch)
 
     file_params = logging_params['file']
@@ -76,7 +76,7 @@ def perform_runs (run_params):
         file = dir + '/' + file_params['filename']
         fh = logging.FileHandler (file)
         fmt = logging.Formatter ('%(asctime)s - %(levelname)s - %(message)s')
-        fh.setLevel (get_loglevel (file_params['level']))
+        fh.setLevel (file_params['level'])
         fh.setFormatter (fmt)
         logger.addHandler (fh)
 
@@ -86,17 +86,4 @@ def perform_runs (run_params):
     # perform runs
     #
     multirun_control.perform_runs (global_rundir, params_dict)
-
-
-def get_loglevel (level_str):
-    if level_str == 'debug':
-        return logging.DEBUG
-    elif level_str == 'info':
-        return logging.INFO
-    elif level_str == 'warning':
-        return logging.WARNING
-    elif level_str == 'error':
-        return logging.ERROR
-    elif level_str == 'critical':
-        return logging.CRITICAL
 
