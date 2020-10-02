@@ -50,7 +50,7 @@ class sysstat:
         # pause of 10 sec
         # timeout of 300 sec; TODO: use a param here
         k8s_wrappers.createpods_sync (self.params['namespace'], \
-            yaml_file, self.params['podlabel'], 3, 10, 3, 300)
+            yaml_file, self.params['podlabel'], 0, 10, 0, 300)
         logger.debug (f'sysstat pods ready')
 
     # gather output

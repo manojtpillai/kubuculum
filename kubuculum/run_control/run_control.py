@@ -46,6 +46,7 @@ def perform_singlerun (run_dir, params_dict):
         logger.info ("stats collection started")
 
     else:
+        logger.debug (f'statistics not enabled')
         stats_module = None
 
     # 

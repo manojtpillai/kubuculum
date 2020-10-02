@@ -76,7 +76,7 @@ class server_fio:
         yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
 
         # delete the pods
-        k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+        k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
 
         # delete the PVCs
         k8s_wrappers.deletefrom_label (namespace, \

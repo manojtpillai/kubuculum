@@ -98,7 +98,7 @@ class fio_random:
         logger.info ("copied output from fio_random prepare pod")
 
         # delete prep pod
-        k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+        k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
         logger.info ("deleted fio_random prepare pod")
 
     # run phase : execute test on previously created data set
@@ -129,7 +129,7 @@ class fio_random:
         logger.info ("copied output from fio_random run pod")
 
         # delete prep pod
-        k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+        k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
         logger.info ("deleted fio_random run pod")
 
         logger.info ("stopping server_fio pods")

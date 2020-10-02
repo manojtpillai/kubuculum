@@ -43,11 +43,23 @@ def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, ret
             pod, "-n", namespace, timeout_string])
 
 
-# delete resources given yaml 
-def deletefrom_yaml (namespace, yaml_file):
+# create resources given yaml 
+def createfrom_yaml (yaml_file, namespace=""):
 
-    subprocess.run (["kubectl", "delete", "-f", yaml_file, "-n", \
-        namespace])
+    if namespace == "":
+        subprocess.run (["kubectl", "create", "-f", yaml_file])
+    else:
+        subprocess.run (["kubectl", "create", "-f", yaml_file, "-n", \
+            namespace])
+
+# delete resources given yaml 
+def deletefrom_yaml (yaml_file, namespace=""):
+
+    if namespace == "":
+        subprocess.run (["kubectl", "delete", "-f", yaml_file])
+    else:
+        subprocess.run (["kubectl", "delete", "-f", yaml_file, "-n", \
+            namespace])
 
 # delete resources given label
 def deletefrom_label (namespace, label, resource_type):

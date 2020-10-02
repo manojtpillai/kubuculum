@@ -1,0 +1,23 @@
+
+
+#
+# options not likely to be tuned, similar to ones in most modules
+# 
+
+# output directory for this module; always overridden by caller
+# dir: 
+
+# namespace for k8s resources; always overridden by caller
+# namespace: 
+
+# sub-directory where templates are stored
+templates_dir: templates
+
+# names of template files
+role_template: kubuculum.role.j2
+rolebinding_template: kubuculum.rolebinding.j2
+
+# names for yaml files derived from templates
+role_yaml: kubuculum.role.yaml
+rolebinding_yaml: kubuculum.rolebinding.yaml
+
