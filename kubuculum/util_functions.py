@@ -24,7 +24,6 @@ def deep_update (base_dict, new_dict):
 
 # extract module dictionary from a run dictionary
 # label_list has elements on path to the module's dictionary
-# result should be deepcopied, if changes need to be made
 def get_modparams (run_params, label_list):
 
     mod_params = run_params
@@ -39,7 +38,11 @@ def get_modparams (run_params, label_list):
             mod_params = {}
             break
 
-    return mod_params
+    # deepcopy not strictly required if callers are well behaved
+    # using it to avoid hard-to-track bugs
+    new_params = copy.deepcopy (mod_params)
+
+    return new_params
 
 
 # global_params has namespace and storageclass
