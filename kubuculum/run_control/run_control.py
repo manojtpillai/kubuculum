@@ -3,6 +3,7 @@ import logging
 import copy
 from kubuculum.setup_run import setup_run
 import kubuculum.benchmarks.util_functions
+import kubuculum.statistics.util_functions
 import kubuculum.util_functions
 
 logger = logging.getLogger (__name__)
@@ -29,6 +30,23 @@ def perform_singlerun (run_dir, params_dict):
     setup_handle = setup_run.environs (run_dir, params_dict, run_globals)
     setup_handle.do_setup ()
     logger.info ("setup completed")
+
+    # 
+    # create handle for stats module
+    #
+    if 'statistics' in module_params:
+
+        stats_module = module_params['statistics']
+        logger.debug (f'statistics: {stats_module} enabled')
+
+        stats_handle = kubuculum.statistics.util_functions.create_object \
+            (stats_module, run_dir, params_dict, run_globals)
+
+        stats_handle.start()
+        logger.info ("stats collection started")
+
+    else:
+        stats_module = None
 
     # 
     # create handle for enabled benchmark 
@@ -61,6 +79,20 @@ def perform_singlerun (run_dir, params_dict):
         logger.info ("initiating benchmark run phase")
         benchmark_handle.run ()
         logger.info ("benchmark run phase completed")
+
+    # 
+    # gather statistics
+    #
+    if stats_module is not None:
+        stats_handle.gather ()
+        logger.info ("statistics gathered")
+
+    # 
+    # stop statistics
+    #
+    if stats_module is not None:
+        stats_handle.stop ()
+        logger.info ("statistics collection stopped")
 
     #
     # perform cleanup tasks

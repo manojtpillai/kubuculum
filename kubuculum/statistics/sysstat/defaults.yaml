@@ -1,0 +1,52 @@
+
+# 
+# options likely to be tuned
+# 
+
+# default monitoring interval
+interval_sec: 10
+
+# top output can get huge
+# separate knob for top mon interval
+topintrvl_sec: 30
+
+# top output can get huge
+# opt to limit it by setting below to True
+limittop: True
+
+# number of top top threads for which output is collected
+# when limittop is true
+topthrds: 100
+
+# number of top top procs for which output is collected
+# when limittop is true
+topprocs: 20
+
+#
+# options not likely to be tuned, similar to ones in most modules
+# 
+
+# output directory for this module; always overridden by caller
+# dir: 
+
+# namespace for k8s resources; always overridden by caller
+# namespace: 
+
+# label on pods
+podlabel: name=sysstat-collection
+
+# optional nodeselector
+# nodeselector: "node-role.kubernetes.io/worker=''"
+
+# sub-directory where templates are stored
+templates_dir: templates
+
+# names of template files
+template_file: sysstat.daemonset.j2
+
+# names for yaml files derived from templates
+yaml_file: sysstat.daemonset.yaml
+
+# location of output files in pod
+podoutdir: /data
+

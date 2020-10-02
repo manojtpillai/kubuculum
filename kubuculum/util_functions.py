@@ -49,7 +49,7 @@ def get_modparams (run_params, label_list):
 def update_modparams (mod_params, global_params):
 
     for new_key, new_value in global_params.items ():
-        if new_key not in base_dict:
+        if new_key not in mod_params:
             mod_params[new_key] = new_value
         # TODO: log a warning if namespace already in modparams
 
