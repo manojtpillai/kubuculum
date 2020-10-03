@@ -1,0 +1,28 @@
+
+global:
+  base_directory: /home/mpillai/runs
+
+run_control:
+  namespace: nm-kubuculum
+  benchmark: fio_random
+  statistics: sysstat
+
+benchmarks:
+  fio_random:
+    ninstances: 3
+    filesize_gb: 32
+    numjobs: 4
+    runtime_sec: 240
+
+multirun_control:
+  test_list:
+    - test_tag: rbd
+      run_control:
+        storageclass: ocs-storagecluster-ceph-rbd
+    - test_tag: cephfs
+      run_control:
+        storageclass: ocs-storagecluster-cephfs
+    - test_tag: gp2
+      run_control:
+        storageclass: gp2
+

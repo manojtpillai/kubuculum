@@ -1,21 +1,26 @@
 
 global:
-  namespace: nm-kubuculum
-  base_directory: /root/mpillai/runs
+  base_directory: /home/mpillai/runs
 
 run_control:
+  namespace: nm-kubuculum
   benchmark: fio_random
+  statistics: sysstat
   storageclass: ocs-storagecluster-ceph-rbd
 
 benchmarks:
   fio_random:
     filesize_gb: 1
     numjobs: 1
-    runtime_sec: 10
+    runtime_sec: 30
 
 multirun_control:
   test_list:
     - test_tag: bs-4
       benchmarks:
         fio_random:
-          bs_kb: 4
+          bs_kb: 8
+    - test_tag: bs-4
+      benchmarks:
+        fio_random:
+          bs_kb: 16

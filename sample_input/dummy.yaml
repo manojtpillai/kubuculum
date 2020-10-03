@@ -1,14 +1,9 @@
 
 global:
-  namespace: nm-kubuculum
-  base_directory: /root/mpillai/runs
+  base_directory: /home/mpillai/runs
 
 run_control:
   benchmark: dummy_pause
-
-benchmarks:
-  dummy_pause:
-    duration: 10
 
 multirun_control:
   test_list:
@@ -16,3 +11,4 @@ multirun_control:
       benchmarks:
         dummy_pause:
           duration: 3
+
