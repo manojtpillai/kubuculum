@@ -2,15 +2,15 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: sysstat
+  name: {{ name }}
 spec:
   selector:
     matchLabels:
-      name: sysstat-collection
+      {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
   template:
     metadata:
       labels:
-        name: sysstat-collection
+        {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
     spec:
 {% if nodeselector is defined %}
       nodeSelector:

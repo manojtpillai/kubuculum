@@ -8,13 +8,17 @@ logger = logging.getLogger (__name__)
 
 class sysstat:
 
+    instance_counter = 0
+
     def __init__ (self, run_dir, params_dict, globals):
 
         # get directory pathname for module
         self.dirpath = os.path.dirname (os.path.abspath (__file__))
 
-        # output directory for self
-        self.tag = 'sysstat' # TODO: make it unique
+        # get a unique id and tag
+        self.id = sysstat.instance_counter
+        sysstat.instance_counter += 1
+        self.tag = 'sysstat' + str (self.id)
 
         # load defaults from file
         yaml_file = self.dirpath + '/defaults.yaml'
@@ -26,13 +30,18 @@ class sysstat:
         util_functions.deep_update (self.params, new_params)
         util_functions.update_modparams (self.params, globals)
         self.params['dir'] = run_dir + '/' + self.tag
+        self.params['name'] = self.tag
+        self.params['podlabel'] = "name=" + self.tag
 
-    # start: create daemonset
-    def start (self, passed_params={}):
-
-        logger.debug (f'sysstat start')
+    # extra parmeters passed by caller
+    def update_params (self, passed_params):
         util_functions.deep_update (self.params, passed_params)
         logger.debug (f'sysstat parameters: {self.params}')
+
+    # start: create daemonset
+    def start (self):
+
+        logger.debug (f'sysstat start')
 
         # create directory for self
         util_functions.create_dir (self.params['dir'])
@@ -78,6 +87,6 @@ class sysstat:
         yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
 
         # delete the pods
-        k8s_wrappers.deletefrom_yaml (namespace, yaml_file)
+        k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
 
 

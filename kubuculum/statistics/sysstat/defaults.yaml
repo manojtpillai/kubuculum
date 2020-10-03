@@ -32,8 +32,11 @@ topprocs: 20
 # namespace for k8s resources; always overridden by caller
 # namespace: 
 
-# label on pods
-podlabel: name=sysstat-collection
+# name; meant to be unique in case there are multiple invocations
+# name: derived, sysstat_<id>
+
+# label on pods; meant to be unique in case there are multiple invocations
+# podlabel: derived, name=sysstat_<id>
 
 # optional nodeselector
 # nodeselector: "node-role.kubernetes.io/worker=''"
