@@ -16,11 +16,11 @@ benchmarks:
 
 multirun_control:
   test_list:
-    - test_tag: bs-4
+    - test_tag: bs-8
       benchmarks:
         fio_random:
           bs_kb: 8
-    - test_tag: bs-4
+    - test_tag: bs-16
       benchmarks:
         fio_random:
           bs_kb: 16
