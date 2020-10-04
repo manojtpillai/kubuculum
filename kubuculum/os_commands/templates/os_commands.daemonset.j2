@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ name }}
+spec:
+  selector:
+    matchLabels:
+      {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
+  template:
+    metadata:
+      labels:
+        {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
+    spec:
+{% if nodeselector is defined %}
+      nodeSelector:
+        {{ nodeselector.split("=")[0] }}: {{ nodeselector.split("=")[1] }}
+{% endif %}
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
+      containers:
+      - name: os-command-completed
+        image: rhel7
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 3600"]
+
+      initContainers:
+      - name: os-command
+        image: rhel7
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        command: ["/bin/sh"]
+        args: ["-c", "{{ command }}"]
+
+      hostNetwork: true
+      hostPID: true
+...

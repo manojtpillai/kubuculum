@@ -2,6 +2,7 @@
 import logging
 import copy
 from kubuculum.setup_run import setup_run
+from kubuculum.dropcaches import dropcaches
 import kubuculum.benchmarks.util_functions
 import kubuculum.statistics.util_functions
 import kubuculum.util_functions
@@ -72,6 +73,15 @@ def perform_singlerun (run_dir, params_dict):
         logger.info ("initiating benchmark prepare phase")
         benchmark_handle.prepare()
         logger.info ("benchmark prepare phase completed")
+
+    # 
+    # drop caches before run
+    #
+    drop_caches = module_params.get ('dropcaches_beforerun', False)
+    if drop_caches:
+        dc_handle = dropcaches.dropcaches (run_dir, params_dict, run_globals)
+        dc_handle.drop_caches ()
+        logger.info ("caches dropped before run phase ")
 
     # 
     # execute benchmark run phase

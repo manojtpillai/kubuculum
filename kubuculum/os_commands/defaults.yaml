@@ -1,0 +1,30 @@
+
+#
+# options not likely to be tuned, similar to ones in most modules
+# 
+
+# output directory for this module; always overridden by caller
+# dir: 
+
+# namespace for k8s resources; always overridden by caller
+# namespace: 
+
+# name; meant to be unique in case there are multiple invocations
+# name: derived, oscommands<id>
+
+# label on pods; meant to be unique in case there are multiple invocations
+# podlabel: derived, name=oscommands<id>
+
+# optional nodeselector
+# nodeselector: "node-role.kubernetes.io/worker=''"
+
+# sub-directory where templates are stored
+templates_dir: templates
+
+# names of template files
+template_file: os_commands.daemonset.j2
+
+# names for yaml files derived from templates
+yaml_file: os_commands.daemonset.yaml
+
+
