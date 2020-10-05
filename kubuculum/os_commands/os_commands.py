@@ -17,8 +17,8 @@ class os_commands:
 
         # get a unique id and tag
         self.id = os_commands.instance_counter
-        os_commands.instance_counter += 1
         self.tag = 'oscommands' + str (self.id)
+        os_commands.instance_counter += 1
 
         # load defaults from file
         yaml_file = self.dirpath + '/defaults.yaml'
@@ -36,15 +36,15 @@ class os_commands:
     # extra parmeters passed by caller
     def update_params (self, passed_params):
         util_functions.deep_update (self.params, passed_params)
-        logger.debug (f'os_commands parameters: {self.params}')
 
     # drop_caches: create daemonset of pods to drop os caches
     def drop_caches (self):
 
-        logger.debug (f'{self.tag} drop_caches')
+        logger.debug (f'{self.tag}: drop_caches')
 
         # command for pods to execute 
         self.params['command'] = "sync; sysctl vm.drop_caches=3"
+        logger.debug (f'{self.tag} parameters: {self.params}')
 
         # TODO: dir present should not be an error
         # drop_caches might be called multiple times on same object
@@ -64,9 +64,10 @@ class os_commands:
         # timeout of 300 sec; TODO: use a param here
         k8s_wrappers.createpods_sync (self.params['namespace'], \
             yaml_file, self.params['podlabel'], 0, 10, 0, 300)
-        logger.debug (f'os_commands pods ready')
+        logger.debug (f'{self.tag}: pods ready')
 
         # pods ready means task complete
         k8s_wrappers.deletefrom_yaml (yaml_file, self.params['namespace'])
+        logger.info (f'{self.tag}: OS caches dropped')
 
 

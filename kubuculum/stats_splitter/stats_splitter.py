@@ -28,7 +28,7 @@ class stats_splitter:
             handle.update_params (stats_module_params)
             self.modhandles.append (handle)
 
-        logger.debug (f'statistics enabled: {self.params['stats_list']}')
+        logger.debug (f"statistics enabled: {self.params['stats_list']}")
 
 
     def start (self):

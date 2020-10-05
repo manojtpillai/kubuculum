@@ -42,7 +42,7 @@ class sysstat:
     # start: create daemonset
     def start (self):
 
-        logger.info ("{self.tag} start")
+        logger.info (f'{self.tag} start')
 
         # create directory for self
         util_functions.create_dir (self.params['dir'])
@@ -80,7 +80,7 @@ class sysstat:
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], gather_dir)
-        logger.info ("{self.tag} gather: copied output from sysstat pods")
+        logger.info (f'{self.tag} gather: copied output from sysstat pods')
 
     # stop operation: delete daemonset
     def stop (self):
@@ -90,5 +90,5 @@ class sysstat:
 
         # delete the pods
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
-        logger.info ("{self.tag} stopped")
+        logger.info (f'{self.tag} stopped')
 

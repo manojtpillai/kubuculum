@@ -21,7 +21,6 @@ class dropcaches:
         self.modhandles = []
         for mod_dict in self.params['module_list']:
 
-            logger.debug (f'dropcaches: {mod_dict}')
             # mod_dict is of the form: module_name: {dict_of_params}
             (dc_module, dc_module_params) = \
                 list (mod_dict.items())[0]
@@ -29,6 +28,8 @@ class dropcaches:
                 (dc_module, run_dir, params_dict, globals)
             handle.update_params (dc_module_params)
             self.modhandles.append (handle)
+
+        logger.debug (f"dropaches enabled modules: {self.params['module_list']}")
 
     def drop_caches (self):
 
