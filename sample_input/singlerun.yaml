@@ -1,0 +1,11 @@
+
+global:
+  base_directory: /home/mpillai/runs
+
+run_control:
+  benchmark: dummy_pause
+
+benchmarks:
+  dummy_pause:
+    duration: 7
+

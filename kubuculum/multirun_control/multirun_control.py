@@ -10,6 +10,12 @@ def perform_runs (run_dir, params_dict):
 
     module_label = 'multirun_control'
 
+
+    # input file does not have section for multirun_control
+    if module_label not in params_dict:
+        run_control.perform_singlerun (run_dir, params_dict) 
+        return
+
     # remove my parameters from params_dict
     module_params = params_dict.pop (module_label, {})
     if module_params is None:
