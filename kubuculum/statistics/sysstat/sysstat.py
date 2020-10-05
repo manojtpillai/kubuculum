@@ -17,8 +17,8 @@ class sysstat:
 
         # get a unique id and tag
         self.id = sysstat.instance_counter
-        sysstat.instance_counter += 1
         self.tag = 'sysstat' + str (self.id)
+        sysstat.instance_counter += 1
 
         # load defaults from file
         yaml_file = self.dirpath + '/defaults.yaml'
@@ -33,7 +33,8 @@ class sysstat:
         self.params['name'] = self.tag
         self.params['podlabel'] = "name=" + self.tag
 
-    # extra parmeters passed by caller
+    # extra parameters passed by caller
+    # TODO: log warning and ignore if already started
     def update_params (self, passed_params):
         util_functions.deep_update (self.params, passed_params)
         logger.debug (f'sysstat parameters: {self.params}')
@@ -41,7 +42,7 @@ class sysstat:
     # start: create daemonset
     def start (self):
 
-        logger.debug (f'sysstat start')
+        logger.info ("{self.tag} start")
 
         # create directory for self
         util_functions.create_dir (self.params['dir'])
@@ -53,14 +54,14 @@ class sysstat:
         util_functions.instantiate_template ( templates_dir, \
             template_file, yaml_file, self.params)
 
-        logger.debug (f'starting sysstat pods')
+        logger.debug (f'{self.tag}: starting sysstat pods')
         # create the pods
         # expected count is unknown, use 0; so retries not relevant
         # pause of 10 sec
         # timeout of 300 sec; TODO: use a param here
         k8s_wrappers.createpods_sync (self.params['namespace'], \
             yaml_file, self.params['podlabel'], 0, 10, 0, 300)
-        logger.debug (f'sysstat pods ready')
+        logger.debug (f'{self.tag}: pods ready')
 
     # gather output
     def gather (self, tag=""):
@@ -72,13 +73,14 @@ class sysstat:
         if tag == "":
             gather_dir = self.params['dir']
         else:
+            # TODO: gather_dir should not exist
             gather_dir = self.params['dir'] + tag
             util_functions.create_dir (gather_dir)
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], gather_dir)
-        logger.info ("copied output from sysstat pods")
+        logger.info ("{self.tag} gather: copied output from sysstat pods")
 
     # stop operation: delete daemonset
     def stop (self):
@@ -88,5 +90,5 @@ class sysstat:
 
         # delete the pods
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
-
+        logger.info ("{self.tag} stopped")
 
