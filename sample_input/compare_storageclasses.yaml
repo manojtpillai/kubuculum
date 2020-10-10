@@ -1,6 +1,6 @@
 
 global:
-  base_directory: /tmp
+  output_basedir: /tmp
 
 run_control:
   namespace: nm-kubuculum
@@ -21,7 +21,7 @@ benchmarks:
 # stats_splitter allows multiple modules to be specified
 # or same module with different options
 stats_splitter:
-  stats_list:
+  module_list:
     - sysstat:
         nodeselector: node-role.kubernetes.io/master=''
     - sysstat:

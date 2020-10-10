@@ -25,7 +25,7 @@ def perform_runs (run_params):
     # TODO: read from defaults file
     # global params minus log_control params
     global_params = {
-        'base_directory': '/tmp',
+        'output_basedir': '/tmp',
         'input_copy': 'kubuculum.input.yaml'
     }
 
@@ -33,12 +33,12 @@ def perform_runs (run_params):
     util_functions.deep_update (global_params, passed_globals) 
 
     # create a directory for runs, if needed
-    if 'dir' not in global_params:
+    if 'output_dir' not in global_params:
         global_rundir = util_functions.createdir_ts \
-            (global_params['base_directory'], 'run_')
+            (global_params['output_basedir'], 'run_')
     else:
-        global_rundir = global_params.pop ('dir')
-    global_params.pop ('base_directory') 
+        global_rundir = global_params.pop ('output_dir')
+    global_params.pop ('output_basedir') 
 
     # write a copy of input params as yaml
     input_file_copy = global_params.pop ('input_copy')

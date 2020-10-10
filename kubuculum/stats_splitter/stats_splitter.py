@@ -18,7 +18,7 @@ class stats_splitter:
         self.params = util_functions.get_modparams (params_dict, labels_path)
 
         self.modhandles = []
-        for stats_dict in self.params['stats_list']:
+        for stats_dict in self.params['module_list']:
 
             # stats_dict is of the form: stats_module: {dict_of_params}
             (stats_module, stats_module_params) = \
@@ -28,7 +28,7 @@ class stats_splitter:
             handle.update_params (stats_module_params)
             self.modhandles.append (handle)
 
-        logger.debug (f"statistics enabled: {self.params['stats_list']}")
+        logger.debug (f"statistics enabled: {self.params['module_list']}")
 
 
     def start (self):

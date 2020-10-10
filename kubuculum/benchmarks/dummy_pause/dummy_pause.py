@@ -11,7 +11,7 @@ class dummy_pause:
 
         # TODO: read from defaults file
         self.params = { 
-            'duration': 5 
+            'duration_sec': 5 
         }
         labels_path = ['benchmarks', 'dummy_pause']
         new_params = util_functions.get_modparams (params_dict, labels_path)
@@ -28,7 +28,7 @@ class dummy_pause:
     def run (self):
 
         logger.info ('dummy_pause: run: start')
-        time.sleep(self.params['duration'])
+        time.sleep(self.params['duration_sec'])
         logger.info ('dummy_pause: run: completed')
 
 
