@@ -74,9 +74,9 @@ def delete_namespace (namespace):
     subprocess.run (["kubectl", "delete", "namespace", namespace])
 
 
-# copy from directory in pod(s)
-# for each pod, creates directory with pod name to store contents
-def copyfrompods (namespace, label, poddir, output_dir):
+# get list of pods matching a label
+# return value in the form [ "podname-a", "podname-b" ]
+def get_podlist (namespace, label):
 
     # get list of pod names as bytes
     podlist_bytes = subprocess.check_output (["kubectl", "get", "pods", \
@@ -86,10 +86,23 @@ def copyfrompods (namespace, label, poddir, output_dir):
     # get podlist into the form [ "podname-a", "podname-b" ]
     podlist = podlist_bytes.decode('utf-8').strip('\n').split('\n')
 
+    return podlist
+
+# copy from directory in pod(s)
+# for each pod, creates directory with pod name to store contents
+def copyfrompods (namespace, label, poddir, output_dir):
+
+    podlist = get_podlist (namespace, label)
+
     for pod in podlist:
         src = namespace + "/" + pod + ":" + poddir
         dest = output_dir + "/" + pod
 
         util_functions.create_dir (dest)
         subprocess.run (["kubectl", "cp", src, dest])
+
+# 
+def exec_command (command, pod, namespace):
+    full_command = 'kubectl exec ' + pod + ' -n ' + namespace + ' -- ' + command
+    subprocess.run ([full_command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 

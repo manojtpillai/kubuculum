@@ -1,0 +1,28 @@
+
+global:
+  base_directory: /root/mpillai/runs
+
+run_control:
+  namespace: nm-kubuculum
+  storageclass: ocs-storagecluster-ceph-rbd
+  benchmark: fio_random
+  statistics: sysstat
+  dropcaches_beforerun: True
+
+benchmarks:
+  fio_random:
+    filesize_gb: 16
+    numjobs: 4
+    runtime_sec: 60
+  dummy_pause:
+    duration: 30
+
+statistics:
+  sysstat:
+    nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+
+dropcaches:
+  module_list:
+    - openshift_storage:
+    - os_commands:
+        nodeselector: cluster.ocs.openshift.io/openshift-storage=''

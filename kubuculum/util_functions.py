@@ -10,6 +10,9 @@ from jinja2 import Environment, FileSystemLoader
 # new_dict is unchanged
 def deep_update (base_dict, new_dict):
 
+    if not new_dict:
+        return
+
     for new_key, new_value in new_dict.items ():
         if new_key in base_dict:
             base_value = base_dict.pop (new_key)

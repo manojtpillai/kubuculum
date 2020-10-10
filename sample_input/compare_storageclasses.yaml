@@ -1,0 +1,51 @@
+
+global:
+  base_directory: /tmp
+
+run_control:
+  namespace: nm-kubuculum
+  # storageclass is being specified in multirun_control
+  benchmark: fio_random
+  statistics: stats_splitter
+  dropcaches_beforerun: True
+
+benchmarks:
+  fio_random:
+    ninstances: 3
+    filesize_gb: 1 # change to say 32, for a realistic run
+    numjobs: 4
+    runtime_sec: 240
+    server_nodeselector: node-role.kubernetes.io/master=''
+
+# specify how and where to collect stats.
+# stats_splitter allows multiple modules to be specified
+# or same module with different options
+stats_splitter:
+  stats_list:
+    - sysstat:
+        nodeselector: node-role.kubernetes.io/master=''
+    - sysstat:
+        nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+
+# specify which caches need to be dropped and possibly where.
+# modules in module_list should have a drop_caches method.
+dropcaches:
+  module_list: 
+    - openshift_storage: 
+    - os_commands:
+        nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+    - os_commands:
+        nodeselector: node-role.kubernetes.io/master=''
+
+multirun_control:
+  test_list:
+    - test_tag: rbd
+      run_control:
+        storageclass: ocs-storagecluster-ceph-rbd
+    - test_tag: cephfs
+      run_control:
+        storageclass: ocs-storagecluster-cephfs
+    - test_tag: gp2
+      run_control:
+        storageclass: gp2
+
