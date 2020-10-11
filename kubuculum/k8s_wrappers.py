@@ -9,8 +9,7 @@ logger = logging.getLogger (__name__)
 def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, retries, timeout_sec):
 
     # create the pods
-    subprocess.run (["kubectl", "create", "-f", yaml_file, "-n", \
-        namespace])
+    createfrom_yaml (yaml_file, namespace)
 
     tried = 0
     while True:
@@ -39,39 +38,49 @@ def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, ret
     # wait for pod to become ready
     timeout_string = "--timeout=" + str(timeout_sec) + "s"
     for pod in podlist:
-        subprocess.run (["kubectl", "wait", "--for=condition=Ready", \
-            pod, "-n", namespace, timeout_string])
+        result = subprocess.run (["kubectl", "wait", \
+            "--for=condition=Ready", pod, "-n", namespace, \
+            timeout_string], stdout=subprocess.PIPE)
+        logger.debug (f'{result}')
 
 
 # create resources given yaml 
 def createfrom_yaml (yaml_file, namespace=""):
 
     if namespace == "":
-        subprocess.run (["kubectl", "create", "-f", yaml_file])
+        result = subprocess.run (["kubectl", "create", "-f", \
+            yaml_file], stdout=subprocess.PIPE)
     else:
-        subprocess.run (["kubectl", "create", "-f", yaml_file, "-n", \
-            namespace])
+        result = subprocess.run (["kubectl", "create", "-f", \
+            yaml_file, "-n", namespace], stdout=subprocess.PIPE)
+    logger.debug (f'{result}')
 
 # delete resources given yaml 
 def deletefrom_yaml (yaml_file, namespace=""):
 
     if namespace == "":
-        subprocess.run (["kubectl", "delete", "-f", yaml_file])
+        result = subprocess.run (["kubectl", "delete", "-f", \
+            yaml_file], stdout=subprocess.PIPE)
     else:
-        subprocess.run (["kubectl", "delete", "-f", yaml_file, "-n", \
-            namespace])
+        result = subprocess.run (["kubectl", "delete", "-f", \
+            yaml_file, "-n", namespace], stdout=subprocess.PIPE)
+    logger.debug (f'{result}')
 
 # delete resources given label
 def deletefrom_label (namespace, label, resource_type):
-
-    subprocess.run (["kubectl", "delete", resource_type,  "-l", \
-        label, "-n", namespace])
+    result = subprocess.run (["kubectl", "delete", resource_type, \
+        "-l", label, "-n", namespace], stdout=subprocess.PIPE)
+    logger.debug (f'{result}')
 
 def create_namespace (namespace):
-    subprocess.run (["kubectl", "create", "namespace", namespace])
+    result = subprocess.run (["kubectl", "create", "namespace", \
+        namespace], stdout=subprocess.PIPE)
+    logger.debug (f'{result}')
 
 def delete_namespace (namespace):
-    subprocess.run (["kubectl", "delete", "namespace", namespace])
+    result = subprocess.run (["kubectl", "delete", "namespace", \
+        namespace], stdout=subprocess.PIPE)
+    logger.debug (f'{result}')
 
 
 # get list of pods matching a label
@@ -99,10 +108,17 @@ def copyfrompods (namespace, label, poddir, output_dir):
         dest = output_dir + "/" + pod
 
         util_functions.create_dir (dest)
-        subprocess.run (["kubectl", "cp", src, dest])
 
-# 
+        result = subprocess.run (["kubectl", "cp", src, dest], \
+            stdout=subprocess.PIPE)
+        logger.debug (f'{result}')
+
+# execute a given command using kubectl-exec
 def exec_command (command, pod, namespace):
+
     full_command = 'kubectl exec ' + pod + ' -n ' + namespace + ' -- ' + command
-    subprocess.run ([full_command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    result = subprocess.run ([full_command], stdout=subprocess.PIPE, \
+        stderr=subprocess.STDOUT, shell=True)
+
+    return result
 

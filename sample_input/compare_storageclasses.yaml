@@ -17,7 +17,7 @@ benchmarks:
     runtime_sec: 240
     server_nodeselector: node-role.kubernetes.io/master=''
 
-# specify how and where to collect stats.
+# specify how and from where to collect stats.
 # stats_splitter allows multiple modules to be specified
 # or same module with different options
 stats_splitter:

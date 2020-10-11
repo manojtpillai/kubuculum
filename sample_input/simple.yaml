@@ -1,0 +1,17 @@
+
+global:
+  output_basedir: /tmp
+
+run_control:
+  namespace: nm-kubuculum
+  benchmark: dummy_pause
+  statistics: sysstat
+
+benchmarks:
+  dummy_pause:
+    duration_sec: 15 
+
+statistics:
+  sysstat:
+    nodeselector: node-role.kubernetes.io/master=''
+
