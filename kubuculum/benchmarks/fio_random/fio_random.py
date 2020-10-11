@@ -128,9 +128,12 @@ class fio_random:
             self.params['podoutdir'], run_dir)
         logger.info ("copied output from fio_random run pod")
 
-        # delete prep pod
+        # delete run phase pod
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
         logger.info ("deleted fio_random run pod")
+
+        # gather info from server pods
+        self.serverhandle.gather ()
 
         logger.info ("stopping server_fio pods")
         self.serverhandle.stop ()

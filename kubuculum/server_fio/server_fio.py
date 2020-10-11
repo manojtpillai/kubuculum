@@ -68,6 +68,29 @@ class server_fio:
 
         return self.returnparams
 
+    # gather output
+    def gather (self, tag=""):
+
+        # shortcuts
+        namespace = self.params['namespace']
+        podlabel = self.params['podlabel']
+
+        if tag == "":
+            gather_dir = self.params['dir']
+        else:
+            # TODO: gather_dir should not exist
+            gather_dir = self.params['dir'] + tag
+            util_functions.create_dir (gather_dir)
+
+        # form list of commands 
+        ls_command = 'ls -l' + ' ' + self.params['datadir']
+        command_list = [(ls_command, 'ls_l.txt'), \
+            ('df -h', 'df_h.txt'), ('mount', 'mount.txt')]
+
+        # gather output of commands
+        k8s_wrappers.command_tofile (command_list, podlabel, \
+            namespace, gather_dir)
+
 
     # stop operation: delete StatefulSet and PVCs
     def stop (self):

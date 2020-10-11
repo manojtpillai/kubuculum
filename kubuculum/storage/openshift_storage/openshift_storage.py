@@ -50,5 +50,7 @@ class openshift_storage:
             k8s_wrappers.exec_command (osd_command, tools_pod, namespace)
             logger.debug (f'openshift_storage: dropped ceph caches')
         else:
-            logger.debug (f'openshift_storage: tools pod not found')
+            logger.warning (f'openshift_storage: tools pod not found')
+
+        logger.info (f'openshift_storage: ceph caches dropped')
 

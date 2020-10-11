@@ -120,5 +120,25 @@ def exec_command (command, pod, namespace):
     result = subprocess.run ([full_command], stdout=subprocess.PIPE, \
         stderr=subprocess.STDOUT, shell=True)
 
+    # TODO: get result into caller-friendly format
     return result
+
+# kubectl-exec command and write output to file
+def command_tofile (command_list, label, namespace, output_dir):
+
+    podlist = get_podlist (namespace, label)
+
+    for pod in podlist:
+
+        # TODO: log error is dir present
+        dest = output_dir + "/" + pod
+        util_functions.create_dir (dest)
+
+        for command, tag in command_list:
+            output_file = dest + '/' + tag
+            full_command = 'kubectl exec ' + pod + ' -n ' + \
+                namespace + ' -- ' + command
+            with open (output_file, 'w') as fp:
+                subprocess.run ([full_command], stdout=fp, shell=True)
+            logger.debug (f'captured output of {command} in {dest}')
 
