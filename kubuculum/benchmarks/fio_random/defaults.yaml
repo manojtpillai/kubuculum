@@ -14,13 +14,15 @@ ninstances: 1
 numjobs: 2
 
 # block size for random I/O
-bs_kb: 8
+bs_kb_list:
+  - 8
 
 # file size per job
 filesize_gb: 1
 
 # fio iodepth
-iodepth: 32
+iodepth_list:
+  - 32
 
 # run time for each test in run phase
 runtime_sec: 30

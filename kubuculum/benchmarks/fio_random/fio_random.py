@@ -4,6 +4,7 @@ import os
 import subprocess
 import time
 from kubuculum.server_fio import server_fio
+from kubuculum.dropcaches import dropcaches
 from kubuculum import util_functions
 from kubuculum import k8s_wrappers
 
@@ -34,7 +35,13 @@ class fio_random:
         # create directory for self
         util_functions.create_dir (self.params['dir'])
 
+        # create handle for dropping caches
+        #
+        self.dc_handle = dropcaches.dropcaches \
+            (self.params['dir'], params_dict, globals)
+
         # create a handle for the fio server object
+        #
         self.serverhandle = server_fio.server_fio \
             (self.params['dir'], params_dict, globals)
 
@@ -102,11 +109,10 @@ class fio_random:
         logger.info ("deleted fio_random prepare pod")
 
     # run phase : execute test on previously created data set
-    def run (self):
+    def _run (self, run_dir):
 
         # shortcuts for commonly used parameters
         namespace = self.params['namespace']
-        run_dir = self.params['dir']
         podlabel = self.params['podlabel']
 
         templates_dir = self.dirpath + '/' + self.params['templates_dir']
@@ -132,6 +138,62 @@ class fio_random:
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
         logger.info ("deleted fio_random run pod")
 
+    # prepare for next iteration of run phase
+    def _setup_next (self):
+        k8s_wrappers.await_termination (self.params['namespace'], \
+            self.params['podlabel'])
+        self.dc_handle.drop_caches ()
+
+    # run phase : execute test on previously created data set
+    def run (self):
+
+        # will there be multiple iterations?
+        num_iterations = len(self.params['bs_kb_list']) * \
+            len(self.params['iodepth_list'])
+        if 'rate_iops_list' in self.params:
+            num_iterations *= len(self.params['rate_iops_list'])
+
+        logger.info (f'fio_random: {num_iterations} iterations to be performed')
+
+        iter = 0
+        for bs_kb in self.params['bs_kb_list']:
+
+            self.params['bs_kb'] = bs_kb
+            run_dir = 'bs_kb-' + str (bs_kb)
+            for iodepth in self.params['iodepth_list']:
+
+                self.params['iodepth'] = iodepth
+                run_dir = run_dir + '_iodepth-' + str (iodepth)
+                if 'rate_iops_list' in self.params:
+                    for rate_iops in self.params['rate_iops_list']:
+
+                        self.params['rate_iops'] = rate_iops
+                        run_dir = run_dir + '_rate_iops-' + str (rate_iops)
+
+                        if num_iterations > 1:
+                            run_dirpath = self.params['dir'] + '/' + run_dir
+                            util_functions.create_dir (run_dirpath)
+                        else:
+                            run_dirpath = self.params['dir']
+                        self._run (run_dirpath)
+                        iter += 1
+                        if iter < num_iterations:
+                            self._setup_next ()
+
+                else:
+                    if num_iterations > 1:
+                        run_dirpath = self.params['dir'] + '/' + run_dir
+                        util_functions.create_dir (run_dirpath)
+                    else:
+                        run_dirpath = self.params['dir']
+                    self._run (run_dirpath)
+                    iter += 1
+                    if iter < num_iterations:
+                        self._setup_next ()
+
+        logger.info (f'fio_random: performed {iter} iterations')
+
+            
         # gather info from server pods
         self.serverhandle.gather ()
 

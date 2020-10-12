@@ -4,7 +4,7 @@ global:
 
 run_control:
   namespace: nm-kubuculum
-  # storageclass is being specified in multirun_control
+  # storageclass is being specified in batch_control
   benchmark: fio_random
   statistics: stats_splitter
   dropcaches_beforerun: True

@@ -33,6 +33,8 @@ class os_commands:
         self.params['name'] = self.tag
         self.params['podlabel'] = 'name=' + self.tag
 
+        self.drop_count = 0
+
     # extra parmeters passed by caller
     def update_params (self, passed_params):
         util_functions.deep_update (self.params, passed_params)
@@ -49,14 +51,15 @@ class os_commands:
         # TODO: dir present should not be an error
         # drop_caches might be called multiple times on same object
         # create directory for self
-        util_functions.create_dir (self.params['dir'])
+        if self.drop_count == 0:
+            util_functions.create_dir (self.params['dir'])
 
-        templates_dir = self.dirpath + '/' + self.params['templates_dir']
-        template_file = self.params['template_file']
-        yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
+            templates_dir = self.dirpath + '/' + self.params['templates_dir']
+            template_file = self.params['template_file']
+            yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
 
-        util_functions.instantiate_template ( templates_dir, \
-            template_file, yaml_file, self.params)
+            util_functions.instantiate_template ( templates_dir, \
+                template_file, yaml_file, self.params)
 
         # create the pods
         # expected count is unknown, use 0; so retries not relevant
@@ -65,6 +68,8 @@ class os_commands:
         k8s_wrappers.createpods_sync (self.params['namespace'], \
             yaml_file, self.params['podlabel'], 0, 10, 0, 300)
         logger.debug (f'{self.tag}: pods ready')
+
+        self.drop_count += 1
 
         # pods ready means task complete
         k8s_wrappers.deletefrom_yaml (yaml_file, self.params['namespace'])

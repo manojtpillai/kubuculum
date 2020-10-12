@@ -95,6 +95,9 @@ def get_podlist (namespace, label):
     # get podlist into the form [ "podname-a", "podname-b" ]
     podlist = podlist_bytes.decode('utf-8').strip('\n').split('\n')
 
+    # handle empty return
+    podlist = list (filter (None, podlist))
+
     return podlist
 
 # copy from directory in pod(s)
@@ -162,4 +165,24 @@ def get_podlocations (podlabel, namespace, output_dir, filename=""):
             subprocess.run (['kubectl', 'get', 'pods', '-l', \
                 podlabel, '-n', namespace, '-o', 'wide'], stdout=fh)
         logger.debug (f'captured pod locations in {output_file}')
+
+
+# wait till pods with podlabel terminate
+def await_termination (namespace, podlabel, pause_sec=20, retries=10):
+
+    tried = 0
+    while True:
+
+        podlist = get_podlist (namespace, podlabel)
+        if len(podlist) == 0:
+            break
+
+        if pause_sec > 0 :
+            util_functions.pause (pause_sec)
+
+        tried += 1
+        # TODO: handle error
+        if (retries == 0) or (tried == retries):
+            logger.warning (f'await_termination: giving up after {tried} retries')
+            break
 
