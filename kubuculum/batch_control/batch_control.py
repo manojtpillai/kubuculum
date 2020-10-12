@@ -8,10 +8,10 @@ logger = logging.getLogger (__name__)
 
 def perform_runs (run_dir, params_dict):
 
-    module_label = 'multirun_control'
+    module_label = 'batch_control'
 
 
-    # input file does not have section for multirun_control
+    # input file does not have section for batch_control
     if module_label not in params_dict:
         run_control.perform_singlerun (run_dir, params_dict) 
         return

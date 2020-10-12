@@ -7,6 +7,7 @@ run_control:
   storageclass: ocs-storagecluster-ceph-rbd
   benchmark: fio_random
   statistics: sysstat
+  dropcaches_beforerun: True
 
 benchmarks:
   fio_random:
@@ -25,7 +26,7 @@ dropcaches:
     - os_commands:
         nodeselector: cluster.ocs.openshift.io/openshift-storage=''
 
-multirun_control:
+batch_control:
   test_list:
     - test_tag: bs-8
       benchmarks:

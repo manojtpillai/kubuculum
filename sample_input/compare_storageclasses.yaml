@@ -18,8 +18,8 @@ benchmarks:
     server_nodeselector: node-role.kubernetes.io/master=''
 
 # specify how and from where to collect stats.
-# stats_splitter allows multiple modules to be specified
-# or same module with different options
+# stats_splitter allows multiple modules to be specified,
+# or same module with different options.
 stats_splitter:
   module_list:
     - sysstat:
@@ -37,7 +37,7 @@ dropcaches:
     - os_commands:
         nodeselector: node-role.kubernetes.io/master=''
 
-multirun_control:
+batch_control:
   test_list:
     - test_tag: rbd
       run_control:

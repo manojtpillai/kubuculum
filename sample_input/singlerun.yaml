@@ -11,6 +11,7 @@ run_control:
 
 benchmarks:
   fio_random:
+    ninstances: 1
     filesize_gb: 1 # try 16, for a realistic run
     numjobs: 4
     runtime_sec: 120

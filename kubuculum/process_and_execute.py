@@ -3,7 +3,7 @@ import logging
 import subprocess
 import copy
 from kubuculum import util_functions
-from kubuculum.multirun_control import multirun_control
+from kubuculum.batch_control import batch_control
 
 def perform_runs (run_params):
 
@@ -85,5 +85,5 @@ def perform_runs (run_params):
     #
     # perform runs
     #
-    multirun_control.perform_runs (global_rundir, params_dict)
+    batch_control.perform_runs (global_rundir, params_dict)
 
