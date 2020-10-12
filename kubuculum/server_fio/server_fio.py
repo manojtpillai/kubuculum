@@ -43,6 +43,10 @@ class server_fio:
         # create directory for self
         util_functions.create_dir (self.params['dir'])
 
+        # shortcuts
+        namespace = self.params['namespace']
+        podlabel = self.params['podlabel']
+
         templates_dir = self.dirpath + '/' + self.params['templates_dir']
         template_file = self.params['template_file']
         yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
@@ -55,10 +59,13 @@ class server_fio:
         # expected count is nservers
         # set retries to nservers with pause of 30 sec
         # timeout of 300 sec; TODO: use a param here
-        k8s_wrappers.createpods_sync (self.params['namespace'], \
-            yaml_file, self.params['podlabel'], \
+        k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             self.params['nservers'], 30, self.params['nservers'], 300)
         logger.debug (f'server_fio pods ready')
+
+        # get pod locations
+        k8s_wrappers.get_podlocations (podlabel, namespace, \
+            self.params['dir'])
 
         # TODO: use list of pods as returned by k8s
         # update returnparams with server list

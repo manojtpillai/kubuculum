@@ -35,7 +35,7 @@ def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, ret
 
     # TODO: handle error case: pod count != expected count
 
-    # wait for pod to become ready
+    # wait for pod(s) to become ready
     timeout_string = "--timeout=" + str(timeout_sec) + "s"
     for pod in podlist:
         result = subprocess.run (["kubectl", "wait", \
@@ -123,14 +123,17 @@ def exec_command (command, pod, namespace):
     # TODO: get result into caller-friendly format
     return result
 
-# kubectl-exec command and write output to file
+# kubectl-exec commands passed as a list
+# each element of list is a tuple (command, tag)
+# pod(s) where commands are to be executed specified by a label
+# write output to file(s) in output_dir
 def command_tofile (command_list, label, namespace, output_dir):
 
     podlist = get_podlist (namespace, label)
 
     for pod in podlist:
 
-        # TODO: log error is dir present
+        # TODO: log error if dir present
         dest = output_dir + "/" + pod
         util_functions.create_dir (dest)
 
@@ -138,7 +141,25 @@ def command_tofile (command_list, label, namespace, output_dir):
             output_file = dest + '/' + tag
             full_command = 'kubectl exec ' + pod + ' -n ' + \
                 namespace + ' -- ' + command
-            with open (output_file, 'w') as fp:
-                subprocess.run ([full_command], stdout=fp, shell=True)
+            with open (output_file, 'w') as fh:
+                subprocess.run ([full_command], stdout=fh, shell=True)
             logger.debug (f'captured output of {command} in {dest}')
+
+
+# get nodes where pods are running
+def get_podlocations (podlabel, namespace, output_dir, filename=""):
+
+    podlist = get_podlist (namespace, podlabel)
+
+    for pod in podlist:
+
+        if not filename:
+            output_file = output_dir + '/' + 'podlocations.txt'
+        else:
+            output_file = output_dir + '/' + filename
+
+        with open (output_file, 'w') as fh:
+            subprocess.run (['kubectl', 'get', 'pods', '-l', \
+                podlabel, '-n', namespace, '-o', 'wide'], stdout=fh)
+        logger.debug (f'captured pod locations in {output_file}')
 

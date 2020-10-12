@@ -47,6 +47,10 @@ class sysstat:
         # create directory for self
         util_functions.create_dir (self.params['dir'])
 
+        # shortcuts
+        namespace = self.params['namespace']
+        podlabel = self.params['podlabel']
+
         templates_dir = self.dirpath + '/' + self.params['templates_dir']
         template_file = self.params['template_file']
         yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
@@ -59,9 +63,13 @@ class sysstat:
         # expected count is unknown, use 0; so retries not relevant
         # pause of 10 sec
         # timeout of 300 sec; TODO: use a param here
-        k8s_wrappers.createpods_sync (self.params['namespace'], \
-            yaml_file, self.params['podlabel'], 0, 10, 0, 300)
+        k8s_wrappers.createpods_sync (namespace, yaml_file, \
+            podlabel, 0, 10, 0, 300)
         logger.debug (f'{self.tag}: pods ready')
+
+        # get pod locations
+        k8s_wrappers.get_podlocations (podlabel, namespace, \
+            self.params['dir'])
 
     # gather output
     def gather (self, tag=""):
