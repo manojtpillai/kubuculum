@@ -11,9 +11,10 @@ run_control:
 
 benchmarks:
   fio_random:
-    ninstances: 1
     filesize_gb: 1 # try 16, for a realistic run
-    numjobs: 4
+    bs_kb_list:  # list of fio block sizes to run with, in KiB
+      - 8
+      - 32
     runtime_sec: 120
     server_nodeselector: cluster.ocs.openshift.io/openshift-storage=''
 
@@ -26,4 +27,17 @@ dropcaches:
     - openshift_storage:
     - os_commands:
         nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+
+batch_control:
+  run_list:
+    - run_tag: 1-server
+      benchmarks:
+        fio_random:
+          ninstances: 1
+          numjobs: 12
+    - run_tag: 2-servers
+      benchmarks:
+        fio_random:
+          ninstances: 2
+          numjobs: 6
 

@@ -6,14 +6,13 @@ from kubuculum.run_control import run_control
 
 logger = logging.getLogger (__name__)
 
-def perform_runs (run_dir, params_dict):
+def perform_runs (batch_dir, params_dict):
 
     module_label = 'batch_control'
 
-
     # input file does not have section for batch_control
     if module_label not in params_dict:
-        run_control.perform_singlerun (run_dir, params_dict) 
+        run_control.perform_singlerun (batch_dir, params_dict) 
         return
 
     # remove my parameters from params_dict
@@ -21,36 +20,36 @@ def perform_runs (run_dir, params_dict):
     if module_params is None:
         module_params = {}
 
-    # get list of tests to iterate over
-    test_list = module_params.get ('test_list', [])
-    if test_list is None:
-        test_list = []
+    # get list of runs to iterate over
+    run_list = module_params.get ('run_list', [])
+    if run_list is None:
+        run_list = []
 
     iter = 0
-    for test_dict in test_list:
+    for run_dict in run_list:
 
-        if test_dict is None:
-            test_dict = {}
+        if run_dict is None:
+            run_dict = {}
 
-        if 'test_tag' in test_dict:
-            test_subdir = test_dict.pop ('test_tag')
+        if 'run_tag' in run_dict:
+            run_subdir = run_dict.pop ('run_tag')
         else:
-            test_subdir = 'test-' + str(iter)
+            run_subdir = 'run-' + str(iter)
 
         # TODO: handle exception
-        # set directory for this test
-        test_dir = util_functions.create_subdir (run_dir, test_subdir)
+        # set directory for this run
+        run_dir = util_functions.create_subdir (batch_dir, run_subdir)
 
-        # generate single dict: params_dict updated with test_dict
+        # generate single dict: params_dict updated with run_dict
         run_params = copy.deepcopy (params_dict)
-        util_functions.deep_update (run_params, test_dict)
+        util_functions.deep_update (run_params, run_dict)
 
-        logger.info ('starting test: %s', test_subdir)
+        logger.info ('starting run: %s', run_subdir)
 
         # run_params is now in a form that perform_singlerun expects
-        run_control.perform_singlerun (test_dir, run_params) 
+        run_control.perform_singlerun (run_dir, run_params) 
 
         iter += 1
 
-    logger.info ('all tests completed')
+    logger.info ('all runs completed')
 

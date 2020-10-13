@@ -11,6 +11,7 @@ run_control:
 
 benchmarks:
   fio_random:
+    ninstances: 2
     filesize_gb: 1 # try 16, for a realistic run
     numjobs: 4
     runtime_sec: 120
@@ -25,15 +26,4 @@ dropcaches:
     - openshift_storage:
     - os_commands:
         nodeselector: cluster.ocs.openshift.io/openshift-storage=''
-
-batch_control:
-  test_list:
-    - test_tag: bs-8
-      benchmarks:
-        fio_random:
-          bs_kb: 8
-    - test_tag: bs-16
-      benchmarks:
-        fio_random:
-          bs_kb: 16
 
