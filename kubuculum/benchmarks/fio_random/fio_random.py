@@ -140,9 +140,9 @@ class fio_random:
 
     # prepare for next iteration of run phase
     def _setup_next (self):
+        self.dc_handle.drop_caches ()
         k8s_wrappers.await_termination (self.params['namespace'], \
             self.params['podlabel'])
-        self.dc_handle.drop_caches ()
 
     # run phase : execute test on previously created data set
     def run (self):
@@ -153,20 +153,19 @@ class fio_random:
         if 'rate_iops_list' in self.params:
             num_iterations *= len(self.params['rate_iops_list'])
 
-        logger.info (f'fio_random: {num_iterations} iterations to be performed')
+        logger.info (f'fio_random: tests to be performed: {num_iterations}')
 
         iter = 0
         for bs_kb in self.params['bs_kb_list']:
-
             self.params['bs_kb'] = bs_kb
             run_dir = 'bs_kb-' + str (bs_kb)
-            for iodepth in self.params['iodepth_list']:
 
+            for iodepth in self.params['iodepth_list']:
                 self.params['iodepth'] = iodepth
                 run_dir = run_dir + '_iodepth-' + str (iodepth)
+
                 if 'rate_iops_list' in self.params:
                     for rate_iops in self.params['rate_iops_list']:
-
                         self.params['rate_iops'] = rate_iops
                         run_dir = run_dir + '_rate_iops-' + str (rate_iops)
 
@@ -191,9 +190,8 @@ class fio_random:
                     if iter < num_iterations:
                         self._setup_next ()
 
-        logger.info (f'fio_random: performed {iter} iterations')
+        logger.info (f'fio_random: tests performed: {iter}')
 
-            
         # gather info from server pods
         self.serverhandle.gather ()
 
