@@ -30,7 +30,7 @@ class fio_random:
         util_functions.deep_update (self.params, new_params)
         util_functions.update_modparams (self.params, globals)
         self.params['dir'] = run_dir + '/' + self.tag
-        logger.debug (f'fio_random parameters: {self.params}')
+        logger.debug (f'parameters: {self.params}')
 
         # create directory for self
         util_functions.create_dir (self.params['dir'])
@@ -97,16 +97,16 @@ class fio_random:
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
-        logger.info ("fio_random prepare pod completed")
+        logger.info ("prepare pod completed")
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], preparep_dir)
-        logger.info ("copied output from fio_random prepare pod")
+        logger.info ("copied output from prepare pod")
 
         # delete prep pod
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
-        logger.info ("deleted fio_random prepare pod")
+        logger.info ("deleted prepare pod")
 
     # run phase : execute test on previously created data set
     def _run (self, run_dir):
@@ -127,16 +127,16 @@ class fio_random:
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
-        logger.info ("fio_random run pod completed")
+        logger.info ("run pod completed")
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], run_dir)
-        logger.info ("copied output from fio_random run pod")
+        logger.info ("copied output from run pod")
 
         # delete run phase pod
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
-        logger.info ("deleted fio_random run pod")
+        logger.info ("deleted run pod")
 
     # prepare for next iteration of run phase
     def _setup_next (self):
@@ -153,7 +153,7 @@ class fio_random:
         if 'rate_iops_list' in self.params:
             num_iterations *= len(self.params['rate_iops_list'])
 
-        logger.info (f'fio_random: tests to be performed: {num_iterations}')
+        logger.info (f'tests to be performed: {num_iterations}')
 
         iter = 0
         for bs_kb in self.params['bs_kb_list']:
@@ -185,16 +185,16 @@ class fio_random:
                     else:
                         run_dirpath = self.params['dir']
 
-                    logger.info (f'fio_random: starting test : {iter}')
+                    logger.info (f'starting test : {iter}')
                     self._run (run_dirpath)
-                    logger.info (f'fio_random: completed test : {iter}')
+                    logger.info (f'completed test : {iter}')
 
                     iter += 1
                     i_inner += 1
                     if iter < num_iterations:
                         self._setup_next ()
 
-        logger.info (f'fio_random: tests performed: {iter}')
+        logger.info (f'tests performed: {iter}')
 
         # gather info from server pods
         self.serverhandle.gather ()

@@ -45,12 +45,12 @@ class openshift_storage:
             mds_command = 'ceph tell mds.* cache drop'
             osd_command = 'ceph tell osd.* cache drop'
 
-            logger.debug (f'openshift_storage: dropping ceph caches')
+            logger.debug (f'dropping ceph caches')
             k8s_wrappers.exec_command (mds_command, tools_pod, namespace)
             k8s_wrappers.exec_command (osd_command, tools_pod, namespace)
-            logger.debug (f'openshift_storage: dropped ceph caches')
+            logger.debug (f'dropped ceph caches')
         else:
-            logger.warning (f'openshift_storage: tools pod not found')
+            logger.warning (f'tools pod not found')
 
-        logger.info (f'openshift_storage: ceph caches dropped')
+        logger.info (f'ceph caches dropped')
 

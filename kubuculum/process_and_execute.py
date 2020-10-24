@@ -63,7 +63,9 @@ def perform_runs (run_params):
     stderr_params = logging_params['stderr']
     if stderr_params['enabled']:
         ch = logging.StreamHandler ()
+        fmt = logging.Formatter ('%(module)s - %(message)s')
         ch.setLevel (stderr_params['level'])
+        ch.setFormatter (fmt)
         logger.addHandler (ch)
 
     file_params = logging_params['file']
@@ -75,7 +77,8 @@ def perform_runs (run_params):
 
         file = dir + '/' + file_params['filename']
         fh = logging.FileHandler (file)
-        fmt = logging.Formatter ('%(asctime)s - %(levelname)s - %(message)s')
+        fmt = logging.Formatter \
+            ('%(asctime)s - %(levelname)s - %(module)s - %(message)s')
         fh.setLevel (file_params['level'])
         fh.setFormatter (fmt)
         logger.addHandler (fh)
