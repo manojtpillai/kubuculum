@@ -158,35 +158,39 @@ class fio_random:
         iter = 0
         for bs_kb in self.params['bs_kb_list']:
             self.params['bs_kb'] = bs_kb
-            run_dir = 'bs_kb-' + str (bs_kb)
+            bs_dirtag = 'bs_kb-' + str (bs_kb)
 
             for iodepth in self.params['iodepth_list']:
                 self.params['iodepth'] = iodepth
-                run_dir = run_dir + '_iodepth-' + str (iodepth)
+                iod_dirtag = '_iodepth-' + str (iodepth)
 
+                # rate_iops_list is optional
                 if 'rate_iops_list' in self.params:
-                    for rate_iops in self.params['rate_iops_list']:
-                        self.params['rate_iops'] = rate_iops
-                        run_dir = run_dir + '_rate_iops-' + str (rate_iops)
-
-                        if num_iterations > 1:
-                            run_dirpath = self.params['dir'] + '/' + run_dir
-                            util_functions.create_dir (run_dirpath)
-                        else:
-                            run_dirpath = self.params['dir']
-                        self._run (run_dirpath)
-                        iter += 1
-                        if iter < num_iterations:
-                            self._setup_next ()
-
+                    num_inner = len (self.params['rate_iops_list'])
                 else:
+                    num_inner = 1
+                i_inner = 0
+                while i_inner < num_inner:
+                    if 'rate_iops_list' in self.params:
+                        rate_iops = self.params['rate_iops_list'][i_inner]
+                        self.params['rate_iops'] = rate_iops
+                        run_dir = bs_dirtag + iod_dirtag \
+                            + '_rate_iops-' + str (rate_iops)
+                    else:
+                        run_dir = bs_dirtag + iod_dirtag
+
                     if num_iterations > 1:
                         run_dirpath = self.params['dir'] + '/' + run_dir
                         util_functions.create_dir (run_dirpath)
                     else:
                         run_dirpath = self.params['dir']
+
+                    logger.info (f'fio_random: starting test : {iter}')
                     self._run (run_dirpath)
+                    logger.info (f'fio_random: completed test : {iter}')
+
                     iter += 1
+                    i_inner += 1
                     if iter < num_iterations:
                         self._setup_next ()
 
