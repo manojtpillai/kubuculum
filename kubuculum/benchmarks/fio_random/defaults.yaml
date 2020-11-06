@@ -13,16 +13,26 @@ ninstances: 1
 # number of jobs per instance
 numjobs: 2
 
-# block size for random I/O
-bs_kb_list:
-  - 8
-
 # file size per job
 filesize_gb: 1
+
+# there are a few options that are specified as lists.
+# if any of these lists has more than 1 item, each run
+# will have multiple tests
+#
+# block size for random I/O
+# fio bs option for each test is based on this
+bs_kb_list:
+  - 8
 
 # fio iodepth
 iodepth_list:
   - 32
+
+# optional: rate limit
+# fio rate_iops option for each test is based on this
+# rate_iops_list:
+  # - 1k
 
 # run time for each test in run phase
 runtime_sec: 30

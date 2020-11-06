@@ -60,6 +60,9 @@ spec:
             ioengine=libaio
             direct=1
             iodepth={{ iodepth }}
+{% if rate_iops is defined %}
+            rate_iops={{ rate_iops }}
+{% endif %}
             time_based=1
             runtime={{ runtime_sec }}
             directory={{ datadir }}
@@ -102,6 +105,9 @@ spec:
             ioengine=libaio
             direct=1
             iodepth={{ iodepth }}
+{% if rate_iops is defined %}
+            rate_iops={{ rate_iops }}
+{% endif %}
             time_based=1
             runtime={{ runtime_sec }}
             directory={{ datadir }}
