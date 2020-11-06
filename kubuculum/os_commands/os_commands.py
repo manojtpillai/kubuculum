@@ -48,10 +48,10 @@ class os_commands:
         self.params['command'] = "sync; sysctl vm.drop_caches=3"
         logger.debug (f'{self.tag} parameters: {self.params}')
 
-        # TODO: dir present should not be an error
         # drop_caches might be called multiple times on same object
-        # create directory for self
         if self.drop_count == 0:
+            # first call, create directory for self
+            # TODO: dir present should not be an error
             util_functions.create_dir (self.params['dir'])
 
             templates_dir = self.dirpath + '/' + self.params['templates_dir']
@@ -60,6 +60,8 @@ class os_commands:
 
             util_functions.instantiate_template ( templates_dir, \
                 template_file, yaml_file, self.params)
+        else:
+            yaml_file = self.params['dir'] + '/' + self.params['yaml_file']
 
         # create the pods
         # expected count is unknown, use 0; so retries not relevant
