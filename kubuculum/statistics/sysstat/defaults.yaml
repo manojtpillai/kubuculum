@@ -8,7 +8,7 @@ interval_sec: 10
 
 # top output can get huge
 # separate knob for top mon interval
-topintrvl_sec: 30
+topintrvl_sec: 20
 
 # top output can get huge
 # opt to limit it by setting below to True
