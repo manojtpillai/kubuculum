@@ -13,6 +13,11 @@
 # sub-directory where templates are stored
 templates_dir: templates
 
+# for failed runs, cleanup may be required,
+# put yaml files in accessible directory
+# directory where yaml files are created
+yaml_dir: /tmp
+
 # names of template files
 role_template: kubuculum.role.j2
 rolebinding_template: kubuculum.rolebinding.j2

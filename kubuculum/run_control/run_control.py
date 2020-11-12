@@ -28,7 +28,7 @@ def perform_singlerun (run_dir, params_dict):
     #
     # perform setup tasks
     #
-    setup_handle = setup_run.environs (run_dir, params_dict, run_globals)
+    setup_handle = setup_run.setup_run (run_dir, params_dict, run_globals)
     setup_handle.do_setup ()
     logger.info (f'setup completed')
 

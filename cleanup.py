@@ -14,5 +14,5 @@ if args.namespace:
 else:
     environment_params = { 'namespace' : default_namespace }
 
-callee_handle = setup_run.environs ("dummy", {}, environment_params)
+callee_handle = setup_run.setup_run ("dummy", {}, environment_params)
 callee_handle.cleanup()
