@@ -20,12 +20,13 @@ benchmarks:
 # specify how and from where to collect stats.
 # stats_splitter allows multiple modules to be specified,
 # or same module with different options.
-stats_splitter:
-  module_list:
-    - sysstat:
-        nodeselector: node-role.kubernetes.io/master=''
-    - sysstat:
-        nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+statistics:
+  stats_splitter:
+    module_list:
+      - sysstat:
+          nodeselector: node-role.kubernetes.io/master=''
+      - sysstat:
+          nodeselector: cluster.ocs.openshift.io/openshift-storage=''
 
 # specify which caches need to be dropped and possibly where.
 # modules in module_list should have a drop_caches method.

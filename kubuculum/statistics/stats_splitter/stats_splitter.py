@@ -14,7 +14,7 @@ class stats_splitter:
         self.dirpath = os.path.dirname (os.path.abspath (__file__))
 
         # update params
-        labels_path = ['stats_splitter']
+        labels_path = ['statistics', 'stats_splitter']
         self.params = util_functions.get_modparams (params_dict, labels_path)
 
         self.modhandles = []

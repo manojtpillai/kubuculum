@@ -1,7 +1,7 @@
 
 
 from kubuculum.statistics.sysstat.sysstat import sysstat
-from kubuculum.stats_splitter.stats_splitter import stats_splitter
+from kubuculum.statistics.stats_splitter.stats_splitter import stats_splitter
 
 def create_object (class_name, run_dir, params_dict, globals):
 
