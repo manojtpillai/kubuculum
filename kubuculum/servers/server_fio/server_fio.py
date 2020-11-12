@@ -9,20 +9,24 @@ logger = logging.getLogger (__name__)
 
 class server_fio:
 
+    instance_counter = 0
+
     def __init__ (self, run_dir, params_dict, globals):
 
         # get directory pathname for module
         self.dirpath = os.path.dirname (os.path.abspath (__file__))
 
-        # output directory for self
-        self.tag = 'server_fio' # TODO: make it unique
+        # get a unique id and tag
+        self.id = server_fio.instance_counter
+        self.tag = 'server_fio' + str (self.id)
+        server_fio.instance_counter += 1
 
         # load defaults from file
         yaml_file = self.dirpath + '/defaults.yaml'
         self.params = util_functions.dict_from_file (yaml_file)
 
         # update params
-        labels_path = ['server_fio']
+        labels_path = ['servers', 'server_fio']
         new_params = util_functions.get_modparams (params_dict, labels_path)
         util_functions.deep_update (self.params, new_params)
         util_functions.update_modparams (self.params, globals)
@@ -36,9 +40,9 @@ class server_fio:
     # start: create StatefulSet
     def start (self, passed_params):
 
-        logger.debug (f'server_fio start')
+        logger.debug (f'{self.tag} start')
         util_functions.deep_update (self.params, passed_params)
-        logger.debug (f'server_fio parameters: {self.params}')
+        logger.debug (f'{self.tag} parameters: {self.params}')
 
         # create directory for self
         util_functions.create_dir (self.params['dir'])
@@ -54,14 +58,14 @@ class server_fio:
         util_functions.instantiate_template ( templates_dir, \
             template_file, yaml_file, self.params)
 
-        logger.debug (f'starting server_fio pods')
+        logger.debug (f'starting {self.tag} pods')
         # create the pods
         # expected count is nservers
         # set retries to nservers with pause of 30 sec
         # timeout of 300 sec; TODO: use a param here
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             self.params['nservers'], 30, self.params['nservers'], 300)
-        logger.debug (f'server_fio pods ready')
+        logger.debug (f'{self.tag} pods ready')
 
         # get pod locations
         k8s_wrappers.get_podlocations (podlabel, namespace, \

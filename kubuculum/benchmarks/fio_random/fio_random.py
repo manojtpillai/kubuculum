@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 import time
-from kubuculum.server_fio import server_fio
+from kubuculum.servers.server_fio import server_fio
 from kubuculum.dropcaches import dropcaches
 from kubuculum import util_functions
 from kubuculum import k8s_wrappers
