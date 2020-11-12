@@ -18,7 +18,7 @@ class server_fio:
 
         # get a unique id and tag
         self.id = server_fio.instance_counter
-        self.tag = 'server_fio' + str (self.id)
+        self.tag = 'serverfio' + str (self.id)
         server_fio.instance_counter += 1
 
         # load defaults from file
@@ -31,6 +31,8 @@ class server_fio:
         util_functions.deep_update (self.params, new_params)
         util_functions.update_modparams (self.params, globals)
         self.params['dir'] = run_dir + '/' + self.tag
+        self.params['name'] = self.tag
+        self.params['podlabel'] = "name=" + self.tag
 
         # parameters clients need in order to use this object
         self.returnparams = {}
@@ -74,7 +76,7 @@ class server_fio:
         # TODO: use list of pods as returned by k8s
         # update returnparams with server list
         for inst in range (self.params['nservers']):
-            new_elem = 'server-fio-' + str (inst) + '.server-fio'
+            new_elem = self.tag + '-' + str (inst) + '.' + self.tag
             self.returnparams['serverlist'].append (new_elem)
 
         return self.returnparams

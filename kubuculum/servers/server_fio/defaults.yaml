@@ -1,6 +1,9 @@
 
-# output directory for this module; always set by caller
-# dir: /tmp
+# name of object; derived: server_fio<id>
+# name: 
+
+# output directory for this module; derived from dir set by caller
+# dir: 
 
 # namespace for k8s resources; always set by caller
 # namespace: default
@@ -8,8 +11,8 @@
 # optional; uses default storageclass, if not set
 # storageclass: 
 
-# label on pods
-podlabel: role=server-fio
+# label on pods; derived: name=server_fio<id>
+# podlabel: 
 
 # optional nodeselector
 # nodeselector: "node-role.kubernetes.io/worker=''"

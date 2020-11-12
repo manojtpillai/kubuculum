@@ -2,32 +2,32 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: server-fio
+  name: {{ name }}
   labels:
-    name: server-fio
+    name: {{ name }}
 spec:
   ports:
   - port: {{ port }}
     targetPort: {{ port }}
   clusterIP: None
   selector:
-    role: server-fio
+    name: {{ name }}
 ...
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: server-fio
+  name: {{ name }}
 spec:
   selector:
     matchLabels:
-      role: server-fio
-  serviceName: "server-fio"
+      name: {{ name }}
+  serviceName: {{ name }}
   replicas: {{ nservers }}
   template:
     metadata:
       labels:
-        role: server-fio
+        name: {{ name }}
     spec:
 {% if nodelabel is defined %}
       nodeSelector:
