@@ -1,0 +1,27 @@
+
+# to change these parameters in the input file,
+# provide new values under key 'global'
+
+# destination directory for run(s)
+# a timestamped sub-dir is created in this directory
+output_basedir: /tmp
+
+# overrides output_basedir
+# instead of output_basedir + timestamped sub-dir,
+# use this directory for output.
+# output_dir: /tmp
+
+# store a copy of the input parameters here
+input_copy: kubuculum.input.yaml
+
+# logging defaults
+log_control:
+  stderr:
+    enabled: True
+    level: INFO
+  file:
+    enabled: True
+    level: DEBUG
+    # dirname: # default, use the output directory
+    filename: kubuculum.log 
+

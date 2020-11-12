@@ -2,6 +2,7 @@
 import logging
 import subprocess
 import copy
+import os
 from kubuculum import util_functions
 from kubuculum.batch_control import batch_control
 
@@ -10,24 +11,15 @@ def perform_runs (run_params):
     # make a copy of params
     params_dict = copy.deepcopy (run_params)
 
-    #
-    # handle global parameters
-    #
     # remove global parameters from params_dict
     passed_globals = params_dict.pop ('global', {})
     if passed_globals is None:
         passed_globals = {}
 
-    passed_logparams = passed_globals.pop ('log_control', {})
-    if passed_logparams is None:
-        passed_logparams = {}
-
-    # TODO: read from defaults file
-    # global params minus log_control params
-    global_params = {
-        'output_basedir': '/tmp',
-        'input_copy': 'kubuculum.input.yaml'
-    }
+    # read global defaults from file
+    dirpath = os.path.dirname (os.path.abspath (__file__))
+    yaml_file = dirpath + '/global_defaults.yaml'
+    global_params = util_functions.dict_from_file (yaml_file)
 
     # update global defaults with passed values
     util_functions.deep_update (global_params, passed_globals) 
@@ -37,28 +29,21 @@ def perform_runs (run_params):
         global_rundir = util_functions.createdir_ts \
             (global_params['output_basedir'], 'run_')
     else:
-        global_rundir = global_params.pop ('output_dir')
-    global_params.pop ('output_basedir') 
+        global_rundir = global_params['output_dir']
 
     # write a copy of input params as yaml
-    input_file_copy = global_params.pop ('input_copy')
+    input_file_copy = global_params['input_copy']
     input_file_copy = global_rundir + '/' + input_file_copy
     util_functions.dict_to_file (run_params, input_file_copy)
 
-    # TODO: read from defaults file
+    # 
+    # set up logging 
     #
-    # setup logging
-    #
-    logging_params = {
-        'stderr': { 'enabled': True, 'level': 'INFO' },
-        'file': { 'enabled': True, 'filename': 'kubuculum.log', 'level': 'DEBUG' }
-    }
-
-    # update logging defaults with passed values
-    util_functions.deep_update (logging_params, passed_logparams) 
 
     logger = logging.getLogger ()
     logger.setLevel (logging.DEBUG)
+
+    logging_params = global_params['log_control']
 
     stderr_params = logging_params['stderr']
     if stderr_params['enabled']:
