@@ -68,7 +68,7 @@ def perform_runs (run_params):
         fh.setFormatter (fmt)
         logger.addHandler (fh)
 
-    logger.info ("output directory: %s" , global_rundir)
+    logger.info (f'output directory: {global_rundir}')
 
     #
     # perform runs

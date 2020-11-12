@@ -30,7 +30,7 @@ def perform_singlerun (run_dir, params_dict):
     #
     setup_handle = setup_run.environs (run_dir, params_dict, run_globals)
     setup_handle.do_setup ()
-    logger.info ("setup completed")
+    logger.info (f'setup completed')
 
     # 
     # create handle for stats module
@@ -44,7 +44,7 @@ def perform_singlerun (run_dir, params_dict):
             (stats_module, run_dir, params_dict, run_globals)
 
         stats_handle.start()
-        logger.info ("stats collection started")
+        logger.info (f'stats collection started')
 
     else:
         logger.debug (f'statistics not enabled')
@@ -56,23 +56,23 @@ def perform_singlerun (run_dir, params_dict):
     if 'benchmark' in module_params:
 
         benchmark_module = module_params['benchmark']
-        logger.debug ("benchmark %s enabled", benchmark_module)
+        logger.debug (f'benchmark {benchmark_module} enabled')
 
         benchmark_handle = kubuculum.benchmarks.util_functions.create_object \
             (benchmark_module, run_dir, params_dict, run_globals)
 
     else:
         benchmark_module = None
-        logger.info ("no benchmark enabled")
+        logger.info (f'no benchmark enabled')
 
 
     # 
     # execute benchmark prepare phase
     #
     if benchmark_module is not None:
-        logger.info ("initiating benchmark prepare phase")
+        logger.info (f'initiating benchmark prepare phase')
         benchmark_handle.prepare()
-        logger.info ("benchmark prepare phase completed")
+        logger.info (f'benchmark prepare phase completed')
 
     # 
     # drop caches before run
@@ -81,34 +81,34 @@ def perform_singlerun (run_dir, params_dict):
     if drop_caches:
         dc_handle = dropcaches.dropcaches (run_dir, params_dict, run_globals)
         dc_handle.drop_caches ()
-        logger.info ("caches dropped before run phase ")
+        logger.info (f'caches dropped before run phase')
 
     # 
     # execute benchmark run phase
     #
     if benchmark_module is not None:
-        logger.info ("initiating benchmark run phase")
+        logger.info (f'initiating benchmark run phase')
         benchmark_handle.run ()
-        logger.info ("benchmark run phase completed")
+        logger.info (f'benchmark run phase completed')
 
     # 
     # gather statistics
     #
     if stats_module is not None:
         stats_handle.gather ()
-        logger.info ("statistics gathered")
+        logger.info (f'statistics gathered')
 
     # 
     # stop statistics
     #
     if stats_module is not None:
         stats_handle.stop ()
-        logger.info ("statistics collection stopped")
+        logger.info (f'statistics collection stopped')
 
     #
     # perform cleanup tasks
     #
     setup_handle.cleanup ()
-    logger.info ("cleanup completed")
+    logger.info (f'cleanup completed')
 
 

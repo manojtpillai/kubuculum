@@ -27,8 +27,8 @@ class dummy_pause:
     # run phase : sleep for duration
     def run (self):
 
-        logger.info ('dummy_pause: run: start')
+        logger.info (f'run: start')
         time.sleep(self.params['duration_sec'])
-        logger.info ('dummy_pause: run: completed')
+        logger.info (f'run: completed')
 
 

@@ -44,12 +44,12 @@ def perform_runs (batch_dir, params_dict):
         run_params = copy.deepcopy (params_dict)
         util_functions.deep_update (run_params, run_dict)
 
-        logger.info ('starting run: %s', run_subdir)
+        logger.info (f'starting run: {run_subdir}')
 
         # run_params is now in a form that perform_singlerun expects
         run_control.perform_singlerun (run_dir, run_params) 
 
         iter += 1
 
-    logger.info ('all runs completed')
+    logger.info (f'all runs completed')
 
