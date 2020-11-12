@@ -5,7 +5,7 @@ global:
 run_control:
   namespace: nm-kubuculum
   benchmark: dummy_pause
-  statistics: sysstat
+  # statistics: sysstat # uncomment to gather sysstat output
 
 benchmarks:
   dummy_pause:
@@ -13,5 +13,4 @@ benchmarks:
 
 statistics:
   sysstat:
-    nodeselector: node-role.kubernetes.io/master=''
-
+      nodeselector: node-role.kubernetes.io/master=''
