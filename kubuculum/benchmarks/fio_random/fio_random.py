@@ -17,7 +17,6 @@ class fio_random:
         # get directory pathname for module
         self.dirpath = os.path.dirname (os.path.abspath (__file__))
 
-        # output directory for self
         self.tag = 'fio_random' # TODO: make it unique
 
         # load defaults from file
@@ -93,6 +92,8 @@ class fio_random:
         util_functions.instantiate_template (templates_dir, \
             template_file, yaml_file, self.params)
 
+        logger.info ("creating prepare pod")
+
         # create prep pod, and wait for its completion
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
@@ -108,7 +109,7 @@ class fio_random:
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
         logger.info ("deleted prepare pod")
 
-    # run phase : execute test on previously created data set
+    # run single iteration/test against previously created data set
     def _run (self, run_dir):
 
         # shortcuts for commonly used parameters
@@ -123,10 +124,13 @@ class fio_random:
         util_functions.instantiate_template ( templates_dir, \
             template_file, yaml_file, self.params)
 
+        logger.info ("creating run pod")
+
         # create pod, and wait for its completion
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
+
         logger.info ("run pod completed")
 
         # copy output from pod
@@ -144,14 +148,19 @@ class fio_random:
         k8s_wrappers.await_termination (self.params['namespace'], \
             self.params['podlabel'])
 
-    # run phase : execute test on previously created data set
+    # run phase : execute test(s) on previously created data set
     def run (self):
 
         # will there be multiple iterations?
         num_iterations = len(self.params['bs_kb_list']) * \
             len(self.params['iodepth_list'])
+
+        # rate_iops_list is optional
         if 'rate_iops_list' in self.params:
-            num_iterations *= len(self.params['rate_iops_list'])
+            num_inner = len (self.params['rate_iops_list'])
+            num_iterations *= num_inner
+        else:
+            num_inner = 1
 
         logger.info (f'tests to be performed: {num_iterations}')
 
@@ -164,11 +173,6 @@ class fio_random:
                 self.params['iodepth'] = iodepth
                 iod_dirtag = '_iodepth-' + str (iodepth)
 
-                # rate_iops_list is optional
-                if 'rate_iops_list' in self.params:
-                    num_inner = len (self.params['rate_iops_list'])
-                else:
-                    num_inner = 1
                 i_inner = 0
                 while i_inner < num_inner:
                     if 'rate_iops_list' in self.params:
