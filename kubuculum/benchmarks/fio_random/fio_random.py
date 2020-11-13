@@ -65,6 +65,11 @@ class fio_random:
         if 'storageclass' in self.params:
             self.serverparams['storageclass'] = self.params['storageclass']
 
+        # pass on nodeselector, if specified
+        if 'server_nodeselector' in self.params:
+            self.serverparams['nodeselector'] = \
+                self.params['server_nodeselector']
+
 
     # prepare phase: create data set
     def prepare (self):

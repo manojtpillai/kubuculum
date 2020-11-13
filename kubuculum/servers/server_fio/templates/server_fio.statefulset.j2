@@ -4,14 +4,14 @@ kind: Service
 metadata:
   name: {{ name }}
   labels:
-    name: {{ name }}
+    {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
 spec:
   ports:
   - port: {{ port }}
     targetPort: {{ port }}
   clusterIP: None
   selector:
-    name: {{ name }}
+    {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
 ...
 ---
 apiVersion: apps/v1
@@ -21,17 +21,17 @@ metadata:
 spec:
   selector:
     matchLabels:
-      name: {{ name }}
+      {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
   serviceName: {{ name }}
   replicas: {{ nservers }}
   template:
     metadata:
       labels:
-        name: {{ name }}
+        {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
     spec:
-{% if nodelabel is defined %}
+{% if nodeselector is defined %}
       nodeSelector:
-        {{ nodelabel.split("=")[0] }}: {{ nodelabel.split("=")[1] }}
+        {{ nodeselector.split("=")[0] }}: {{ nodeselector.split("=")[1] }}
 {% endif %}
       containers:
       - name: fioserver

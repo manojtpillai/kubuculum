@@ -12,10 +12,11 @@ run_control:
 benchmarks:
   fio_random:
     ninstances: 3
-    filesize_gb: 1 # change to say 32, for a realistic run
+    filesize_gb: 1 # change to say 16, for a realistic run
     numjobs: 4
     runtime_sec: 240
-    server_nodeselector: node-role.kubernetes.io/master=''
+    server_nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+
 
 # specify how and from where to collect stats.
 # stats_splitter allows multiple modules to be specified,
@@ -24,9 +25,10 @@ statistics:
   stats_splitter:
     module_list:
       - sysstat:
-          nodeselector: node-role.kubernetes.io/master=''
-      - sysstat:
           nodeselector: cluster.ocs.openshift.io/openshift-storage=''
+      # the following is just for illustration; no good reason to have it here
+      - sysstat:
+          nodeselector: node-role.kubernetes.io/master=''
 
 # specify which caches need to be dropped and possibly where.
 # modules in module_list should have a drop_caches method.
@@ -35,8 +37,6 @@ dropcaches:
     - openshift_storage: 
     - os_commands:
         nodeselector: cluster.ocs.openshift.io/openshift-storage=''
-    - os_commands:
-        nodeselector: node-role.kubernetes.io/master=''
 
 batch_control:
   run_list:
