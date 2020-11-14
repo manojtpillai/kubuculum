@@ -1,0 +1,14 @@
+
+#
+# defaults for Openshift Container Storage (OCS)
+#
+
+# namespace used by OCS
+ocs_namespace: openshift-storage
+
+# label used by OCS
+nodelabel: cluster.ocs.openshift.io/openshift-storage=''
+
+# most functionality is through the tools pod
+podlabel: app=rook-ceph-tools
+

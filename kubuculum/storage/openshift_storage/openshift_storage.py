@@ -14,12 +14,9 @@ class openshift_storage:
         # get directory pathname for module
         self.dirpath = os.path.dirname (os.path.abspath (__file__))
 
-        # TODO: read from defaults
-        self.params = {
-            'ocs_namespace': 'openshift-storage',
-            'nodelabel': 'cluster.ocs.openshift.io/openshift-storage=',
-            'podlabel': 'app=rook-ceph-tools'
-        }
+        # load defaults from file
+        yaml_file = self.dirpath + '/defaults.yaml'
+        self.params = util_functions.dict_from_file (yaml_file)
 
         # update params; doesn't need kubuculum namespace
         labels_path = ['storage', 'openshift_storage']
@@ -39,18 +36,17 @@ class openshift_storage:
         # get the tools pod; there is only one
         podlist = k8s_wrappers.get_podlist (namespace, \
             self.params['podlabel'])
-        tools_pod = podlist[0] 
 
-        if tools_pod:
+        if len(podlist) >= 1:
+            tools_pod = podlist[0] 
             mds_command = 'ceph tell mds.* cache drop'
             osd_command = 'ceph tell osd.* cache drop'
 
             logger.debug (f'dropping ceph caches')
             k8s_wrappers.exec_command (mds_command, tools_pod, namespace)
             k8s_wrappers.exec_command (osd_command, tools_pod, namespace)
-            logger.debug (f'dropped ceph caches')
+            logger.info (f'ceph caches dropped')
         else:
-            logger.warning (f'tools pod not found')
+            logger.warning (f'tools pod not found; ceph caches not dropped')
 
-        logger.info (f'ceph caches dropped')
 
