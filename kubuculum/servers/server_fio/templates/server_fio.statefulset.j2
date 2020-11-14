@@ -23,6 +23,7 @@ spec:
     matchLabels:
       {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
   serviceName: {{ name }}
+  podManagementPolicy: "Parallel"
   replicas: {{ nservers }}
   template:
     metadata:
