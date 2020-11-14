@@ -38,3 +38,6 @@ datadir: /dataset
 # fio port; not used
 port: 8765
 
+# fio image
+fio_image: quay.io/mpillai/fio
+

@@ -22,6 +22,9 @@ topthrds: 100
 # when limittop is true
 topprocs: 20
 
+# sysstat image
+sysstat_image: quay.io/mpillai/sysstat
+
 #
 # options not likely to be tuned, similar to ones in most modules
 # 

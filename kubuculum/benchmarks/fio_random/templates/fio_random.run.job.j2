@@ -30,7 +30,7 @@ spec:
       initContainers:
 
       - name: fio-genhosts
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
@@ -46,7 +46,7 @@ spec:
 {% if testrread %}
 
       - name: fio-genrreadjob
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
@@ -73,7 +73,7 @@ spec:
             EOF
 
       - name: fio-randomread
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
@@ -91,7 +91,7 @@ spec:
 {% if testrwrite %}
 
       - name: fio-genrwritejob
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
@@ -118,7 +118,7 @@ spec:
             EOF
 
       - name: fio-randomwrite
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume

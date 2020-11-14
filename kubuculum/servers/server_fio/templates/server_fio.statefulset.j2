@@ -35,7 +35,7 @@ spec:
 {% endif %}
       containers:
       - name: fioserver
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ datadir }}
             name: server-fio-pvc

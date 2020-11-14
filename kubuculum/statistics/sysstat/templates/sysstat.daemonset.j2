@@ -22,7 +22,7 @@ spec:
 
       containers:
       - name: sysstat-iostat
-        image: quay.io/mpillai/sysstat
+        image: {{ sysstat_image }}
         securityContext:
           privileged: true
         volumeMounts:
@@ -32,7 +32,7 @@ spec:
         args: ["-c", "iostat -tkdxN {{ interval_sec }} > {{ podoutdir }}/iostat.out.txt"]
 
       - name: sysstat-top-thr
-        image: quay.io/mpillai/sysstat
+        image: {{ sysstat_image }}
         securityContext:
           privileged: true
         volumeMounts:
@@ -46,7 +46,7 @@ spec:
 {% endif %}
 
       - name: sysstat-top-proc
-        image: quay.io/mpillai/sysstat
+        image: {{ sysstat_image }}
         securityContext:
           privileged: true
         volumeMounts:
@@ -60,7 +60,7 @@ spec:
 {% endif %}
 
       - name: sysstat-sar
-        image: quay.io/mpillai/sysstat
+        image: {{ sysstat_image }}
         securityContext:
           privileged: true
         volumeMounts:

@@ -30,7 +30,7 @@ spec:
       initContainers:
 
       - name: fio-genhosts
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
@@ -44,7 +44,7 @@ spec:
 {% endfor %}
 
       - name: fio-genjob
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
@@ -67,7 +67,7 @@ spec:
             EOF
 
       - name: fio-initwrite
-        image: quay.io/mpillai/fio
+        image: {{ fio_image }}
         volumeMounts:
           - mountPath: {{ podoutdir }}
             name: output-volume
