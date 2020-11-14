@@ -50,7 +50,8 @@ class fio_random:
 
         # pass on basic parameters
         self.serverparams = { 
-            'nservers': self.params['ninstances']
+            'nservers': self.params['ninstances'],
+            'fio_image': self.params['fio_image']
         }
 
         # derive space requirements 
