@@ -84,6 +84,7 @@ class fio_random:
         util_functions.create_dir (preparep_dir)
 
         # start the servers
+        logger.info (f'starting server_fio pods')
         conn_params = self.serverhandle.start (self.serverparams)
 
         # update self.params with parameters required for server_fio
@@ -97,22 +98,22 @@ class fio_random:
         util_functions.instantiate_template (templates_dir, \
             template_file, yaml_file, self.params)
 
-        logger.info ("creating prepare pod")
+        logger.info (f'creating prep pod')
 
         # create prep pod, and wait for its completion
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
-        logger.info ("prepare pod completed")
+        logger.info (f'prep pod completed')
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], preparep_dir)
-        logger.info ("copied output from prepare pod")
+        logger.info (f'copied output from prep pod')
 
         # delete prep pod
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
-        logger.info ("deleted prepare pod")
+        logger.info (f'deleted prep pod')
 
     # run single iteration/test against previously created data set
     def _run (self, run_dir):
@@ -129,23 +130,23 @@ class fio_random:
         util_functions.instantiate_template ( templates_dir, \
             template_file, yaml_file, self.params)
 
-        logger.info ("creating run pod")
+        logger.info (f'creating pod to run test')
 
         # create pod, and wait for its completion
         # expected pod count is 1, pause of 5 sec, 0 retries
         k8s_wrappers.createpods_sync (namespace, yaml_file, podlabel, \
             1, 5, 0, self.params['maxruntime_sec'])
 
-        logger.info ("run pod completed")
+        logger.info (f'pod completed')
 
         # copy output from pod
         k8s_wrappers.copyfrompods (namespace, podlabel, \
             self.params['podoutdir'], run_dir)
-        logger.info ("copied output from run pod")
+        logger.info (f'copied output from pod')
 
         # delete run phase pod
         k8s_wrappers.deletefrom_yaml (yaml_file, namespace)
-        logger.info ("deleted run pod")
+        logger.info (f'deleted pod')
 
     # prepare for next iteration of run phase
     def _setup_next (self):
@@ -208,7 +209,7 @@ class fio_random:
         # gather info from server pods
         self.serverhandle.gather ()
 
-        logger.info ("stopping server_fio pods")
+        logger.info (f'stopping server_fio pods')
         self.serverhandle.stop ()
 
 
