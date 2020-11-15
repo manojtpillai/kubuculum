@@ -30,7 +30,7 @@ class dummy_pause:
         duration = self.params['duration_sec']
 
         logger.info (f'run: sleeping for {duration} seconds; ctrl-c to continue')
-        util_functions.pause (duration)
+        util_functions.intr_pause (duration)
         logger.info (f'run: completed')
 
 

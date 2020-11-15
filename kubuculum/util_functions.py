@@ -112,6 +112,11 @@ def create_subdir (parent, child):
 
 # pause for specified duration
 def pause (pause_sec):
+    subprocess.run (["sleep", str (pause_sec)])
+
+# pause for specified duration
+# supports keyboard interrupt to break out
+def intr_pause (pause_sec):
     try:
         subprocess.run (["sleep", str (pause_sec)])
     except KeyboardInterrupt:
