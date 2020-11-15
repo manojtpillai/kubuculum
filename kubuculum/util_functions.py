@@ -110,9 +110,11 @@ def create_subdir (parent, child):
 
     return path
 
-# TODO: make it interruptible ala ansible pause
 # pause for specified duration
 def pause (pause_sec):
-    subprocess.run (["sleep", str (pause_sec)])
+    try:
+        subprocess.run (["sleep", str (pause_sec)])
+    except KeyboardInterrupt:
+        pass
 
 

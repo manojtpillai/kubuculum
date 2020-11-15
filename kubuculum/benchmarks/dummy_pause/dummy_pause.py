@@ -1,5 +1,4 @@
 
-import time
 import logging
 from kubuculum import util_functions
 
@@ -27,8 +26,11 @@ class dummy_pause:
     # run phase : sleep for duration
     def run (self):
 
-        logger.info (f'run: start')
-        time.sleep(self.params['duration_sec'])
+        # shortcuts
+        duration = self.params['duration_sec']
+
+        logger.info (f'run: sleeping for {duration} seconds; ctrl-c to continue')
+        util_functions.pause (duration)
         logger.info (f'run: completed')
 
 
