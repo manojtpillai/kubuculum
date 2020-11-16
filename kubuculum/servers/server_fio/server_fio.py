@@ -18,7 +18,7 @@ class server_fio:
 
         # get a unique id and tag
         self.id = server_fio.instance_counter
-        self.tag = 'serverfio' + str (self.id)
+        self.tag = 'server-fio' + str (self.id)
         server_fio.instance_counter += 1
 
         # load defaults from file

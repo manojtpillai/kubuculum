@@ -17,7 +17,7 @@ class os_commands:
 
         # get a unique id and tag
         self.id = os_commands.instance_counter
-        self.tag = 'oscommands' + str (self.id)
+        self.tag = 'oscommands-' + str (self.id)
         os_commands.instance_counter += 1
 
         # load defaults from file

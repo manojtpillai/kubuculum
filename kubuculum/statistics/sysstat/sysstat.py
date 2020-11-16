@@ -17,7 +17,7 @@ class sysstat:
 
         # get a unique id and tag
         self.id = sysstat.instance_counter
-        self.tag = 'sysstat' + str (self.id)
+        self.tag = 'sysstat-' + str (self.id)
         sysstat.instance_counter += 1
 
         # load defaults from file
