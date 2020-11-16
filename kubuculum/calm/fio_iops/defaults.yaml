@@ -1,0 +1,89 @@
+
+# 
+# options likely to be tuned
+# 
+
+# number of fio instances
+ninstances: 1
+
+# number of jobs per instance
+numjobs: 1
+
+# file size per job
+filesize_gb: 1
+
+# block size for random I/O
+# NOTE: the option is bs, rather than the usual bs_kb
+# supports fio syntax for separate bs for r/w
+bs: 8k
+
+# fio iodepth
+iodepth: 32
+
+# use rate limit?
+rate_controlled: True
+
+# rate limit
+rate_iops: 256
+
+# read mix in r/w workload
+readpct: 50
+
+# output results every so often
+statusintrvl_sec: 60
+
+# optional; size of PVC, auto-calculated if not set
+# pvcsize_gb:
+
+# parameters for auto-calculating PVC size 
+# used if pvcsize_gb is not set
+scalefactor: 1.25
+extraspace_gb: 2
+
+# block size for initial write
+sbs_kb: 1024
+
+# max expected time for prep phase
+maxpreptime_sec: 36000
+
+# run time for each test in run phase
+# should be stopped before this
+runtime_sec: 86400
+
+# fio image
+fio_image: quay.io/mpillai/fio
+
+#
+# options not likely to be tuned, similar to ones in most modules
+# 
+
+# output directory for this module; always overridden by caller
+# dir: 
+
+# namespace for k8s resources; always overridden by caller
+# namespace: 
+
+# optional; uses default storageclass, if not set
+# storageclass: 
+
+# label on pods
+# podlabel: derived; role=calm-fioiops-<id>
+
+# optional nodeselector, for fio client
+# nodeselector: "node-role.kubernetes.io/worker=''"
+
+# optional nodeselector, for fio server
+# server_nodeselector: "node-role.kubernetes.io/worker=''"
+
+# sub-directory where templates are stored
+templates_dir: templates
+
+# names of template files
+template: fio_iops.job.j2
+
+# names for yaml files derived from templates
+yaml_file: fio_iops.job.yaml
+
+# location of output files in pod
+podoutdir: /calmout
+

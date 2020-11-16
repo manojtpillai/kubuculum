@@ -5,6 +5,7 @@ from kubuculum.setup_run import setup_run
 from kubuculum.dropcaches import dropcaches
 import kubuculum.benchmarks.util_functions
 import kubuculum.statistics.util_functions
+import kubuculum.calm.util_functions
 import kubuculum.util_functions
 
 logger = logging.getLogger (__name__)
@@ -43,12 +44,16 @@ def perform_singlerun (run_dir, params_dict):
         stats_handle = kubuculum.statistics.util_functions.create_object \
             (stats_module, run_dir, params_dict, run_globals)
 
-        stats_handle.start()
-        logger.info (f'stats collection started')
-
     else:
         logger.debug (f'statistics not enabled')
         stats_module = None
+
+    # 
+    # start statistics
+    #
+    if stats_module is not None:
+        stats_handle.start ()
+        logger.info (f'stats collection started')
 
     # 
     # create handle for enabled benchmark 
@@ -84,12 +89,50 @@ def perform_singlerun (run_dir, params_dict):
         logger.info (f'caches dropped before run phase')
 
     # 
+    # create handle for CALM module
+    # CALM: Controlled Ambient Load Mixing
+    # used to set up a background load
+    #
+    if 'calm' in module_params:
+
+        calm_module = module_params['calm']
+        logger.debug (f'CALM: {calm_module} enabled')
+
+        calm_handle = kubuculum.calm.util_functions.create_object \
+            (calm_module, run_dir, params_dict, run_globals)
+
+    else:
+        logger.debug (f'CALM not enabled')
+        calm_module = None
+
+    # 
+    # start CALM
+    #
+    if calm_module is not None:
+        calm_handle.start ()
+        logger.info (f'CALM load started')
+
+    # 
+    # wait for CALM steady state
+    #
+    if calm_module is not None:
+        calm_handle.ensure_ready ()
+        logger.info (f'CALM load ready')
+
+    # 
     # execute benchmark run phase
     #
     if benchmark_module is not None:
         logger.info (f'initiating benchmark run phase')
         benchmark_handle.run ()
         logger.info (f'benchmark run phase completed')
+
+    # 
+    # stop CALM 
+    #
+    if calm_module is not None:
+        calm_handle.stop ()
+        logger.info (f'CALM load stopped')
 
     # 
     # gather statistics

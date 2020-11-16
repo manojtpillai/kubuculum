@@ -5,11 +5,15 @@ from kubuculum import util_functions
 
 logger = logging.getLogger (__name__)
 
-# create pod(s) from yaml and wait till ready
-def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, retries, timeout_sec):
+# create pod(s) from yaml; do not wait for them to come up
+def createpods_async (namespace, yaml_file):
 
     # create the pods
     createfrom_yaml (yaml_file, namespace)
+
+
+# wait for pod(s) to become ready
+def ensure_ready (namespace, label, expected_count, pause_sec, retries, timeout_sec):
 
     tried = 0
     while True:
@@ -42,6 +46,16 @@ def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, ret
             "--for=condition=Ready", pod, "-n", namespace, \
             timeout_string], stdout=subprocess.PIPE)
         logger.debug (f'{result}')
+
+
+# create pod(s) from yaml and wait till ready
+def createpods_sync (namespace, yaml_file, label, expected_count, pause_sec, retries, timeout_sec):
+
+    # create the pods
+    createfrom_yaml (yaml_file, namespace)
+
+    # wait for them to become ready
+    ensure_ready (namespace, label, expected_count, pause_sec, retries, timeout_sec)
 
 
 # create resources given yaml 

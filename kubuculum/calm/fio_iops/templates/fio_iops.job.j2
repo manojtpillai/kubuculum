@@ -1,0 +1,120 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ name }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{ podlabel.split("=")[0] }}: {{ podlabel.split("=")[1] }}
+    spec:
+{% if nodeselector is defined %}
+      nodeSelector:
+        {{ nodeselector.split("=")[0] }}: {{ nodeselector.split("=")[1] }}
+{% endif %}
+
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+
+      containers:
+      - name: calm-fiorun
+        image: {{ fio_image }}
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            fio
+            --output={{ podoutdir }}/fio.randrw.run.txt
+            --status-interval={{ statusintrvl_sec }}
+            --client={{ podoutdir }}/hostlist
+            {{ podoutdir }}/jobfile.fiorun
+
+      initContainers:
+
+      - name: fio-genhosts
+        image: {{ fio_image }}
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            touch {{ podoutdir }}/hostlist
+{% for ii in range(ninstances) %}
+            ; echo {{ serverlist[ii] }} >> {{ podoutdir }}/hostlist
+{% endfor %}
+
+      - name: fio-genprepjob
+        image: {{ fio_image }}
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ podoutdir }}/jobfile.fioinit <<EOF
+            [initwrite]
+            rw=write 
+            ioengine=sync 
+            direct=0
+            create_on_open=1
+            end_fsync=1
+            directory={{ datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ sbs_kb }}k
+            filesize={{ filesize_gb }}g
+            numjobs={{ numjobs }}
+            EOF
+
+      - name: fio-initwrite
+        image: {{ fio_image }}
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c" 
+          - > 
+            fio 
+            --output={{ podoutdir }}/fio.initwrite.run.txt
+            --client={{ podoutdir }}/hostlist
+            {{ podoutdir }}/jobfile.fioinit
+
+      - name: fio-genrunjob
+        image: {{ fio_image }}
+        volumeMounts:
+          - mountPath: {{ podoutdir }}
+            name: output-volume
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            cat > {{ podoutdir }}/jobfile.fiorun <<EOF
+            [randrw]
+            rw=randrw 
+            ioengine=libaio 
+            direct=1
+            norandommap
+            rwmixread={{ readpct }}
+            iodepth={{ iodepth }}
+{% if rate_controlled %}
+            rate_iops={{ rate_iops }}
+{% endif %}
+            time_based=1
+            runtime={{ runtime_sec }}
+            directory={{ datadir }}
+            filename_format=f.\$jobnum.\$filenum
+            bs={{ bs }}
+            filesize={{ filesize_gb }}g
+            numjobs={{ numjobs }}
+            EOF
+
+      restartPolicy: Never
+...
