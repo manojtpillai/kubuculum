@@ -127,27 +127,44 @@ corresponding directory. Below is the output of the *tree* command for
 
 The *defaults.yaml* file has the options that are available for this
 particular benchmark. The input file only needs to specify those
-options that need to be overridden. 
+options whose default values need to be overridden. 
 
 Generally speaking, the data set size parameters in the defaults are
 chosen to be unrealistically low. This is to allow new users to try
 out runs that complete quickly. For useful runs, it is expected that
 users will provide better values. Specifically for the *fio_random*
-benchmark, the user would specify more appropriate values for
+benchmark, the user should specify more appropriate values for
 *filesize_gb*, *ninstances* and *numjobs* options.
 
 ## Additional Details
 
+- **Dropping Caches:** The tool supports dropping of OS kernel caches,
+which can be important in some scenarios.  Currently, there is also
+support for dropping of ceph MDS and OSD caches. See below.
+
 - **Storage backends:** The tool uses k8s features for allocating
 storage, so it mostly doesn't need to be aware of specific storage
 backends. The *openshift_storage* module, written for Openshift
-Container Storage (OCS) is an example of how specific features can be
-incorporated into the tool: this module implements *drop_caches*
-functionality for OCS.
+Container Storage (OCS), is an example of how specific storage-backend
+features can be incorporated into the tool: this module implements
+*drop caches* functionality for OCS that can be plugged into the *drop
+caches* feature of the tool.
+
+    - The OCS drop caches functionality depends on the ceph tools pod
+    being present. Use the following command to enable it:
+```
+oc patch OCSInitialization ocsinit -n openshift-storage --type json --patch  '[{ "op": "replace", "path": "/spec/enableCephTools", "value": true }]'
+```
 
 - **Statistics:** The tool currently has one module, *sysstat*, for
-natively collecting stats during runs. But it is designed to allow
+natively collecting stats during runs, but it is designed to support
 other ways of collecting stats. There is also a module,
 *stats_splitter*, that allows multiple stats collection modules to be
-active concurrently.
+active concurrently. Obviously, users can also rely on external
+monitoring solutions, like prometheus, that they have set up.
+
+- **Images:** Most of the images being used by the tool were built
+from files in the *dockerfiles* directory. The modules using these
+images allow an alternative image to be specified that has the same
+functionality.
 
