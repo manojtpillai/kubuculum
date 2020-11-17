@@ -1,9 +1,0 @@
----
-
-# drop os kernel caches
-util_dropcaches_os: True
-
-# drop caches osd/mgr caches 
-util_dropcaches_ceph: True
-
-...

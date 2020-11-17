@@ -1,4 +1,0 @@
----
-- include_tasks: '{{ calm_mode }}.yml'
-
-...

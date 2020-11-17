@@ -1,9 +1,0 @@
----
-
-- name: stop fio pod
-  command: 'kubectl delete -f {{ bench_fiorand_dir }}/fiorun_job.yaml -n {{ bench_fiorand_namespace }}'
-
-- name: delete fio pvc
-  command: 'kubectl delete -f {{ bench_fiorand_dir }}/fiopvc.yaml -n {{ bench_fiorand_namespace }}'
-
-...

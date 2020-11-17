@@ -1,4 +1,0 @@
----
-- include_tasks: '{{ stats_mode }}.yml'
-
-...

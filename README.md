@@ -44,9 +44,13 @@ Openshift. Known usage of the tool has also been on Openshift.
 
 ## Versions
 
-The initial implementation was in ansible, followed by a python
-rewrite. The python version has better capabilities, but not all
-benchmarks and features have been ported to it at this time.
+- The initial implementation was in ansible. This version is still
+accessible via tag v0.1
+
+- The tool has been rewritten in python. It has gained better
+capabilities in this rewrite; maybe most significant is the ability to
+specify a batch of runs in a single input file. However, not all
+benchmarks available in the ansible version have been rewritten yet.
 
 ## Getting Started
 
@@ -55,35 +59,30 @@ benchmarks and features have been ported to it at this time.
 kubuculum is run on a system that has kubectl set up to control a
 kubernetes cluster. The prerequisites for running the tool are:
 
-- A kubernetes cluster up and running.
-
-- The system running the tool should have kubectl set up to
-work against said kubernetes cluster.
-
-- The kubernetes cluster should have a default StorageClass. This
-is used by the tool for dynamically provisioning storage.
-Alternatively, you can specify a StorageClass to use; see below.
-
-- The system running the tool should have python3 (>= 3.6) and
-the following modules installed.
+- python3 (>= 3.6) on the system running the tool. It also requires
+additional packages. The following should suffice:
   - pip3 install pyyaml
   - pip3 install jinja2
 
-In addition, the access policy for the kubernetes cluster should
-allow the kubectl commands issued by the tool: create a
-namespace, list nodes, create statefulsets and pods, to list a
-few. In this context, note that:
+- A kubernetes cluster up and running. The system running the tool
+should have kubectl set up to work against said kubernetes cluster.
+Since the benchmarks are storage focused, the kubernetes cluster
+should either have a default storageclass, or a storageclass should be
+specified the input file (see below).
 
-- kubuculum has an option to collect system stats (*iostat, sar,
-top*) during runs. This option is disabled by default; when
-enabled, it creates a daemonset of privileged pods on
-all/selected nodes.
+In addition, the access policy for the kubernetes cluster should allow
+the kubectl commands issued by the tool: create a namespace, list
+nodes, create statefulsets and pods, to list a few. In this context,
+note the following:
 
-- kubuculum has an option to drop linux kernel caches at points
-during the benchmark runs. This option is disabled by default;
-when enabled, it creates a daemonset of privileged pods with root
-access, on selected nodes, that execute the *sysctl
-vm.drop_caches* command.
+- kubuculum has an option to collect system stats (*iostat, sar, top*)
+during runs. When enabled, this creates a daemonset of privileged pods
+on all/selected nodes.
+
+- kubuculum has an option to drop linux kernel caches at points during
+the benchmark runs. When enabled, this creates a daemonset of
+privileged pods with root access, on all/selected nodes, that execute
+the *sysctl vm.drop_caches* command.
 
 ### Quick Start
 
@@ -94,7 +93,7 @@ cd kubuculum
 ```
 
 Based on settings in the dummy.yaml input file, this will run a dummy
-benchmark (just sleeps for a specified suration).  Output goes to a
+benchmark (just sleeps for a specified duration).  Output goes to a
 timestamped directory */tmp/run_\<timestamp\>*.  A quick examination
 of this directory should give a sense of how the tool organizes
 output.
@@ -106,3 +105,26 @@ run, use the cleanup script:
 ```
 ./cleanup.py
 ```
+### Controlling Runs
+
+The examples in the *sample_input* directory highlight the
+capabilities of the tool, and the input file syntax to use to exercise
+them.
+
+For more details on the individual packages/modules look in the
+corresponding directory. Below is the output of the *tree* command for
+*kubuculum/benchmarks/fio_random*:
+
+```
+.
+├── defaults.yaml
+├── fio_random.py
+└── templates
+    ├── fio_random.prep.job.j2
+    └── fio_random.run.job.j2
+```
+
+The *defaults.yaml* file has the options that are available for this
+particular benchmark. The input file only needs to specify those
+options that need to be overridden.
+

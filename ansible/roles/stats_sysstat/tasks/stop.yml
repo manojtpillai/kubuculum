@@ -1,5 +1,0 @@
----
-
-- name: stop sysstat pods
-  command: 'kubectl delete -f {{ stats_sysstat_dir }}/sysstat_daemonset.yaml -n {{ stats_sysstat_namespace }}'
-...
