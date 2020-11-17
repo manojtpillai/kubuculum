@@ -68,7 +68,7 @@ additional packages. The following should suffice:
 should have kubectl set up to work against said kubernetes cluster.
 Since the benchmarks are storage focused, the kubernetes cluster
 should either have a default storageclass, or a storageclass should be
-specified the input file (see below).
+specified in the input file (see below).
 
 In addition, the access policy for the kubernetes cluster should allow
 the kubectl commands issued by the tool: create a namespace, list
@@ -105,7 +105,8 @@ run, use the cleanup script:
 ```
 ./cleanup.py
 ```
-### Controlling Runs
+
+### Beyond the Trivial
 
 The examples in the *sample_input* directory highlight the
 capabilities of the tool, and the input file syntax to use to exercise
@@ -126,5 +127,27 @@ corresponding directory. Below is the output of the *tree* command for
 
 The *defaults.yaml* file has the options that are available for this
 particular benchmark. The input file only needs to specify those
-options that need to be overridden.
+options that need to be overridden. 
+
+Generally speaking, the data set size parameters in the defaults are
+chosen to be unrealistically low. This is to allow new users to try
+out runs that complete quickly. For useful runs, it is expected that
+users will provide better values. Specifically for the *fio_random*
+benchmark, the user would specify more appropriate values for
+*filesize_gb*, *ninstances* and *numjobs* options.
+
+## Additional Details
+
+- **Storage backends:** The tool uses k8s features for allocating
+storage, so it mostly doesn't need to be aware of specific storage
+backends. The *openshift_storage* module, written for Openshift
+Container Storage (OCS) is an example of how specific features can be
+incorporated into the tool: this module implements *drop_caches*
+functionality for OCS.
+
+- **Statistics:** The tool currently has one module, *sysstat*, for
+natively collecting stats during runs. But it is designed to allow
+other ways of collecting stats. There is also a module,
+*stats_splitter*, that allows multiple stats collection modules to be
+active concurrently.
 
