@@ -65,6 +65,9 @@ spec:
 {% endif %}
             time_based=1
             runtime={{ runtime_sec }}
+{% if refill_buffers is defined %}
+            refill_buffers={{ refill_buffers }}
+{% endif %}
             directory={{ datadir }}
             filename_format=f.\$jobnum.\$filenum
             bs={{ bs_kb }}k
@@ -104,12 +107,16 @@ spec:
             rw=randwrite
             ioengine=libaio
             direct=1
+            end_fsync=1
             iodepth={{ iodepth }}
 {% if rate_iops is defined %}
             rate_iops={{ rate_iops }}
 {% endif %}
             time_based=1
             runtime={{ runtime_sec }}
+{% if refill_buffers is defined %}
+            refill_buffers={{ refill_buffers }}
+{% endif %}
             directory={{ datadir }}
             filename_format=f.\$jobnum.\$filenum
             bs={{ bs_kb }}k

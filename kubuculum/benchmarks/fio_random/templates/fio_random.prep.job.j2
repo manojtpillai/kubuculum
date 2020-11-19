@@ -59,6 +59,9 @@ spec:
             direct=0
             create_on_open=1
             end_fsync=1
+{% if refill_buffers is defined %}
+            refill_buffers={{ refill_buffers }}
+{% endif %}
             directory={{ datadir }}
             filename_format=f.\$jobnum.\$filenum
             bs={{ sbs_kb }}k

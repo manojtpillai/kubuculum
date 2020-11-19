@@ -48,6 +48,9 @@ extraspace_gb: 2
 # block size for initial write
 sbs_kb: 1024
 
+# optional:
+# refill_buffers: 1
+
 # fio image
 fio_image: quay.io/mpillai/fio
 
