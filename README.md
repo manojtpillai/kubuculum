@@ -52,6 +52,11 @@ capabilities in this rewrite; maybe most significant is the ability to
 specify a batch of runs in a single input file. However, not all
 benchmarks available in the ansible version have been rewritten yet.
 
+## Status
+
+Inactive until further notice. But a fork that is active is likely.
+Stay tuned.
+
 ## Getting Started
 
 ### Prerequisites
